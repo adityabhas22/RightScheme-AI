@@ -1,0 +1,5 @@
+openai
+faiss-cpu
+numpy
+json
+os
