@@ -1,0 +1,7 @@
+CHUNK 1
+==================================================
+BHIM App
+Launched 2016
+Main Objective: To provide unified payment interface (UPI) facility
+BHIM (Bharat Interface for Money) is a mobile payment App developed by the National Payments Corporation of India (NPCI), based on the Unified Payments Interface (UPI). This app is intended to facilitate e-payments directly through banks as part of the 2016 Indian banknote demonetisation and drive towards cashless transactions. The app supports all Indian banks which use UPI, which is built over the Immediate Payment Service (IMPS) infrastructure and allows the user to instantly transfer money between bank accounts of any two parties. It can be used on all mobile devices. Official Website: google play store
+

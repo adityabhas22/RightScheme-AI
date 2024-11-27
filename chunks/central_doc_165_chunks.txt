@@ -1,0 +1,7 @@
+CHUNK 1
+==================================================
+Shala Ashmita Yojana
+Announced 25 May 2016
+Main Objective: Student tracking system programme
+SAY aims to track the educational journey of school students from Class I to Class XII across the 15 lakhs private and government schools in the country. ASMITA will be an online database which will carry information of student attendance and enrolment, learning outcomes, mid-day meal service and infrastructural facilities among others. Students will be tracked through their Aadhaar numbers and incase those not having unique number will be provided with it. Official Website: mhrd.gov.in
+

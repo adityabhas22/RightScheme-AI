@@ -1,0 +1,6 @@
+CHUNK 1
+==================================================
+Clean My Coach
+Launched 13 March 2016
+Main Objective: To provide cleaning, watering, disinfection, pest control, linen/bedroll, train lighting/AC and petty Repairs services for coaches in Indian Railways. Passengers may request for following COACH-MITRA services just by entering PNR number and mobile number in this website or Passengers can send their requests as SMS to 58888 or 9200003232 by typing CLEAN< Space ><10-digit PNR number>< Space >SERVICE TYPE CODE. Clean My Coach Application will forward the request to mobile phone of the onboard staff or the concerned control office of the particular train directly. The Railway Administration will also simultaneously receive an intimation of such requests for follow up. Official Website: http://cleanmycoach.com/
+

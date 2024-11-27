@@ -1,0 +1,7 @@
+CHUNK 1
+==================================================
+Vidyalakshmi Loan Scheme
+Launched 15 August 2015
+Main Objective: Education loans for students
+Vidya Lakshmi is a first of its kind portal for students seeking Education Loan. This portal has been developed under the guidance of Department of Financial Services (Ministry of Finance), Department of Higher Education (Ministry of Human Resource Development) and Indian Banks Association (IBA). The portal has been developed and being maintained by NSDL e-Governance Infrastructure Limited. Students can view, apply and track the education loan applications to banks anytime, anywhere by accessing the portal. Official Website: https://www.vidyalakshmi.co.in/Students/
+

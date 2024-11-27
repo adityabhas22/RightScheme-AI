@@ -1,0 +1,7 @@
+CHUNK 1
+==================================================
+Aadhaar and Other Laws (Amendment) Bill, 2018
+Introduced 2 January 2019
+Main Objective: To verify person’s identity through aadhaar authentication
+Minister of Law and Justice, and Electronics and Information Technology, Mr. Ravi Shankar Prasad, in Lok Sabha on January 2, 2019. The Bill amends the Aadhaar (Targeted Delivery of Financial and Other Subsidies, Benefits and Services) Act, 2016, the Indian Telegraph Act, 1885, and the Prevention of Money Laundering Act, 2002. The Aadhaar Act provides targeted delivery of subsidies and benefits to individuals residing in India by assigning them unique identity numbers, called Aadhaar numbers. The Bill additionally allows offline verification of an individual’s identity, without authentication, through modes specified by the Unique Identification Authority of India (UIDAI) by regulations. During offline verification, the agency must obtain the consent of the individual, inform them of alternatives to sharing information and not collect, use or store Aadhaar number or biometric information. Official Website: uidai.gov.in
+

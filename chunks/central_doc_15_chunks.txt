@@ -1,0 +1,6 @@
+CHUNK 1
+==================================================
+Aarogya Setu App
+Launched: 17 April 2020
+Main Objective: To track and prevent Coronavirus (COVID-19) spread. Central govt. launches Aarogya Setu mobile app which is available to download in 11 languages from google play store (android users) and apple app store (iPhone iOS users). This app will alert persons in case they come in proximity with the COVID infected persons. The app will inform users about best practices and relevant medical advisories. It is a privacy first app by design and has highly scalable architecture. Official Website: https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en_GB
+
