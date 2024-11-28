@@ -8,6 +8,14 @@ st.set_page_config(
     layout="wide"
 )
 
+def display_thinking_animation():
+    """Display an elegant thinking animation."""
+    with st.chat_message("assistant"):
+        with st.status("🤔 Analyzing your question...", expanded=True) as status:
+            st.write("🔍 Searching relevant schemes...")
+            st.write("📚 Processing information...")
+            return status
+
 def main():
     initialize_session_state()
     
@@ -52,15 +60,25 @@ def main():
     if query := st.chat_input("Type your question here..."):
         st.session_state.is_first_message = False
         
-        # Add state context to the query
-        contextualized_query = f"For someone in {st.session_state.user_state}: {query}"
-        
+        # Immediately display user message
+        with st.chat_message("user"):
+            st.write(query)
+
         # Add user message to chat history
         st.session_state.chat_history.append({"role": "user", "content": query})
-
-        # Get response
-        with st.spinner("Thinking..."):
+        
+        # Show thinking animation
+        with display_thinking_animation() as status:
+            # Add state context to the query
+            contextualized_query = f"For someone in {st.session_state.user_state}: {query}"
+            
+            # Get response
             response_data = process_query(contextualized_query)
+            status.update(label="✨ Response ready!", state="complete", expanded=False)
+
+        # Display assistant response
+        with st.chat_message("assistant"):
+            st.write(response_data["response"])
 
         # Add assistant response to chat history
         st.session_state.chat_history.append(

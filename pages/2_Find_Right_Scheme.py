@@ -65,6 +65,14 @@ def format_initial_query(responses, state):
         f"Please suggest government schemes that I am eligible for, "
     )
 
+def display_thinking_animation():
+    """Display an elegant thinking animation."""
+    with st.chat_message("assistant"):
+        with st.status("🤔 Analyzing your question...", expanded=True) as status:
+            st.write("🔍 Searching relevant schemes...")
+            st.write("📚 Processing information...")
+            return status
+
 def main():
     initialize_session_state()
     initialize_questionnaire_state()
@@ -130,27 +138,41 @@ def main():
     # Process initial query or handle user input
     if st.session_state.questionnaire_completed:
         if st.session_state.is_first_message:
-            with st.spinner("Finding relevant schemes..."):
+            with display_thinking_animation() as status:
                 initial_query = st.session_state.chat_history[-1]["content"]
                 response_data = process_query(initial_query)
-                st.session_state.chat_history.append(
-                    {"role": "assistant", "content": response_data["response"]}
-                )
-                st.session_state.is_first_message = False
-                st.rerun()
+                status.update(label="✨ Response ready!", state="complete", expanded=False)
 
-        # Handle follow-up questions
-        if query := st.chat_input("Ask follow-up questions about schemes..."):
-            st.session_state.chat_history.append({"role": "user", "content": query})
-            
-            with st.spinner("Thinking..."):
-                response_data = process_query(query)
-                
+            with st.chat_message("assistant"):
+                st.write(response_data["response"])
+
             st.session_state.chat_history.append(
                 {"role": "assistant", "content": response_data["response"]}
             )
-            
+            st.session_state.is_first_message = False
             st.rerun()
+
+        # Handle follow-up questions
+        if query := st.chat_input("Ask follow-up questions about schemes..."):
+            # Immediately display user message
+            with st.chat_message("user"):
+                st.write(query)
+
+            # Add to chat history
+            st.session_state.chat_history.append({"role": "user", "content": query})
+            
+            # Show thinking animation
+            with display_thinking_animation() as status:
+                response_data = process_query(query)
+                status.update(label="✨ Response ready!", state="complete", expanded=False)
+            
+            # Display assistant response
+            with st.chat_message("assistant"):
+                st.write(response_data["response"])
+            
+            st.session_state.chat_history.append(
+                {"role": "assistant", "content": response_data["response"]}
+            )
 
 if __name__ == "__main__":
     main() 
