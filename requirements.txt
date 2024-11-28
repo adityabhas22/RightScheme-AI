@@ -18,3 +18,4 @@ chardet
 streamlit-extras
 watchdog
 faiss-cpu
+langchain_openai
