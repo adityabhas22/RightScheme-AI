@@ -15,7 +15,10 @@ import streamlit as st
 
 # Load environment variables
 load_dotenv()
-client = OpenAI()
+client = OpenAI(
+    api_key=os.getenv('OPENAI_API_KEY'),
+    base_url="https://api.openai.com/v1"
+)
 
 # Add Streamlit session state initialization
 if "scheme_agent" not in st.session_state:
