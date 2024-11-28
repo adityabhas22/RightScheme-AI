@@ -75,5 +75,35 @@ def main():
         # Rerun to update chat display
         st.rerun()
 
+    # Add/modify the CSS for chat messages
+    st.markdown("""
+    <style>
+        /* Optimize message containers for mobile */
+        div.stChatMessage {
+            padding: 1rem 1.5rem !important;
+            margin: 0.5rem 0 !important;
+            max-width: 100% !important;
+        }
+        
+        /* Reduce indentation on mobile */
+        @media (max-width: 768px) {
+            div.stChatMessage {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            
+            div.stChatMessage [data-testid="chatAvatarIcon-user"],
+            div.stChatMessage [data-testid="chatAvatarIcon-assistant"] {
+                padding: 0 !important;
+            }
+            
+            div.stChatMessage [data-testid="StMarkdownContainer"] {
+                margin-left: 0.5rem !important;
+                margin-right: 0.5rem !important;
+            }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 if __name__ == "__main__":
     main() 

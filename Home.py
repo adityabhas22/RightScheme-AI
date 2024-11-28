@@ -39,5 +39,23 @@ def main():
         if st.button("Go to Compare Schemes", use_container_width=True):
             st.switch_page("pages/3_Compare_Schemes.py")
 
+    # Add responsive design CSS
+    st.markdown("""
+    <style>
+        /* General mobile optimizations */
+        @media (max-width: 768px) {
+            .stMarkdown {
+                padding: 0.5rem !important;
+            }
+            
+            /* Adjust any chat containers */
+            .element-container {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 if __name__ == "__main__":
     main() 
