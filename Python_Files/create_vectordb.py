@@ -1,8 +1,39 @@
-import faiss
 import numpy as np
 import json
 import os
 from datetime import datetime
+from pinecone import Pinecone, ServerlessSpec
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+def init_pinecone():
+    """Initialize Pinecone client and create index if it doesn't exist."""
+    try:
+        # Initialize Pinecone
+        pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+        
+        index_name = os.getenv('PINECONE_INDEX_NAME')
+        
+        # Create index if it doesn't exist
+        if index_name not in pc.list_indexes().names():
+            pc.create_index(
+                name=index_name,
+                dimension=1536,  # dimension for text-embedding-ada-002
+                metric='cosine',
+                spec=ServerlessSpec(
+                    cloud='aws',
+                    region=os.getenv('PINECONE_ENV')
+                )
+            )
+            print(f"Created new Pinecone index: {index_name}")
+        
+        return pc.Index(index_name)
+    
+    except Exception as e:
+        print(f"Error initializing Pinecone: {str(e)}")
+        return None
 
 def load_embeddings_and_metadata(embeddings_dir):
     """Load the most recent embeddings and metadata files."""
@@ -34,113 +65,62 @@ def load_embeddings_and_metadata(embeddings_dir):
         print(f"Error loading files: {str(e)}")
         return None, None
 
-def create_faiss_index(embeddings, index_type="l2"):
-    """Create and populate a FAISS index."""
+def upsert_to_pinecone(index, embeddings, metadata):
+    """Upload vectors and metadata to Pinecone."""
     try:
-        vector_dimension = embeddings.shape[1]
+        batch_size = 50
+        total = len(metadata)
         
-        # Choose index type
-        if index_type == "l2":
-            index = faiss.IndexFlatL2(vector_dimension)
-        elif index_type == "ip":  # Inner product
-            index = faiss.IndexFlatIP(vector_dimension)
-        else:
-            raise ValueError(f"Unsupported index type: {index_type}")
-        
-        # Add vectors to the index
-        index.add(embeddings)
-        
-        print(f"\nCreated FAISS index:")
-        print(f"- Type: {index_type}")
-        print(f"- Dimension: {vector_dimension}")
-        print(f"- Number of vectors: {index.ntotal}")
-        
-        return index
-    
-    except Exception as e:
-        print(f"Error creating FAISS index: {str(e)}")
-        return None
-
-def save_faiss_index(index, metadata, output_dir):
-    """Save the FAISS index and metadata."""
-    try:
-        # Create output directory if it doesn't exist
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        
-        # Generate timestamp
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
-        # Save FAISS index
-        index_path = os.path.join(output_dir, f"faiss_index_{timestamp}.index")
-        faiss.write_index(index, index_path)
-        
-        # Save metadata
-        metadata_path = os.path.join(output_dir, f"faiss_metadata_{timestamp}.json")
-        with open(metadata_path, 'w', encoding='utf-8') as f:
-            json.dump(metadata, f, indent=2, ensure_ascii=False)
-        
-        print(f"\nSaved FAISS index to: {index_path}")
-        print(f"Saved metadata to: {metadata_path}")
-        
-        return index_path, metadata_path
-    
-    except Exception as e:
-        print(f"Error saving FAISS index: {str(e)}")
-        return None, None
-
-def test_faiss_index(index, metadata, num_queries=3, top_k=5):
-    """Test the FAISS index with random queries."""
-    try:
-        print("\nTesting FAISS index...")
-        
-        # Get random vectors for testing
-        num_vectors = index.ntotal
-        test_indices = np.random.choice(num_vectors, num_queries, replace=False)
-        
-        for i, idx in enumerate(test_indices):
-            print(f"\nTest Query {i+1}:")
+        for i in range(0, total, batch_size):
+            # Prepare batch
+            end_idx = min(i + batch_size, total)
+            batch_ids = [str(j) for j in range(i, end_idx)]
+            batch_embeddings = embeddings[i:end_idx].tolist()
+            batch_metadata = metadata[i:end_idx]
             
-            # Get a vector and search
-            query_vector = faiss.vector_to_array(index.reconstruct(int(idx)))
-            distances, indices = index.search(query_vector.reshape(1, -1), top_k)
+            # Create vectors for Pinecone
+            vectors = []
+            for id_, vector, meta in zip(batch_ids, batch_embeddings, batch_metadata):
+                vectors.append({
+                    'id': id_,
+                    'values': vector,
+                    'metadata': meta
+                })
             
-            print(f"Original document: {metadata[idx]['source_file']}")
-            print(f"\nTop {top_k} matches:")
+            # Upsert to Pinecone
+            index.upsert(vectors=vectors)
             
-            for j, (dist, matched_idx) in enumerate(zip(distances[0], indices[0])):
-                matched_doc = metadata[matched_idx]['source_file']
-                print(f"{j+1}. Distance: {dist:.4f} - Document: {matched_doc}")
-    
+            print(f"Uploaded vectors {i} to {end_idx} of {total}")
+        
+        print(f"\nSuccessfully uploaded {total} vectors to Pinecone")
+        return True
+        
     except Exception as e:
-        print(f"Error testing FAISS index: {str(e)}")
+        print(f"Error uploading to Pinecone: {str(e)}")
+        return False
 
 def main():
     # Specify directories
     embeddings_dir = "/Users/adityabhaskara/Downloads/embeddings"
-    output_dir = "/Users/adityabhaskara/Downloads/vectorDb"
     
-    print("Starting FAISS index creation...")
+    print("Starting Pinecone index creation...")
+    
+    # Initialize Pinecone
+    index = init_pinecone()
+    if index is None:
+        return
     
     # Load embeddings and metadata
     embeddings, metadata = load_embeddings_and_metadata(embeddings_dir)
     if embeddings is None or metadata is None:
         return
     
-    # Create FAISS index
-    index = create_faiss_index(embeddings, index_type="l2")
-    if index is None:
+    # Upload to Pinecone
+    success = upsert_to_pinecone(index, embeddings, metadata)
+    if not success:
         return
     
-    # Save the index and metadata
-    index_path, metadata_path = save_faiss_index(index, metadata, output_dir)
-    if index_path is None:
-        return
-    
-    # Test the index
-    test_faiss_index(index, metadata)
-    
-    print("\nFAISS index creation completed successfully!")
+    print("\nPinecone index creation completed successfully!")
 
 if __name__ == "__main__":
     main()

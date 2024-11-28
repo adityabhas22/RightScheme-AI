@@ -1,8 +1,8 @@
-import faiss
 import numpy as np
 import json
 import os
 from openai import OpenAI
+from pinecone import Pinecone
 from dotenv import load_dotenv
 from datetime import datetime
 from langchain.prompts import PromptTemplate
@@ -11,36 +11,35 @@ from langchain.chains import LLMChain
 from langchain.memory import ConversationSummaryMemory
 from langchain.schema import SystemMessage
 
-
-# Load environment variables and initialize OpenAI client
+# Load environment variables and initialize clients
 load_dotenv()
 client = OpenAI()
 
-
 class VectorDBQuerier:
-    def __init__(self, index_dir):
-        """Initialize the querier with the latest index and metadata."""
-        self.index_dir = index_dir
-        self.index, self.metadata = self._load_latest_index()
-        
-        # Initialize LangChain components
-        self.llm = ChatOpenAI(
-            temperature=0.7,
-            model_name="gpt-3.5-turbo"
-        )
-        
-        # Initialize memory
-        self.memory = ConversationSummaryMemory(
-            llm=self.llm,
-            memory_key="chat_history",
-            return_messages=True,
+    def __init__(self):
+        """Initialize the querier with Pinecone."""
+        try:
+            # Initialize Pinecone
+            pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+            self.index = pc.Index(os.getenv('PINECONE_INDEX_NAME'))
             
-        )
-        
-        # Create a custom prompt template for government schemes
-        self.prompt = PromptTemplate(
-            input_variables=["chat_history", "context", "question"],
-            template="""You are an expert assistant for Indian Government Schemes.
+            # Initialize LangChain components
+            self.llm = ChatOpenAI(
+                temperature=0.7,
+                model_name="gpt-3.5-turbo"
+            )
+            
+            # Initialize memory
+            self.memory = ConversationSummaryMemory(
+                llm=self.llm,
+                memory_key="chat_history",
+                return_messages=True
+            )
+            
+            # Create prompt template
+            self.prompt = PromptTemplate(
+                input_variables=["chat_history", "context", "question"],
+                template="""You are an expert assistant for Indian Government Schemes.
 
 Previous Conversation:
 {chat_history}
@@ -61,44 +60,18 @@ Instructions:
 8. Reference any relevant information from previous interactions if applicable
 
 Answer: Let me help you with information about Indian Government Schemes."""
-        )
-        
-        # Create the chain with memory
-        self.chain = LLMChain(
-            llm=self.llm,
-            prompt=self.prompt,
-            verbose=True
-        )
-    
-    def _load_latest_index(self):
-        """Load the most recent FAISS index and its metadata."""
-        try:
-            # Find the most recent index file
-            index_files = [f for f in os.listdir(self.index_dir) if f.startswith('faiss_index_') and f.endswith('.index')]
-            if not index_files:
-                raise FileNotFoundError("No FAISS index files found")
+            )
             
-            latest_index = max(index_files)
-            index_path = os.path.join(self.index_dir, latest_index)
-            
-            # Find corresponding metadata file
-            timestamp = latest_index.replace('faiss_index_', '').replace('.index', '')
-            metadata_file = f'faiss_metadata_{timestamp}.json'
-            metadata_path = os.path.join(self.index_dir, metadata_file)
-            
-            print(f"Loading index from: {index_path}")
-            print(f"Loading metadata from: {metadata_path}")
-            
-            # Load files
-            index = faiss.read_index(index_path)
-            with open(metadata_path, 'r', encoding='utf-8') as f:
-                metadata = json.load(f)
-                
-            return index, metadata
+            # Create the chain with memory
+            self.chain = LLMChain(
+                llm=self.llm,
+                prompt=self.prompt,
+                verbose=True
+            )
             
         except Exception as e:
-            print(f"Error loading index: {str(e)}")
-            return None, None
+            print(f"Error initializing VectorDBQuerier: {str(e)}")
+            raise
     
     def generate_embedding(self, text):
         """Generate embedding for query text."""
@@ -120,27 +93,26 @@ Answer: Let me help you with information about Indian Government Schemes."""
             if query_embedding is None:
                 return []
             
-            # Search the index
-            distances, indices = self.index.search(
-                query_embedding.reshape(1, -1), 
-                top_k
+            # Search Pinecone
+            results = self.index.query(
+                vector=query_embedding.tolist(),
+                top_k=top_k,
+                include_metadata=True
             )
             
             # Format results
-            results = []
-            for i, (idx, distance) in enumerate(zip(indices[0], distances[0])):
-                if idx != -1:  # Valid match
-                    metadata = self.metadata[idx]
-                    result = {
-                        "rank": i + 1,
-                        "distance": float(distance),
-                        "chunk_id": metadata["chunk_id"],
-                        "source_file": metadata["source_file"],
-                        "text": metadata["text"]
-                    }
-                    results.append(result)
+            formatted_results = []
+            for i, match in enumerate(results.matches):
+                result = {
+                    "rank": i + 1,
+                    "score": match.score,
+                    "chunk_id": match.metadata.get("chunk_id"),
+                    "source_file": match.metadata.get("source_file"),
+                    "text": match.metadata.get("text")
+                }
+                formatted_results.append(result)
             
-            return results
+            return formatted_results
             
         except Exception as e:
             print(f"Error during search: {str(e)}")
@@ -154,7 +126,7 @@ Answer: Let me help you with information about Indian Government Schemes."""
             for result in search_results:
                 context_parts.append(
                     f"Document (from {result['source_file']}):\n{result['text']}\n"
-                    f"Relevance Score: {1 / (1 + result['distance']):.4f}\n"
+                    f"Relevance Score: {result['score']:.4f}\n"
                 )
             context = "\n\n".join(context_parts)
             
@@ -168,7 +140,7 @@ Answer: Let me help you with information about Indian Government Schemes."""
                     "chat_history": str(chat_history),
                     "context": context,
                     "question": query
-                })["text"]  # Extract text from response
+                })["text"]
                 
                 # Save interaction to memory
                 self.memory.save_context(
@@ -181,7 +153,7 @@ Answer: Let me help you with information about Indian Government Schemes."""
                     "sources": [
                         {
                             "file": r['source_file'],
-                            "relevance": 1 / (1 + r['distance']),
+                            "relevance": r['score'],
                             "text": r['text'][:200] + "..."
                         }
                         for r in search_results
@@ -201,26 +173,6 @@ Answer: Let me help you with information about Indian Government Schemes."""
                 "chat_history": ""
             }
     
-    def format_results(self, results):
-        """Format search results for display."""
-        if not results:
-            return "No results found."
-        
-        output = []
-        output.append("\nSearch Results:")
-        output.append("=" * 50)
-        
-        for result in results:
-            output.append(f"\nRank: {result['rank']}")
-            output.append(f"Source: {result['source_file']}")
-            output.append(f"Relevance Score: {1 / (1 + result['distance']):.4f}")
-            output.append("\nContent:")
-            output.append("-" * 40)
-            output.append(result['text'])
-            output.append("-" * 40)
-        
-        return "\n".join(output)
-    
     def get_conversation_summary(self) -> str:
         """Get a summary of the conversation history."""
         try:
@@ -233,11 +185,8 @@ Answer: Let me help you with information about Indian Government Schemes."""
             return "Error retrieving conversation history."
 
 def main():
-    # Specify the directory containing your FAISS index
-    vector_db_dir = "vectorDb"
-    
     # Initialize querier
-    querier = VectorDBQuerier(vector_db_dir)
+    querier = VectorDBQuerier()
     
     print("\nGovernment Schemes Query System")
     print("=" * 50)

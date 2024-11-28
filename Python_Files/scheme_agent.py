@@ -5,9 +5,9 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationSummaryMemory
 from langchain.tools import tool
 from pydantic import BaseModel, Field
-import faiss
 import numpy as np
 from openai import OpenAI
+from pinecone import Pinecone
 import json
 import os
 from dotenv import load_dotenv
@@ -34,35 +34,17 @@ class SchemeInfo(BaseModel):
     relevance_score: float = Field(description="Relevance score of the retrieved information")
 
 class SchemeTools:
-    def __init__(self, index_dir: str):
-        self.index_dir = index_dir
-        self.index, self.metadata = self._load_latest_index()
-        self.current_scheme = None
-        self.last_search_results = []
-
-    def _load_latest_index(self):
-        """Load the most recent FAISS index and its metadata."""
+    def __init__(self):
+        """Initialize with Pinecone."""
         try:
-            index_files = [f for f in os.listdir(self.index_dir) if f.startswith('faiss_index_') and f.endswith('.index')]
-            if not index_files:
-                raise FileNotFoundError("No FAISS index files found")
-            
-            latest_index = max(index_files)
-            index_path = os.path.join(self.index_dir, latest_index)
-            
-            timestamp = latest_index.replace('faiss_index_', '').replace('.index', '')
-            metadata_file = f'faiss_metadata_{timestamp}.json'
-            metadata_path = os.path.join(self.index_dir, metadata_file)
-            
-            index = faiss.read_index(index_path)
-            with open(metadata_path, 'r', encoding='utf-8') as f:
-                metadata = json.load(f)
-                
-            return index, metadata
-            
+            # Initialize Pinecone
+            pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+            self.index = pc.Index(os.getenv('PINECONE_INDEX_NAME'))
+            self.current_scheme = None
+            self.last_search_results = []
         except Exception as e:
-            print(f"Error loading index: {str(e)}")
-            return None, None
+            print(f"Error initializing Pinecone: {str(e)}")
+            raise
 
     def generate_embedding(self, text: str) -> np.ndarray:
         """Generate embedding for query text."""
@@ -83,25 +65,25 @@ class SchemeTools:
             if query_embedding is None:
                 return []
             
-            distances, indices = self.index.search(
-                query_embedding.reshape(1, -1), 
-                3  # Get top 3 results
+            # Query Pinecone
+            results = self.index.query(
+                vector=query_embedding.tolist(),
+                top_k=3,
+                include_metadata=True
             )
             
-            results = []
-            for idx, distance in zip(indices[0], distances[0]):
-                if idx != -1:
-                    metadata = self.metadata[idx]
-                    scheme_info = SchemeInfo(
-                        scheme_name=metadata.get("scheme_name", "Unknown Scheme"),
-                        details=metadata["text"],
-                        source_file=metadata["source_file"],
-                        relevance_score=float(1 / (1 + distance))
-                    )
-                    results.append(scheme_info)
+            formatted_results = []
+            for match in results.matches:
+                scheme_info = SchemeInfo(
+                    scheme_name=match.metadata.get("scheme_name", "Unknown Scheme"),
+                    details=match.metadata.get("text", ""),
+                    source_file=match.metadata.get("source_file", ""),
+                    relevance_score=float(match.score)
+                )
+                formatted_results.append(scheme_info)
             
-            self.last_search_results = results
-            return results
+            self.last_search_results = formatted_results
+            return formatted_results
             
         except Exception as e:
             print(f"Error during search: {str(e)}")
@@ -130,10 +112,7 @@ class SchemeTools:
         if not results:
             return "No application process information found for this scheme."
         
-        # Try to find the most relevant information about the application process
         application_info = results[0].details
-        
-        # Format the response to be more readable
         response = (
             f"Application Process for {scheme_name}:\n\n"
             f"{application_info}\n\n"
@@ -144,7 +123,7 @@ class SchemeTools:
 
 def create_scheme_agent():
     # Initialize tools
-    tools_instance = SchemeTools("vectorDb")
+    tools_instance = SchemeTools()
     
     # Create tools using the Tool class
     tools = [
