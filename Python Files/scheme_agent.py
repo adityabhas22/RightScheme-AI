@@ -139,6 +139,149 @@ class SchemeTools:
         )
         return response
 
+    def parse_eligibility_criteria(self, scheme_name: str) -> List[Dict[str, Any]]:
+        """Convert eligibility criteria into structured questions."""
+        query = f"eligibility criteria for {scheme_name}"
+        results = self.search_scheme(query)
+        
+        if not results:
+            return []
+        
+        try:
+            # Simplified prompt for GPT-3.5-turbo
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Create 3-5 yes/no questions to check eligibility. Format: Q1? [yes/no required] (type: age/income/occupation/location/other)"
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Eligibility criteria: {results[0].details}"
+                    }
+                ]
+            )
+            
+            # Parse the simpler response format
+            questions = []
+            for line in response.choices[0].message.content.split('\n'):
+                if '?' in line:
+                    try:
+                        # Extract question and metadata
+                        question_part = line.split('?')[0] + '?'
+                        metadata = line.split('?')[1].strip()
+                        required = 'yes' in metadata.lower()
+                        
+                        # Extract criteria type
+                        criteria_type = 'other'
+                        for t in ['age', 'income', 'occupation', 'location']:
+                            if t in metadata.lower():
+                                criteria_type = t
+                                break
+                        
+                        questions.append({
+                            "question": question_part,
+                            "required_answer": True,
+                            "disqualifying": True,
+                            "criteria_type": criteria_type,
+                            "explanation": metadata
+                        })
+                    except Exception as e:
+                        print(f"Error parsing question line: {str(e)}")
+                        continue
+            
+            return questions if questions else self._generate_fallback_questions(scheme_name, results[0].details)
+            
+        except Exception as e:
+            print(f"Error parsing eligibility criteria: {str(e)}")
+            return self._generate_fallback_questions(scheme_name, results[0].details)
+
+    def _generate_fallback_questions(self, scheme_name: str, criteria_text: str) -> List[Dict[str, Any]]:
+        """Generate basic eligibility questions when parsing fails."""
+        try:
+            # Simple prompt to get basic yes/no questions
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Convert the eligibility criteria into 3-5 simple yes/no questions. Each question should be crucial for determining eligibility."
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Eligibility criteria for {scheme_name}: {criteria_text}"
+                    }
+                ]
+            )
+            
+            questions = response.choices[0].message.content.strip().split("\n")
+            # Format basic questions
+            return [
+                {
+                    "question": q.strip("1234567890. "),
+                    "required_answer": True,
+                    "disqualifying": True,
+                    "criteria_type": "other",
+                    "explanation": "Basic eligibility requirement"
+                }
+                for q in questions if "?" in q
+            ]
+        except Exception as e:
+            print(f"Error generating fallback questions: {str(e)}")
+            return [
+                {
+                    "question": f"Do you meet the basic eligibility criteria for {scheme_name}?",
+                    "required_answer": True,
+                    "disqualifying": True,
+                    "criteria_type": "other",
+                    "explanation": "Basic eligibility check"
+                }
+            ]
+
+    def check_eligibility(self, scheme_name: str, answers: Dict[str, bool]) -> Dict[str, Any]:
+        """Check eligibility based on user answers."""
+        criteria = self.parse_eligibility_criteria(scheme_name)
+        
+        if not criteria:
+            return {
+                "eligible": None,
+                "message": "Could not determine eligibility criteria for this scheme."
+            }
+        
+        # Check for immediate disqualifiers first
+        for criterion in criteria:
+            question = criterion["question"]
+            if question in answers:
+                if criterion.get("disqualifying", False):
+                    if answers[question] != criterion["required_answer"]:
+                        return {
+                            "eligible": False,
+                            "message": f"Not eligible: {criterion.get('explanation', 'Does not meet mandatory requirement')}",
+                            "failed_criteria": [criterion["question"]]
+                        }
+        
+        # Check all other criteria
+        failed_criteria = []
+        for criterion in criteria:
+            question = criterion["question"]
+            if question in answers:
+                if answers[question] != criterion["required_answer"]:
+                    failed_criteria.append(criterion["question"])
+        
+        if failed_criteria:
+            return {
+                "eligible": False,
+                "message": "Not eligible based on provided information.",
+                "failed_criteria": failed_criteria
+            }
+        
+        return {
+            "eligible": True,
+            "message": "Based on the provided information, you appear to be eligible for this scheme.",
+            "next_steps": "Please proceed with the application process."
+        }
+
 def create_scheme_agent():
     # Initialize tools
     tools_instance = SchemeTools("vectorDb")
@@ -168,11 +311,11 @@ def create_scheme_agent():
     ]
 
     # Initialize LLM
-    llm = ChatOpenAI(temperature=0.7, model="gpt-3.5-turbo")
+    llm = ChatOpenAI(temperature=0.7, model="gpt-4o-mini")
 
     # Initialize ConversationSummaryMemory
     memory = ConversationSummaryMemory(
-        llm=llm,
+        llm=ChatOpenAI(temperature=0.7, model="gpt-4o-mini"),
         memory_key="chat_history",
         return_messages=True,
         max_token_limit=2000
@@ -180,51 +323,54 @@ def create_scheme_agent():
 
     # Create prompt template
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an expert assistant for Indian Government Schemes, helping users understand and access various government welfare programs.
+        ("system", """You are an expert assistant for Indian Government Schemes. Provide detailed but well-structured information.
 
-        Previous conversation summary:
+        Previous conversation:
         {chat_history}
         
+        RESPONSE FORMAT:
+        
+        📋 SCHEME NAME:
+        [Full name of the scheme]
+        
+        💡 OVERVIEW:
+        [2-3 sentences explaining the scheme's purpose and main objective]
+        
+        💰 KEY BENEFITS:
+        • [List each major benefit in detail]
+        • [Include monetary values where applicable]
+        • [Mention subsidies or financial assistance]
+        • [Add any special benefits]
+        
+        🎯 ELIGIBILITY:
+        • [List primary eligibility criteria]
+        • [Include income limits if any]
+        • [Mention target beneficiaries]
+        • [Special categories if applicable]
+        
+        📝 HOW TO APPLY:
+        1. [Step-by-step application process]
+        2. [Where to apply]
+        3. [Online/offline methods]
+        
+        📄 REQUIRED DOCUMENTS:
+        • [List all necessary documents]
+        • [Any special certificates needed]
+        
+        🏛️ SCHEME TYPE:
+        • Central/State scheme
+        • Implementing ministry/department
+        • State-specific variations if any
+        
         GUIDELINES:
-        1. Maintain strong conversation context:
-           - Always check the previous messages to understand the ongoing discussion
-           - If user asks for more information, provide details about the scheme last discussed
-           - Stay focused on the current scheme until user asks about something else
+        1. Keep focus on current scheme until user changes topic
+        2. Use simple language but provide complete information
+        3. Break down complex terms in parentheses
+        4. Format information with bullet points and numbers
+        5. Consider user's state context
+        6. Highlight important points with emojis
         
-        2. When providing scheme information:
-           📋 SCHEME OVERVIEW:
-           [Brief explanation of the scheme]
-           
-           💰 KEY BENEFITS:
-           • [List main benefits in simple terms]
-           • [Include monetary benefits if any]
-           
-           🎯 ELIGIBILITY:
-           • [Who can apply]
-           • [Basic requirements]
-           
-           📝 APPLICATION PROCESS:
-           • [Step-by-step application guide]
-           • [Where to apply]
-           
-           📄 REQUIRED DOCUMENTS:
-           • [List of necessary documents]
-           
-           🏛️ AVAILABILITY:
-           • [Central or State scheme]
-           • [State-specific details if any]
-        
-        3. When user asks for "more information":
-           - Provide application process if not shared before
-           - Share document requirements if not mentioned earlier
-           - Give specific details about benefits and subsidy amounts
-           - Include contact information or relevant offices
-        
-        4. Always use simple language and explain technical terms
-        5. Consider the user's state context in responses
-        
-        Remember: Stay focused on the current scheme being discussed until the user explicitly asks about something else.
-        """),
+        Remember: Make information comprehensive yet easy to read."""),
         MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -262,6 +408,15 @@ def process_query(query: str) -> Dict[str, Any]:
         st.session_state.scheme_agent = create_scheme_agent()
     
     response = st.session_state.scheme_agent.invoke({"input": query})
+    
+    # Try to identify the scheme being discussed
+    try:
+        scheme_name = extract_scheme_name(response["output"])
+        if scheme_name:
+            st.session_state.current_scheme = scheme_name
+    except Exception as e:
+        print(f"Error extracting scheme name: {str(e)}")
+    
     return format_response(response)
 
 def main():
@@ -292,6 +447,32 @@ def main():
         # Display conversation summary in expander
         with st.expander("View Conversation Summary"):
             st.write(response_data["conversation_summary"])
+
+def extract_scheme_name(text: str) -> str:
+    """Extract scheme name from response text."""
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Extract only the scheme name. Reply 'none' if no scheme found."},
+                {"role": "user", "content": text}
+            ]
+        )
+        scheme_name = response.choices[0].message.content.strip()
+        return None if scheme_name.lower() == 'none' else scheme_name
+    except Exception as e:
+        print(f"Error extracting scheme name: {str(e)}")
+        return None
+
+# Export necessary components
+__all__ = [
+    'process_query',
+    'create_scheme_agent',
+    'SchemeTools',
+    'extract_scheme_name',
+    'format_response',
+    'get_conversation_summary'
+]
 
 if __name__ == "__main__":
     main() 
