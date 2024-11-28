@@ -63,8 +63,6 @@ def format_initial_query(responses, state):
         f"My annual household income is Rs. {responses['annual_income']} "
         f"and I am {responses['occupation'].lower()} by occupation. "
         f"Please suggest government schemes that I am eligible for, "
-        f"considering my profile. List the most relevant schemes first, "
-        f"including specific details about eligibility, benefits, and how to apply."
     )
 
 def main():
