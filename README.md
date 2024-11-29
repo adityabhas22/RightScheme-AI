@@ -1,3 +1,4 @@
+
 # RightScheme AI 🏛️
 
 RightScheme AI is an intelligent platform that helps citizens discover, understand, and access government welfare schemes in India. The platform uses advanced AI technology to provide personalized scheme recommendations and detailed information about government welfare programs.
