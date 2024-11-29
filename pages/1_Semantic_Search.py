@@ -8,6 +8,24 @@ st.set_page_config(
     layout="wide"
 )
 
+def display_thinking_animation():
+    """Display a subtle, engaging thinking animation."""
+    with st.chat_message("assistant"):
+        with st.status("💭 Finding the perfect answer...", expanded=True) as status:
+            st.markdown("""
+                <style>
+                    div[data-testid="stStatus"] {
+                        animation: fadeInOut 2s infinite;
+                    }
+                    @keyframes fadeInOut {
+                        0% { opacity: 0.5; }
+                        50% { opacity: 1; }
+                        100% { opacity: 0.5; }
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+            return status
+
 def main():
     initialize_session_state()
     
@@ -52,15 +70,25 @@ def main():
     if query := st.chat_input("Type your question here..."):
         st.session_state.is_first_message = False
         
-        # Add state context to the query
-        contextualized_query = f"For someone in {st.session_state.user_state}: {query}"
-        
+        # Immediately display user message
+        with st.chat_message("user"):
+            st.write(query)
+
         # Add user message to chat history
         st.session_state.chat_history.append({"role": "user", "content": query})
-
-        # Get response
-        with st.spinner("Thinking..."):
+        
+        # Show thinking animation
+        with display_thinking_animation() as status:
+            # Add state context to the query
+            contextualized_query = f"For someone in {st.session_state.user_state}: {query}"
+            
+            # Get response
             response_data = process_query(contextualized_query)
+            status.update(label="✨ Response ready!", state="complete", expanded=False)
+
+        # Display assistant response
+        with st.chat_message("assistant"):
+            st.write(response_data["response"])
 
         # Add assistant response to chat history
         st.session_state.chat_history.append(
@@ -74,6 +102,36 @@ def main():
 
         # Rerun to update chat display
         st.rerun()
+
+    # Add/modify the CSS for chat messages
+    st.markdown("""
+    <style>
+        /* Optimize message containers for mobile */
+        div.stChatMessage {
+            padding: 1rem 1.5rem !important;
+            margin: 0.5rem 0 !important;
+            max-width: 100% !important;
+        }
+        
+        /* Reduce indentation on mobile */
+        @media (max-width: 768px) {
+            div.stChatMessage {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            
+            div.stChatMessage [data-testid="chatAvatarIcon-user"],
+            div.stChatMessage [data-testid="chatAvatarIcon-assistant"] {
+                padding: 0 !important;
+            }
+            
+            div.stChatMessage [data-testid="StMarkdownContainer"] {
+                margin-left: 0.5rem !important;
+                margin-right: 0.5rem !important;
+            }
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main() 
