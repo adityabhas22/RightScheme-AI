@@ -21,6 +21,11 @@ def initialize_questionnaire_state():
         st.session_state.scheme_agent = None
     if "is_first_message" not in st.session_state:
         st.session_state.is_first_message = True
+    
+    # Persist gender across sessions if available
+    if "gender" not in st.session_state and "user_responses" in st.session_state:
+        if "gender" in st.session_state.user_responses:
+            st.session_state.gender = st.session_state.user_responses["gender"]
 
 def get_questions():
     return [
@@ -34,7 +39,8 @@ def get_questions():
             "id": "gender",
             "text": "What is your gender?",
             "type": "select",
-            "options": ["Male", "Female", "Other"]
+            "options": ["Male", "Female", "Other"],
+            "help_text": "This helps us find gender-specific schemes you may be eligible for"
         },
         {
             "id": "category",
@@ -57,12 +63,14 @@ def get_questions():
     ]
 
 def format_initial_query(responses, state):
+    gender_context = "who identifies as " + responses['gender'].lower() if responses['gender'] != 'Other' else ""
     return (
-        f"I am a {responses['age']} year old {responses['gender'].lower()} from {state}, "
+        f"I am a {responses['age']} year old person {gender_context} from {state}, "
         f"belonging to {responses['category']} category. "
         f"My annual household income is Rs. {responses['annual_income']} "
         f"and I am {responses['occupation'].lower()} by occupation. "
         f"Please suggest government schemes that I am eligible for, "
+        f"taking into account my gender and other characteristics."
     )
 
 def display_thinking_animation():

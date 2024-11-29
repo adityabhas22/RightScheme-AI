@@ -47,38 +47,85 @@ class SchemeTools:
             self.MIN_RELEVANCE_SCORE = 0.7
             # Add state context
             self.user_state = None
+            
+            # Cache for embeddings
+            self.embedding_cache = {}
+            
+            # Pre-compute concept embeddings
+            self.concepts = {
+                "financial": ["loan", "money", "fund", "finance", "credit", "subsidy"],
+                "education": ["study", "school", "college", "education", "learning"],
+                "health": ["medical", "health", "treatment", "hospital", "disease"],
+                "employment": ["job", "work", "employment", "business", "career"],
+                "housing": ["house", "home", "shelter", "residence", "building"]
+            }
+            self._precompute_concept_embeddings()
+            
         except Exception as e:
             print(f"Error initializing Pinecone: {str(e)}")
             raise
+
+    def _precompute_concept_embeddings(self):
+        """Precompute embeddings for all concept terms."""
+        self.concept_embeddings = {}
+        all_terms = set(chain.from_iterable(self.concepts.values()))
+        
+        # Batch embedding generation
+        responses = client.embeddings.create(
+            input=list(all_terms),
+            model="text-embedding-ada-002"
+        )
+        
+        # Store embeddings in cache
+        for term, embedding_data in zip(all_terms, responses.data):
+            self.embedding_cache[term] = np.array(embedding_data.embedding, dtype='float32')
 
     def set_user_state(self, state: str):
         """Set the user's state for context-aware searching."""
         self.user_state = state
 
     def is_scheme_applicable(self, scheme_info: SchemeInfo) -> bool:
-        """Check if a scheme is applicable based on state context."""
+        """Check scheme applicability considering both state and central schemes."""
         if not self.user_state:
             return True
-            
+        
         scheme_details = scheme_info.details.lower()
         state_name = self.user_state.lower()
         
-        # Always include central schemes
-        if any(term in scheme_details for term in [
-            "central scheme", 
-            "centrally sponsored", 
-            "nationwide",
-            "all states",
-            "pan india",
-            "government of india"
-        ]):
-            return True
+        # Get user's gender from session state
+        user_gender = st.session_state.get('user_responses', {}).get('gender', '').lower()
+        
+        # Gender exclusion logic
+        if user_gender:
+            if user_gender == 'male' and any(phrase in scheme_details for phrase in [
+                "only for women", "women only", "exclusively for women",
+                "female candidates only", "women beneficiaries only"
+            ]):
+                return False
             
-        # Include state-specific schemes
+            if user_gender == 'female' and any(phrase in scheme_details for phrase in [
+                "only for men", "men only", "exclusively for men",
+                "male candidates only", "male beneficiaries only"
+            ]):
+                return False
+        
+        # Check if it's a central scheme
+        central_indicators = {
+            "central scheme", "centrally sponsored", "nationwide",
+            "all states", "pan india", "government of india",
+            "ministry of", "central government", "union government",
+            "national scheme", "bharat", "indian government"
+        }
+        
+        # If it's a central scheme, it's applicable
+        if any(indicator in scheme_details for indicator in central_indicators):
+            return True
+        
+        # If it specifically mentions the user's state, it's applicable
         if state_name in scheme_details:
             return True
-            
-        # Exclude schemes explicitly mentioning other states
+        
+        # Check if it's explicitly for another state
         indian_states = {"andhra pradesh", "arunachal pradesh", "assam", "bihar", 
                         "chhattisgarh", "goa", "gujarat", "haryana", "himachal pradesh", 
                         "jharkhand", "karnataka", "kerala", "madhya pradesh", 
@@ -87,115 +134,132 @@ class SchemeTools:
                         "telangana", "tripura", "uttar pradesh", "uttarakhand", 
                         "west bengal"}
         
+        # Only exclude if explicitly mentioned for another state
         for state in indian_states:
-            if state != state_name and state in scheme_details:
+            if state != state_name and f"for {state}" in scheme_details:
                 return False
-                
+        
+        # If no explicit state restriction is found, include the scheme
+        # This ensures we don't miss central schemes that don't explicitly mention their scope
         return True
 
-    def generate_embedding(self, text: str) -> np.ndarray:
-        """Generate embedding for query text."""
+    def get_question_embedding(self, text: str) -> np.ndarray:
+        """Get embedding with caching."""
+        if text in self.embedding_cache:
+            return self.embedding_cache[text]
+            
         try:
             response = client.embeddings.create(
                 input=text,
                 model="text-embedding-ada-002"
             )
-            return np.array(response.data[0].embedding, dtype='float32')
+            embedding = np.array(response.data[0].embedding, dtype='float32')
+            self.embedding_cache[text] = embedding
+            return embedding
         except Exception as e:
             print(f"Error generating embedding: {str(e)}")
             return None
 
-    def generate_query_variations(self, query: str) -> List[str]:
-        """Generate semantic variations of the search query."""
-        # Basic query variations
-        variations = [query]
-        
-        # Add common Indian government scheme terms
-        if "loan" in query.lower():
-            variations.extend([
-                query + " yojana",
-                query.replace("loan", "credit") + " scheme",
-                query.replace("loan", "financial assistance")
-            ])
-        
-        if "farmer" in query.lower() or "agriculture" in query.lower():
-            variations.extend([
-                query + " kisan",
-                query.replace("farmer", "agricultural") + " scheme",
-                "krishi " + query
-            ])
-        
-        # Add more variations for other common themes
-        if "women" in query.lower():
-            variations.extend([
-                query + " mahila",
-                query.replace("women", "female empowerment")
-            ])
-        
-        # Remove duplicates while preserving order
-        return list(dict.fromkeys(variations))
-
-    def deduplicate_results(self, results: List[SchemeInfo]) -> List[SchemeInfo]:
-        """Remove duplicate or very similar results."""
-        unique_results = []
-        seen_content = set()
-        
-        for result in results:
-            # Create a simplified content fingerprint
-            content_simple = re.sub(r'\s+', ' ', result.details.lower())
-            content_simple = content_simple[:100]  # Compare first 100 chars
-            
-            if content_simple not in seen_content:
-                seen_content.add(content_simple)
-                unique_results.append(result)
-        
-        return unique_results
-
     def search_scheme(self, query: str) -> List[SchemeInfo]:
-        """Enhanced search with state-aware filtering."""
+        """Search for both state-specific and central schemes."""
         try:
-            # Get user state from Streamlit session state
-            if "user_state" in st.session_state:
-                self.set_user_state(st.session_state.user_state)
-
-            query_variations = self.generate_query_variations(query)
-            all_results = []
+            # Get embedding for original query
+            query_embedding = self.get_question_embedding(query)
+            if query_embedding is None:
+                return []
             
-            for variation in query_variations:
-                query_embedding = self.generate_embedding(variation)
-                if query_embedding is None:
-                    continue
-                
-                results = self.index.query(
-                    vector=query_embedding.tolist(),
-                    top_k=15,  # Increased to account for filtering
-                    include_metadata=True
-                )
-                
-                for match in results.matches:
-                    if match.score >= self.MIN_RELEVANCE_SCORE:
-                        scheme_info = SchemeInfo(
-                            scheme_name=match.metadata.get("scheme_name", "Unknown Scheme"),
-                            details=match.metadata.get("text", ""),
-                            source_file=match.metadata.get("source_file", ""),
-                            relevance_score=float(match.score)
-                        )
-                        # Only add applicable schemes
-                        if self.is_scheme_applicable(scheme_info):
-                            all_results.append(scheme_info)
+            # Get results with original query
+            results = self.index.query(
+                vector=query_embedding.tolist(),
+                top_k=30,  # Increased to ensure we catch enough schemes
+                include_metadata=True
+            )
             
-            # Deduplicate and sort results
-            unique_results = self.deduplicate_results(all_results)
-            unique_results.sort(key=lambda x: x.relevance_score, reverse=True)
+            schemes = []
+            seen_schemes = set()
             
-            self.last_search_results = unique_results
+            for match in results.matches:
+                if match.score >= self.MIN_RELEVANCE_SCORE:
+                    scheme_info = SchemeInfo(
+                        scheme_name=match.metadata.get("scheme_name", "Unknown Scheme"),
+                        details=match.metadata.get("text", ""),
+                        source_file=match.metadata.get("source_file", ""),
+                        relevance_score=float(match.score)
+                    )
+                    
+                    # Skip duplicates
+                    if scheme_info.scheme_name in seen_schemes:
+                        continue
+                    
+                    scheme_details = scheme_info.details.lower()
+                    
+                    # Check if it's a central scheme
+                    is_central = any(indicator in scheme_details for indicator in [
+                        "central scheme", "centrally sponsored", "nationwide",
+                        "all states", "pan india", "government of india",
+                        "ministry of", "central government", "union government",
+                        "national scheme", "bharat", "indian government"
+                    ])
+                    
+                    # Check if it's for user's state
+                    is_state_specific = self.user_state.lower() in scheme_details
+                    
+                    # Include if it's either central or for user's state
+                    if is_central or is_state_specific:
+                        # Boost score for exact state match
+                        if is_state_specific:
+                            scheme_info.relevance_score = min(1.0, scheme_info.relevance_score + 0.1)
+                        
+                        schemes.append(scheme_info)
+                        seen_schemes.add(scheme_info.scheme_name)
             
-            # Return top results
-            return unique_results[:5]
+            # Sort by relevance and return top results
+            schemes.sort(key=lambda x: x.relevance_score, reverse=True)
+            return schemes[:5]
             
         except Exception as e:
             print(f"Error during search: {str(e)}")
             return []
+
+    def diversify_results(self, results: List[SchemeInfo]) -> List[SchemeInfo]:
+        """Ensure diversity in search results."""
+        if not results:
+            return []
+            
+        diversified = [results[0]]  # Start with highest scoring result
+        remaining = results[1:]
+        
+        while remaining and len(diversified) < 5:
+            # Find the result that's most different from current selections
+            max_diff_score = -1
+            max_diff_idx = 0
+            
+            for i, result in enumerate(remaining):
+                min_similarity = float('inf')
+                result_embedding = self.get_question_embedding(result.details)
+                
+                if result_embedding is None:
+                    continue
+                    
+                # Calculate minimum similarity to already selected results
+                for selected in diversified:
+                    selected_embedding = self.get_question_embedding(selected.details)
+                    if selected_embedding is not None:
+                        similarity = np.dot(result_embedding, selected_embedding) / (
+                            np.linalg.norm(result_embedding) * np.linalg.norm(selected_embedding)
+                        )
+                        min_similarity = min(min_similarity, similarity)
+                
+                # Higher difference score means more diverse
+                diff_score = 1 - min_similarity
+                if diff_score > max_diff_score:
+                    max_diff_score = diff_score
+                    max_diff_idx = i
+            
+            # Add most diverse result to selection
+            diversified.append(remaining.pop(max_diff_idx))
+        
+        return diversified
 
     def get_eligibility_criteria(self, scheme_name: str) -> str:
         """Get eligibility criteria for a specific scheme."""
@@ -229,6 +293,77 @@ class SchemeTools:
         )
         return response
 
+    def is_similar_question(self, query: str, base_questions: List[str], threshold: float = 0.85) -> bool:
+        """Check if query is semantically similar to any base question."""
+        query_embedding = self.get_question_embedding(query)
+        if query_embedding is None:
+            return False
+        
+        for base_q in base_questions:
+            base_embedding = self.get_question_embedding(base_q)
+            if base_embedding is None:
+                continue
+            
+            # Calculate cosine similarity
+            similarity = np.dot(query_embedding, base_embedding) / (
+                np.linalg.norm(query_embedding) * np.linalg.norm(base_embedding)
+            )
+            
+            if similarity >= threshold:
+                return True
+        
+        return False
+
+    def is_allowed_question(self, query: str, chat_history: List[Dict[str, str]]) -> tuple[bool, str]:
+        """
+        Check if the query is allowed using semantic similarity.
+        Returns (is_allowed, response_if_not_allowed)
+        """
+        # Base questions for semantic comparison
+        base_questions = [
+            "who made you",
+            "what is your purpose",
+            "how can you help me"
+        ]
+        
+        # Convert query to lowercase for processing
+        query_lower = query.lower()
+        
+        # Check if query is semantically similar to allowed questions
+        if self.is_similar_question(query_lower, base_questions):
+            return True, ""
+        
+        # Check if query is about government schemes
+        scheme_related_terms = {
+            "scheme", "yojana", "program", "benefit", "welfare", "subsidy", "grant",
+            "application", "apply", "document", "eligibility", "criteria", "government",
+            "qualification", "income", "category", "reservation"
+        }
+        
+        if any(term in query_lower for term in scheme_related_terms):
+            return True, ""
+        
+        # If not allowed, return contextual redirect
+        return False, get_contextual_redirect(query, chat_history)
+
+    def validate_response(self, response: str) -> tuple[bool, str]:
+        """Validate response for potential inaccuracies."""
+        red_flags = [
+            "might be", "probably", "I think", "should be",
+            "around", "approximately", "possibly"
+        ]
+        
+        has_red_flags = any(flag in response.lower() for flag in red_flags)
+        
+        if has_red_flags:
+            return False, (
+                f"{response}\n\n"
+                "⚠️ Note: Some details in this response may need verification. "
+                "Please confirm with official government sources."
+            )
+        
+        return True, response
+
 def create_scheme_agent():
     # Initialize tools
     tools_instance = SchemeTools()
@@ -257,8 +392,12 @@ def create_scheme_agent():
         )
     ]
 
-    # Initialize LLM
-    llm = ChatOpenAI(temperature=0.7, model="gpt-4o-mini")
+    # Initialize LLM - using only gpt-4o-mini
+    llm = ChatOpenAI(
+        temperature=0.7,
+        model="gpt-4o-mini",  # Enforcing use of gpt-4o-mini
+        model_kwargs={"top_p": 0.9}  # Optional: add any specific model parameters
+    )
 
     # Initialize ConversationSummaryMemory
     memory = ConversationSummaryMemory(
@@ -276,60 +415,35 @@ def create_scheme_agent():
         {chat_history}
         
         STRICT GUIDELINES:
-        1. ONLY answer questions related to government schemes, welfare programs, and benefits, even if it has potential to be related to schemes do answer the question. 
-        If a user asks about anything else (like general knowledge, coding, weather, etc.), 
-        firmly but politely respond:
-        "I am specifically designed to help with government schemes and welfare programs. 
-        Please ask me about government schemes, eligibility criteria, benefits, or application processes.
+        1. ONLY answer questions related to government schemes, welfare programs, and benefits.
         
+        2. For questions about who created you or your purpose:
+           - Respond: "I am an AI assistant created by the government to help citizens find and understand various government schemes and welfare programs."
+           - Keep responses focused on your role in helping with government schemes
+           - Do not discuss technical details about your creation or operation
         
-        2. Maintain strong conversation context:
-           - Always check the previous messages to understand the ongoing discussion
-           - If user asks for more information, provide details about the scheme last discussed
-           - Stay focused on the current scheme until user asks about something else
+        3. When users say "yes" or give short responses:
+           - Always maintain context from previous messages
+           - Ask follow-up questions to clarify their needs
+           - Guide them towards specific scheme information
         
-        3. When providing scheme information:
-           📋 SCHEME OVERVIEW:
-           [Brief explanation of the scheme]
-           
-           💰 KEY BENEFITS:
-           • [List main benefits in simple terms]
-           • [Include monetary benefits if any]
-           
-           🎯 ELIGIBILITY:
-           • [Who can apply]
-           • [Basic requirements]
-           
-           📝 APPLICATION PROCESS:
-           • [Step-by-step application guide]
-           • [Where to apply]
-           
-           📄 REQUIRED DOCUMENTS:
-           • [List of necessary documents]
-           
-           🏛️ AVAILABILITY:
-           • [Central or State scheme]
-           • [State-specific details if any]
+        4. Stay focused on government schemes:
+           - If users ask about non-scheme topics, politely redirect them
+           - Always bring the conversation back to available schemes and benefits
+           - Provide specific, actionable information about schemes
         
-        4. When user asks for "more information":
-           - Provide application process if not shared before
-           - Share document requirements if not mentioned earlier
-           - Give specific details about benefits and subsidy amounts
-           - Include contact information or relevant offices
+        5. Handle gender-specific schemes appropriately:
+           - Only exclude schemes explicitly marked for other genders
+           - Include all generally applicable schemes
+           - Be inclusive in language and recommendations
         
-        5. Always use simple language and explain technical terms
-        6. Consider the user's state context in responses
-        
-        IMPORTANT: You must ONLY engage with queries about:
+        IMPORTANT: You must ONLY engage with:
         • Government schemes and programs
-        • Welfare benefits
-        • Eligibility criteria
-        • Application processes
-        • Required documents
-        • Scheme-related updates or changes
-        • Government subsidies and financial assistance
+        • Welfare benefits and eligibility
+        • Application processes and documents
+        • Basic questions about your purpose
         
-        For ANY other topic, politely redirect the user to ask about government schemes.
+        For ANY other topic, politely redirect to scheme-related discussions.
         """),
         MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{input}"),
@@ -362,13 +476,149 @@ def format_response(response: Dict[str, Any]) -> Dict[str, Any]:
         "conversation_summary": get_conversation_summary(st.session_state.scheme_agent)
     }
 
+def get_conversation_context(chat_history: List[Dict[str, str]]) -> tuple[str, str]:
+    """
+    Analyze chat history to extract the most recent scheme and conversation context.
+    Returns (last_scheme, conversation_topic)
+    """
+    last_scheme = ""
+    conversation_topic = ""
+    
+    # Look through recent messages (in reverse)
+    for message in reversed(chat_history):
+        content = message['content'].lower()
+        
+        # Look for scheme names (usually followed by "scheme" or "yojana")
+        scheme_match = re.search(r'([a-zA-Z\s]+)(scheme|yojana)', content)
+        if scheme_match and not last_scheme:
+            last_scheme = scheme_match.group(1).strip()
+        
+        # Look for conversation topics
+        topics = ["eligibility", "documents", "application", "benefits"]
+        for topic in topics:
+            if topic in content and not conversation_topic:
+                conversation_topic = topic
+                break
+        
+        if last_scheme and conversation_topic:
+            break
+    
+    return last_scheme, conversation_topic
+
+def get_contextual_redirect(query: str, chat_history: List[Dict[str, str]]) -> str:
+    """Generate a context-aware redirection message."""
+    last_scheme, conversation_topic = get_conversation_context(chat_history)
+    
+    if last_scheme:
+        if conversation_topic:
+            return (
+                f"I see you're interested in {last_scheme}. While I can't help with {query}, "
+                f"I can tell you more about the {conversation_topic} requirements or other aspects of this scheme. "
+                f"What specific information would you like to know?"
+            )
+        return (
+            f"Let's focus on helping you with the {last_scheme}. "
+            f"Would you like to know about its eligibility criteria, benefits, or how to apply?"
+        )
+    
+    if len(chat_history) > 0:
+        return (
+            "I'm your government schemes assistant, so I can best help you with finding and understanding "
+            "various welfare programs and benefits. What kind of government assistance are you looking for?"
+        )
+    
+    return (
+        "I specialize in helping you find and understand government schemes that might benefit you. "
+        "Would you like to explore available schemes based on your eligibility, or learn about specific programs?"
+    )
+
 def process_query(query: str) -> Dict[str, Any]:
-    """Process a query and return the formatted response."""
+    """Process a query with enhanced usage control and debugging."""
     if not st.session_state.scheme_agent:
         st.session_state.scheme_agent = create_scheme_agent()
     
-    response = st.session_state.scheme_agent.invoke({"input": query})
+    # Create SchemeTools instance if not exists
+    if not hasattr(st.session_state, 'scheme_tools'):
+        st.session_state.scheme_tools = SchemeTools()
+    
+    # Debug original query
+    print("\n=== Query Processing Debug ===")
+    print(f"Original Query: {query}")
+    
+    # Check if query is allowed with context
+    is_allowed, response = st.session_state.scheme_tools.is_allowed_question(
+        query, 
+        st.session_state.chat_history
+    )
+    
+    if not is_allowed:
+        print(f"Query not allowed. Redirect response: {response}")
+        return {
+            "response": response,
+            "conversation_summary": get_conversation_summary(st.session_state.scheme_agent)
+        }
+    
+    # Handle whitelisted questions about the AI
+    if any(q in query.lower() for q in ["who made you", "who created you", "what is your purpose"]):
+        print("Query identified as AI purpose question")
+        return {
+            "response": (
+                "I am an AI assistant created by the government to help citizens find and understand "
+                "various government schemes and welfare programs. My purpose is to make it easier for "
+                "you to discover schemes you're eligible for and guide you through the application process."
+            ),
+            "conversation_summary": get_conversation_summary(st.session_state.scheme_agent)
+        }
+    
+    # Process regular scheme-related query
+    print(f"Processing scheme-related query...")
+    print(f"Current state: {st.session_state.user_state}")
+    print(f"Chat history length: {len(st.session_state.chat_history)}")
+    
+    # Debug the agent invocation
+    print("\n=== Agent Invocation ===")
+    print(f"Final query being passed to agent: {query}")
+    response = st.session_state.scheme_agent.invoke(
+        {"input": query},
+        callbacks=[
+            LangChainCallbackHandler(
+                print_input=True,  # Print input to agent
+                print_output=True,  # Print output from agent
+                print_intermediate_steps=True  # Print tool usage
+            )
+        ]
+    )
+    print("=== End Agent Invocation ===\n")
+    
+    # Validate response before returning
+    is_valid, validated_response = st.session_state.scheme_tools.validate_response(response["output"])
+    response["output"] = validated_response
+    
     return format_response(response)
+
+# Add LangChain callback handler for debugging
+class LangChainCallbackHandler:
+    def __init__(self, print_input=True, print_output=True, print_intermediate_steps=True):
+        self.print_input = print_input
+        self.print_output = print_output
+        self.print_intermediate_steps = print_intermediate_steps
+    
+    def on_chain_start(self, serialized, inputs, **kwargs):
+        if self.print_input:
+            print(f"\nChain Input: {inputs}")
+    
+    def on_chain_end(self, outputs, **kwargs):
+        if self.print_output:
+            print(f"\nChain Output: {outputs}")
+    
+    def on_tool_start(self, serialized, input_str, **kwargs):
+        if self.print_intermediate_steps:
+            print(f"\nTool Used: {serialized['name']}")
+            print(f"Tool Input: {input_str}")
+    
+    def on_tool_end(self, output, **kwargs):
+        if self.print_intermediate_steps:
+            print(f"Tool Output: {output}")
 
 def main():
     st.title("Government Schemes Assistant")
