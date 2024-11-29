@@ -66,11 +66,28 @@ def format_initial_query(responses, state):
     )
 
 def display_thinking_animation():
-    """Display an elegant thinking animation."""
+    """Display a subtle, engaging thinking animation."""
     with st.chat_message("assistant"):
-        with st.status("🤔 Analyzing your question...", expanded=True) as status:
-            st.write("🔍 Searching relevant schemes...")
-            st.write("📚 Processing information...")
+        with st.status("💭 Finding the perfect answer...", expanded=True) as status:
+            st.markdown("""
+                <style>
+                    div[data-testid="stStatus"] {
+                        animation: fadeInOut 2s infinite;
+                        background: linear-gradient(90deg, #f0f2f6, #e8eaf6, #f0f2f6);
+                        background-size: 200% 100%;
+                        animation: fadeInOut 2s infinite, gradientMove 3s infinite;
+                    }
+                    @keyframes fadeInOut {
+                        0% { opacity: 0.5; }
+                        50% { opacity: 1; }
+                        100% { opacity: 0.5; }
+                    }
+                    @keyframes gradientMove {
+                        0% { background-position: 100% 50%; }
+                        100% { background-position: -100% 50%; }
+                    }
+                </style>
+            """, unsafe_allow_html=True)
             return status
 
 def main():

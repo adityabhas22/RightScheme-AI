@@ -9,11 +9,21 @@ st.set_page_config(
 )
 
 def display_thinking_animation():
-    """Display an elegant thinking animation."""
+    """Display a subtle, engaging thinking animation."""
     with st.chat_message("assistant"):
-        with st.status("🤔 Analyzing your question...", expanded=True) as status:
-            st.write("🔍 Searching relevant schemes...")
-            st.write("📚 Processing information...")
+        with st.status("💭 Finding the perfect answer...", expanded=True) as status:
+            st.markdown("""
+                <style>
+                    div[data-testid="stStatus"] {
+                        animation: fadeInOut 2s infinite;
+                    }
+                    @keyframes fadeInOut {
+                        0% { opacity: 0.5; }
+                        50% { opacity: 1; }
+                        100% { opacity: 0.5; }
+                    }
+                </style>
+            """, unsafe_allow_html=True)
             return status
 
 def main():

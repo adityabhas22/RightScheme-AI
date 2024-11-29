@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 from langchain.agents import Tool, AgentExecutor, create_openai_functions_agent
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -12,6 +12,8 @@ import json
 import os
 from dotenv import load_dotenv
 import streamlit as st
+import re
+from itertools import chain
 
 # Load environment variables
 load_dotenv()
@@ -37,14 +39,59 @@ class SchemeTools:
     def __init__(self):
         """Initialize with Pinecone."""
         try:
-            # Initialize Pinecone
             pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
             self.index = pc.Index(os.getenv('PINECONE_INDEX_NAME'))
             self.current_scheme = None
             self.last_search_results = []
+            # Define minimum relevance score threshold
+            self.MIN_RELEVANCE_SCORE = 0.7
+            # Add state context
+            self.user_state = None
         except Exception as e:
             print(f"Error initializing Pinecone: {str(e)}")
             raise
+
+    def set_user_state(self, state: str):
+        """Set the user's state for context-aware searching."""
+        self.user_state = state
+
+    def is_scheme_applicable(self, scheme_info: SchemeInfo) -> bool:
+        """Check if a scheme is applicable based on state context."""
+        if not self.user_state:
+            return True
+            
+        scheme_details = scheme_info.details.lower()
+        state_name = self.user_state.lower()
+        
+        # Always include central schemes
+        if any(term in scheme_details for term in [
+            "central scheme", 
+            "centrally sponsored", 
+            "nationwide",
+            "all states",
+            "pan india",
+            "government of india"
+        ]):
+            return True
+            
+        # Include state-specific schemes
+        if state_name in scheme_details:
+            return True
+            
+        # Exclude schemes explicitly mentioning other states
+        indian_states = {"andhra pradesh", "arunachal pradesh", "assam", "bihar", 
+                        "chhattisgarh", "goa", "gujarat", "haryana", "himachal pradesh", 
+                        "jharkhand", "karnataka", "kerala", "madhya pradesh", 
+                        "maharashtra", "manipur", "meghalaya", "mizoram", "nagaland", 
+                        "odisha", "punjab", "rajasthan", "sikkim", "tamil nadu", 
+                        "telangana", "tripura", "uttar pradesh", "uttarakhand", 
+                        "west bengal"}
+        
+        for state in indian_states:
+            if state != state_name and state in scheme_details:
+                return False
+                
+        return True
 
     def generate_embedding(self, text: str) -> np.ndarray:
         """Generate embedding for query text."""
@@ -58,32 +105,93 @@ class SchemeTools:
             print(f"Error generating embedding: {str(e)}")
             return None
 
+    def generate_query_variations(self, query: str) -> List[str]:
+        """Generate semantic variations of the search query."""
+        # Basic query variations
+        variations = [query]
+        
+        # Add common Indian government scheme terms
+        if "loan" in query.lower():
+            variations.extend([
+                query + " yojana",
+                query.replace("loan", "credit") + " scheme",
+                query.replace("loan", "financial assistance")
+            ])
+        
+        if "farmer" in query.lower() or "agriculture" in query.lower():
+            variations.extend([
+                query + " kisan",
+                query.replace("farmer", "agricultural") + " scheme",
+                "krishi " + query
+            ])
+        
+        # Add more variations for other common themes
+        if "women" in query.lower():
+            variations.extend([
+                query + " mahila",
+                query.replace("women", "female empowerment")
+            ])
+        
+        # Remove duplicates while preserving order
+        return list(dict.fromkeys(variations))
+
+    def deduplicate_results(self, results: List[SchemeInfo]) -> List[SchemeInfo]:
+        """Remove duplicate or very similar results."""
+        unique_results = []
+        seen_content = set()
+        
+        for result in results:
+            # Create a simplified content fingerprint
+            content_simple = re.sub(r'\s+', ' ', result.details.lower())
+            content_simple = content_simple[:100]  # Compare first 100 chars
+            
+            if content_simple not in seen_content:
+                seen_content.add(content_simple)
+                unique_results.append(result)
+        
+        return unique_results
+
     def search_scheme(self, query: str) -> List[SchemeInfo]:
-        """Search for information about government schemes."""
+        """Enhanced search with state-aware filtering."""
         try:
-            query_embedding = self.generate_embedding(query)
-            if query_embedding is None:
-                return []
+            # Get user state from Streamlit session state
+            if "user_state" in st.session_state:
+                self.set_user_state(st.session_state.user_state)
+
+            query_variations = self.generate_query_variations(query)
+            all_results = []
             
-            # Query Pinecone
-            results = self.index.query(
-                vector=query_embedding.tolist(),
-                top_k=3,
-                include_metadata=True
-            )
-            
-            formatted_results = []
-            for match in results.matches:
-                scheme_info = SchemeInfo(
-                    scheme_name=match.metadata.get("scheme_name", "Unknown Scheme"),
-                    details=match.metadata.get("text", ""),
-                    source_file=match.metadata.get("source_file", ""),
-                    relevance_score=float(match.score)
+            for variation in query_variations:
+                query_embedding = self.generate_embedding(variation)
+                if query_embedding is None:
+                    continue
+                
+                results = self.index.query(
+                    vector=query_embedding.tolist(),
+                    top_k=15,  # Increased to account for filtering
+                    include_metadata=True
                 )
-                formatted_results.append(scheme_info)
+                
+                for match in results.matches:
+                    if match.score >= self.MIN_RELEVANCE_SCORE:
+                        scheme_info = SchemeInfo(
+                            scheme_name=match.metadata.get("scheme_name", "Unknown Scheme"),
+                            details=match.metadata.get("text", ""),
+                            source_file=match.metadata.get("source_file", ""),
+                            relevance_score=float(match.score)
+                        )
+                        # Only add applicable schemes
+                        if self.is_scheme_applicable(scheme_info):
+                            all_results.append(scheme_info)
             
-            self.last_search_results = formatted_results
-            return formatted_results
+            # Deduplicate and sort results
+            unique_results = self.deduplicate_results(all_results)
+            unique_results.sort(key=lambda x: x.relevance_score, reverse=True)
+            
+            self.last_search_results = unique_results
+            
+            # Return top results
+            return unique_results[:5]
             
         except Exception as e:
             print(f"Error during search: {str(e)}")
@@ -150,7 +258,7 @@ def create_scheme_agent():
     ]
 
     # Initialize LLM
-    llm = ChatOpenAI(temperature=0.7, model="gpt-3.5-turbo")
+    llm = ChatOpenAI(temperature=0.7, model="gpt-4o-mini")
 
     # Initialize ConversationSummaryMemory
     memory = ConversationSummaryMemory(
