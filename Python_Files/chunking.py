@@ -3,9 +3,9 @@ import os
 import re
 from typing import List, Dict
 import unicodedata
-import json
 from datetime import datetime
 import time
+from docx import Document
 
 class TextCleaner:
     @staticmethod
@@ -133,84 +133,82 @@ class TextChunker:
         
         return chunks
 
-def save_chunks_to_json(chunks_by_file: Dict[str, List[str]], output_dir: str):
-    """
-    Save chunks in a structured JSON format suitable for embedding generation.
-    """
-    # Create output directory if it doesn't exist
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    # Prepare structured data for JSON
-    chunks_data = []
-    for filename, chunks in chunks_by_file.items():
-        for i, chunk in enumerate(chunks):
-            chunk_data = {
-                "chunk_id": f"{filename}_{i}",
-                "source_file": filename,
-                "chunk_index": i,
-                "text": chunk,
-                "token_count": TextChunker().count_tokens(chunk),
-                "char_count": len(chunk),
-                "word_count": len(chunk.split())
-            }
-            chunks_data.append(chunk_data)
-    
-    # Save to JSON file
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_file = os.path.join(output_dir, f"chunks_{timestamp}.json")
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(chunks_data, f, indent=2, ensure_ascii=False)
-    
-    print(f"\nChunks saved to: {output_file}")
-    print(f"Total chunks saved: {len(chunks_data)}")
-    return output_file
+    @staticmethod
+    def read_file_content(file_path: str) -> str:
+        """Read content from either .txt or .docx files."""
+        if file_path.endswith('.txt'):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        elif file_path.endswith('.docx'):
+            doc = Document(file_path)
+            # Extract text from paragraphs and tables
+            text_content = []
+            
+            # Get text from paragraphs
+            for paragraph in doc.paragraphs:
+                text_content.append(paragraph.text)
+            
+            # Get text from tables
+            for table in doc.tables:
+                for row in table.rows:
+                    row_text = []
+                    for cell in row.cells:
+                        row_text.append(cell.text.strip())
+                    text_content.append(' | '.join(row_text))
+            
+            return '\n\n'.join(text_content)
+        else:
+            raise ValueError(f"Unsupported file format: {file_path}")
 
-def process_files_in_folder(folder_path: str, max_tokens: int = 512) -> Dict[str, List[str]]:
-    """Process all text files in a folder with chunking."""
+    def save_chunks(self, chunks: List[str], output_folder: str, base_name: str):
+        """Save each chunk as a separate file."""
+        for i, chunk in enumerate(chunks, 1):
+            # Create filename with padding for proper sorting
+            chunk_filename = f"{base_name}_chunk_{i:04d}.txt"
+            chunk_path = os.path.join(output_folder, chunk_filename)
+            
+            with open(chunk_path, 'w', encoding='utf-8') as f:
+                f.write(chunk.strip())
+
+def process_files_in_folder(folder_path: str, output_dir: str, max_tokens: int = 512) -> Dict[str, List[str]]:
+    """Process all text and docx files in a folder with chunking."""
     chunker = TextChunker(max_tokens=max_tokens)
     chunks_by_file = {}
     
     print(f"\nProcessing files in {folder_path}")
     print("=" * 50)
 
-    # First, verify the folder exists
     if not os.path.exists(folder_path):
         print(f"Error: Folder not found at {folder_path}")
         return {}
 
-    # Create chunks folder
-    chunks_folder = os.path.join(os.path.dirname(folder_path), "chunks")
-    if not os.path.exists(chunks_folder):
-        os.makedirs(chunks_folder)
+    # Create chunks directory with timestamp in the specified output directory
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    chunks_folder = os.path.join(output_dir, f"chunks_{timestamp}")
+    os.makedirs(chunks_folder, exist_ok=True)
 
     files_processed = 0
     total_chunks = 0
 
     for root, _, files in os.walk(folder_path):
-        txt_files = [f for f in files if f.endswith('.txt')]
-        if not txt_files:
-            print(f"No .txt files found in {folder_path}")
+        supported_files = [f for f in files if f.endswith(('.txt', '.docx'))]
+        if not supported_files:
+            print(f"No .txt or .docx files found in {folder_path}")
             continue
 
-        print(f"\nFound {len(txt_files)} text files to process")
+        print(f"\nFound {len(supported_files)} files to process")
         
-        for file in txt_files:
+        for file in supported_files:
             file_path = os.path.join(root, file)
             try:
                 print(f"\nProcessing: {file}")
                 
-                # Read the file
-                with open(file_path, "r", encoding="utf-8") as f:
-                    text = f.read()
+                text = TextChunker.read_file_content(file_path)
                 print(f"- Read {len(text)} characters")
                 
-                # Generate chunks
                 chunks = chunker.create_chunks(text)
                 print(f"- Generated {len(chunks)} initial chunks")
                 
-                # Verify chunks
                 valid_chunks = []
                 for i, chunk in enumerate(chunks):
                     tokens = chunker.count_tokens(chunk)
@@ -219,20 +217,20 @@ def process_files_in_folder(folder_path: str, max_tokens: int = 512) -> Dict[str
                     else:
                         print(f"  Warning: Chunk {i+1} exceeded token limit ({tokens} tokens)")
                 
-                # Save chunks to file
-                chunk_file = os.path.join(chunks_folder, f"{file.replace('.txt', '')}_chunks.txt")
-                with open(chunk_file, "w", encoding="utf-8") as f:
-                    for i, chunk in enumerate(valid_chunks, 1):
-                        f.write(f"CHUNK {i}\n")
-                        f.write("="*50 + "\n")
-                        f.write(chunk + "\n\n")
+                # Create a subdirectory for this file's chunks
+                base_name = os.path.splitext(file)[0]
+                file_chunks_dir = os.path.join(chunks_folder, base_name)
+                os.makedirs(file_chunks_dir, exist_ok=True)
+                
+                # Save individual chunk files
+                chunker.save_chunks(valid_chunks, file_chunks_dir, base_name)
                 
                 chunks_by_file[file] = valid_chunks
                 files_processed += 1
                 total_chunks += len(valid_chunks)
                 
                 print(f"✓ Created {len(valid_chunks)} valid chunks")
-                print(f"✓ Saved chunks to: {chunk_file}")
+                print(f"✓ Saved chunks to: {file_chunks_dir}")
                 
             except Exception as e:
                 print(f"Error processing {file}: {str(e)}")
@@ -264,106 +262,49 @@ def display_chunks(chunks_by_file: Dict[str, List[str]], num_files: int = 1, num
         chunker = TextChunker()
         for j, chunk in enumerate(chunks[:num_chunks]):
             token_count = chunker.count_tokens(chunk)
-            char_count = len(chunk)
-            
             print(f"\nChunk {j + 1}:")
             print("-" * 40)
             print(chunk)
             print("-" * 40)
             print(f"Statistics:")
             print(f"- Tokens: {token_count}")
-            print(f"- Characters: {char_count}")
             print(f"- Words: {len(chunk.split())}")
 
-def process_existing_chunks(chunks_dir: str, output_dir: str):
-    """
-    Process existing chunked text files and convert them to JSON format.
-    Args:
-        chunks_dir: Directory containing the chunked text files
-        output_dir: Directory to save the JSON output
-    """
-    chunks_by_file = {}
-    
-    print(f"\nProcessing existing chunks from: {chunks_dir}")
-    print("=" * 50)
-    
-    try:
-        # Get all text files in the chunks directory
-        chunk_files = [f for f in os.listdir(chunks_dir) if f.endswith('.txt')]
-        
-        if not chunk_files:
-            print("No chunk files found!")
-            return None
-            
-        print(f"Found {len(chunk_files)} chunk files")
-        total_chunks = 0
-        
-        for file_name in chunk_files:
-            file_path = os.path.join(chunks_dir, file_name)
-            chunks = []
-            current_chunk = []
-            
-            print(f"\nProcessing: {file_name}")
-            
-            with open(file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-                
-                for line in lines:
-                    if line.strip().startswith('CHUNK'):
-                        if current_chunk:  # Save previous chunk if exists
-                            chunks.append(' '.join(current_chunk))
-                            current_chunk = []
-                    elif not line.startswith('='):  # Skip separator lines
-                        current_chunk.append(line.strip())
-                
-                # Add the last chunk if exists
-                if current_chunk:
-                    chunks.append(' '.join(current_chunk))
-            
-            if chunks:  # Only add if we found chunks
-                chunks_by_file[file_name] = chunks
-                total_chunks += len(chunks)
-                print(f"✓ Extracted {len(chunks)} chunks")
-            
-            # Add a small delay to prevent system overload
-            time.sleep(0.1)
-    
-        if chunks_by_file:
-            # Save to JSON
-            json_file = save_chunks_to_json(chunks_by_file, output_dir)
-            print(f"\nProcessed {len(chunk_files)} files")
-            print(f"Total chunks extracted: {total_chunks}")
-            print(f"All chunks saved to: {json_file}")
-            return chunks_by_file
-        else:
-            print("No valid chunks found in any file.")
-            return None
-        
-    except Exception as e:
-        print(f"Error processing chunks: {str(e)}")
-        return None
-
 if __name__ == "__main__":
-    # Specify your directories
-    chunks_dir = "/Users/adityabhaskara/Downloads/chunks"  # Your source chunks directory
-    output_dir = "/Users/adityabhaskara/Downloads"  # Where to save the JSON
+    # Specify your input and output directories
+    input_dir = "/Users/adityabhaskara/Downloads/data"  # Replace with your input directory path
+    output_dir = "/Users/adityabhaskara/Downloads/newchunks"  # Replace with your output directory path
     
-    print("Starting chunk processing...")
+    print("\nStarting chunk processing...")
+    print(f"Input directory: {input_dir}")
+    print(f"Output directory: {output_dir}")
     
     try:
-        # Process existing chunks with timeout
-        chunks_by_file = process_existing_chunks(chunks_dir, output_dir)
+        # Create output directory if it doesn't exist
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Process the files with specified output directory
+        chunks_by_file = process_files_in_folder(input_dir, output_dir)
         
         if chunks_by_file:
-            # Display sample analysis
-            display_chunks(chunks_by_file, num_files=1, num_chunks=2)
+            # Display sample chunks for verification
+            print("\nDisplaying sample chunks for verification:")
+            display_chunks(chunks_by_file, num_files=2, num_chunks=2)
+            
+            # Print summary
+            total_files = len(chunks_by_file)
+            total_chunks = sum(len(chunks) for chunks in chunks_by_file.values())
+            print("\nProcessing Summary:")
+            print(f"Total files processed: {total_files}")
+            print(f"Total chunks created: {total_chunks}")
             print("\nChunk processing completed successfully!")
         else:
-            print("No chunks were processed. Please check the input directory.")
+            print("\nNo chunks were processed. Please check if the input directory contains .txt or .docx files.")
     
+    except KeyboardInterrupt:
+        print("\nProcessing interrupted by user.")
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
-    
+        print(f"\nAn error occurred: {str(e)}")
     finally:
         print("\nProcessing finished.")
 
