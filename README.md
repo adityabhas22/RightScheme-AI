@@ -97,3 +97,4 @@ If you encounter any issues:
 4. Make sure you're using a compatible Python version
 
 
+Aditeey added this.
