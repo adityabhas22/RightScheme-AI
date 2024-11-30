@@ -35,21 +35,26 @@ def init_pinecone():
         print(f"Error initializing Pinecone: {str(e)}")
         return None
 
-def load_embeddings_and_metadata(embeddings_dir):
-    """Load the most recent embeddings and metadata files."""
+def load_embeddings_and_metadata(embeddings_dir, embeddings_file=None, metadata_file=None):
+    """Load specific embeddings and metadata files or the most recent ones."""
     try:
-        # Find the most recent embeddings file
-        embeddings_files = [f for f in os.listdir(embeddings_dir) if f.startswith('embeddings_') and f.endswith('.npy')]
-        if not embeddings_files:
-            raise FileNotFoundError("No embeddings files found")
-        
-        latest_embeddings = max(embeddings_files)
-        embeddings_path = os.path.join(embeddings_dir, latest_embeddings)
-        
-        # Find corresponding metadata file
-        timestamp = latest_embeddings.replace('embeddings_', '').replace('.npy', '')
-        metadata_file = f'metadata_{timestamp}.json'
-        metadata_path = os.path.join(embeddings_dir, metadata_file)
+        if embeddings_file and metadata_file:
+            # Use specified files
+            embeddings_path = os.path.join(embeddings_dir, embeddings_file)
+            metadata_path = os.path.join(embeddings_dir, metadata_file)
+        else:
+            # Find the most recent embeddings file
+            embeddings_files = [f for f in os.listdir(embeddings_dir) if f.startswith('embeddings_') and f.endswith('.npy')]
+            if not embeddings_files:
+                raise FileNotFoundError("No embeddings files found")
+            
+            latest_embeddings = max(embeddings_files)
+            embeddings_path = os.path.join(embeddings_dir, latest_embeddings)
+            
+            # Find corresponding metadata file
+            timestamp = latest_embeddings.replace('embeddings_', '').replace('.npy', '')
+            metadata_file = f'metadata_{timestamp}.json'
+            metadata_path = os.path.join(embeddings_dir, metadata_file)
         
         print(f"Loading embeddings from: {embeddings_path}")
         print(f"Loading metadata from: {metadata_path}")
@@ -99,11 +104,10 @@ def upsert_to_pinecone(index, embeddings, metadata):
         print(f"Error uploading to Pinecone: {str(e)}")
         return False
 
-def main():
-    # Specify directories
-    embeddings_dir = "/Users/adityabhaskara/Downloads/embeddings"
-    
+def main(embeddings_dir, embeddings_file=None, metadata_file=None):
+    """Main function with specified input files."""
     print("Starting Pinecone index creation...")
+    print(f"Using embeddings directory: {embeddings_dir}")
     
     # Initialize Pinecone
     index = init_pinecone()
@@ -111,7 +115,11 @@ def main():
         return
     
     # Load embeddings and metadata
-    embeddings, metadata = load_embeddings_and_metadata(embeddings_dir)
+    embeddings, metadata = load_embeddings_and_metadata(
+        embeddings_dir, 
+        embeddings_file, 
+        metadata_file
+    )
     if embeddings is None or metadata is None:
         return
     
@@ -123,4 +131,16 @@ def main():
     print("\nPinecone index creation completed successfully!")
 
 if __name__ == "__main__":
-    main()
+    # Specify your embeddings directory and optionally specific files
+    embeddings_dir = "/Users/adityabhaskara/Downloads/newembeddings"  # Replace with your embeddings directory
+    
+    # Optional: specify exact files to use
+    # embeddings_file = "embeddings_20240101_120000.npy"  # Replace with your file name
+    # metadata_file = "metadata_20240101_120000.json"     # Replace with your file name
+    
+    # Run with either specific files or most recent files
+    main(
+        embeddings_dir,
+        # embeddings_file=embeddings_file,  # Uncomment to use specific files
+        # metadata_file=metadata_file       # Uncomment to use specific files
+    )
