@@ -1,6 +1,7 @@
 import streamlit as st
 from utils.common import initialize_session_state, display_state_selector
 from Python_Files.scheme_agent import process_query, create_scheme_agent
+from Python_Files.translation_utils import translate_text
 
 st.set_page_config(
     page_title="Semantic Search - RightScheme AI",
@@ -10,32 +11,33 @@ st.set_page_config(
 
 def display_thinking_animation():
     """Display a simple thinking text with fade animation."""
+    thinking_text = translate_text("Thinking...")
     with st.chat_message("assistant"):
-        st.markdown("""
-            <div class="thinking-animation">Thinking...</div>
+        st.markdown(f"""
+            <div class="thinking-animation">{thinking_text}</div>
             <style>
-                .thinking-animation {
+                .thinking-animation {{
                     animation: thinking 1.5s ease-in-out infinite;
                     color: #666;
-                }
-                @keyframes thinking {
-                    0%, 100% { opacity: 0.3; }
-                    50% { opacity: 1; }
-                }
+                }}
+                @keyframes thinking {{
+                    0%, 100% {{ opacity: 0.3; }}
+                    50% {{ opacity: 1; }}
+                }}
             </style>
         """, unsafe_allow_html=True)
 
 def main():
     initialize_session_state()
     
-    st.title("🔍 Semantic Search")
-    st.write("Ask me anything about Indian Government Schemes!")
+    st.title(translate_text("🔍 Semantic Search"))
+    st.write(translate_text("Ask me anything about Indian Government Schemes!"))
     
     # State selection in sidebar
     selected_state = display_state_selector()
     
     with st.sidebar:
-        if st.button("Clear Conversation"):
+        if st.button(translate_text("Clear Conversation")):
             st.session_state.chat_history = []
             st.session_state.scheme_agent = None
             st.session_state.is_first_message = True
@@ -43,15 +45,17 @@ def main():
 
     # Main chat interface
     if st.session_state.user_state is None:
-        st.info("👆 Please select your state from the sidebar to get started!")
+        st.info(translate_text("👆 Please select your state from the sidebar to get started!"))
         st.stop()
 
     # Display welcome message for first-time users
     if st.session_state.is_first_message:
-        welcome_message = (
+        welcome_message = translate_text(
             f"👋 Welcome! I'll help you find government schemes available in {st.session_state.user_state} "
-            "and central schemes that you can benefit from.\n\n"
-            "You can ask me about:\n"
+            "and central schemes that you can benefit from."
+        ) + "\n\n" + translate_text(
+            "You can ask me about:"
+        ) + "\n" + translate_text(
             "• Available schemes in your state\n"
             "• Eligibility criteria\n"
             "• Application process\n"
@@ -66,7 +70,7 @@ def main():
             st.write(message["content"])
 
     # Chat input
-    if query := st.chat_input("Type your question here..."):
+    if query := st.chat_input(translate_text("Type your question here...")):
         st.session_state.is_first_message = False
         
         # Immediately display user message
@@ -96,7 +100,7 @@ def main():
 
         # Show conversation summary in sidebar
         with st.sidebar:
-            with st.expander("Conversation Summary", expanded=False):
+            with st.expander(translate_text("Conversation Summary"), expanded=False):
                 st.write(response_data["conversation_summary"])
 
         # Rerun to update chat display
