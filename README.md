@@ -37,4 +37,4 @@ A Streamlit application for finding and comparing the right scheme for your need
 ## Running the Application
 
 To run the application, use the following command:
-wait
+wait.
