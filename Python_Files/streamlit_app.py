@@ -1,5 +1,9 @@
 import streamlit as st
-from scheme_agent import process_query, create_scheme_agent
+from Python_Files.translation_utils import (
+    initialize_translation_settings,
+    get_translation_selector,
+    translate_text
+)
 
 # List of Indian states and UTs
 INDIAN_STATES = [
@@ -13,12 +17,6 @@ INDIAN_STATES = [
     "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ]
 
-st.set_page_config(
-    page_title="Government Schemes Assistant",
-    page_icon="🏛️",
-    layout="wide"
-)
-
 def initialize_session_state():
     if "scheme_agent" not in st.session_state:
         st.session_state.scheme_agent = None
@@ -30,80 +28,29 @@ def initialize_session_state():
         st.session_state.is_first_message = True
 
 def main():
-    initialize_session_state()
+    st.set_page_config(
+        page_title="Scheme Eligibility Checker",
+        page_icon="🏠",
+        layout="wide"
+    )
     
-    st.title("🏛️ Government Schemes Assistant")
+    # Initialize translation settings
+    initialize_translation_settings()
     
-    # State selection in sidebar
-    with st.sidebar:
-        st.header("Your Location")
-        selected_state = st.selectbox(
-            "Select your state",
-            options=INDIAN_STATES,
-            index=0,
-            key="state_selector"
-        )
-        
-        if selected_state != "Select State":
-            st.session_state.user_state = selected_state
-            st.success(f"Showing schemes available in {selected_state} and Central Schemes")
-        
-        if st.button("Clear Conversation"):
-            st.session_state.chat_history = []
-            st.session_state.scheme_agent = None
-            st.session_state.is_first_message = True
-            st.rerun()
-
-    # Main chat interface
-    if st.session_state.user_state is None:
-        st.info("👆 Please select your state from the sidebar to get started!")
-        st.stop()
-
-    # Display welcome message for first-time users
-    if st.session_state.is_first_message:
-        welcome_message = (
-            f"👋 Welcome! I'll help you find government schemes available in {st.session_state.user_state} "
-            "and central schemes that you can benefit from.\n\n"
-            "You can ask me about:\n"
-            "• Available schemes in your state\n"
-            "• Eligibility criteria\n"
-            "• Application process\n"
-            "• Required documents\n"
-            "• Benefits and features"
-        )
-        st.chat_message("assistant").write(welcome_message)
-
-    # Display chat history
-    for message in st.session_state.chat_history:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-
-    # Chat input
-    if query := st.chat_input("Type your question here..."):
-        st.session_state.is_first_message = False
-        
-        # Add state context to the query
-        contextualized_query = f"For someone in {st.session_state.user_state}: {query}"
-        
-        # Add user message to chat history
-        st.session_state.chat_history.append({"role": "user", "content": query})
-
-        # Get response
-        with st.spinner("Thinking..."):
-            response_data = process_query(contextualized_query)
-
-        # Add assistant response to chat history
-        st.session_state.chat_history.append(
-            {"role": "assistant", "content": response_data["response"]}
-        )
-
-        # Show conversation summary in sidebar
-        with st.sidebar:
-            with st.expander("Conversation Summary", expanded=False):
-                st.write(response_data["conversation_summary"])
-
-        # Rerun to update chat display
-        st.rerun()
+    # Add language selector to sidebar
+    get_translation_selector()
+    
+    # Translate main title
+    st.title(translate_text("Scheme Eligibility Checker"))
+    
+    # Rest of your main app code...
+    welcome_text = """
+    Welcome to the Scheme Eligibility Checker. This tool helps you find 
+    government schemes you might be eligible for.
+    """
+    st.write(translate_text(welcome_text))
+    
+    # Continue with your existing app logic...
 
 if __name__ == "__main__":
     main() 

@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.common import initialize_session_state, display_state_selector
+from utils.common import initialize_session_state, display_state_selector, translate_text
 from Python_Files.scheme_agent import process_query, create_scheme_agent
 
 st.set_page_config(
@@ -26,33 +26,47 @@ def get_questions():
     return [
         {
             "id": "age",
-            "text": "What is your age?",
+            "text": translate_text("What is your age?"),
             "type": "number",
             "validation": lambda x: 0 <= x <= 120
         },
         {
             "id": "gender",
-            "text": "What is your gender?",
+            "text": translate_text("What is your gender?"),
             "type": "select",
-            "options": ["Male", "Female", "Other"]
+            "options": [
+                translate_text("Male"),
+                translate_text("Female"),
+                translate_text("Other")
+            ]
         },
         {
             "id": "category",
-            "text": "Which category do you belong to?",
+            "text": translate_text("Which category do you belong to?"),
             "type": "select",
-            "options": ["General", "SC", "ST", "OBC"]
+            "options": [
+                translate_text("General"),
+                translate_text("SC"),
+                translate_text("ST"),
+                translate_text("OBC")
+            ]
         },
         {
             "id": "annual_income",
-            "text": "What is your annual household income (in INR)?",
+            "text": translate_text("What is your annual household income (in INR)?"),
             "type": "number",
             "validation": lambda x: x >= 0
         },
         {
             "id": "occupation",
-            "text": "What is your primary occupation?",
+            "text": translate_text("What is your primary occupation?"),
             "type": "select",
-            "options": ["Student", "Farmer", "Self-employed", "Salaried", "Unemployed", "Other"]
+            "options": [
+                translate_text(opt) for opt in [
+                    "Student", "Farmer", "Self-employed",
+                    "Salaried", "Unemployed", "Other"
+                ]
+            ]
         }
     ]
 
