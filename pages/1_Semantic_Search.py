@@ -12,20 +12,23 @@ st.set_page_config(
 def display_thinking_animation():
     """Display a simple thinking text with fade animation."""
     thinking_text = translate_text("Thinking...")
-    with st.chat_message("assistant"):
-        st.markdown(f"""
-            <div class="thinking-animation">{thinking_text}</div>
-            <style>
-                .thinking-animation {{
-                    animation: thinking 1.5s ease-in-out infinite;
-                    color: #666;
-                }}
-                @keyframes thinking {{
-                    0%, 100% {{ opacity: 0.3; }}
-                    50% {{ opacity: 1; }}
-                }}
-            </style>
-        """, unsafe_allow_html=True)
+    thinking_container = st.empty()
+    with thinking_container.container():
+        with st.chat_message("assistant"):
+            st.markdown(f"""
+                <div class="thinking-animation">{thinking_text}</div>
+                <style>
+                    .thinking-animation {{
+                        animation: thinking 1.5s ease-in-out infinite;
+                        color: #666;
+                    }}
+                    @keyframes thinking {{
+                        0%, 100% {{ opacity: 0.3; }}
+                        50% {{ opacity: 1; }}
+                    }}
+                </style>
+            """, unsafe_allow_html=True)
+    return thinking_container
 
 def main():
     initialize_session_state()
@@ -64,47 +67,73 @@ def main():
         )
         st.chat_message("assistant").write(welcome_message)
 
-    # Display chat history
+    # Display chat history with translations
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
-            st.write(message["content"])
+            if message["role"] == "assistant" and st.session_state.language != "en":
+                original_text = message["content"]
+                translated_text = translate_text(original_text)
+                
+                # Display original English text
+                st.write(original_text)
+                
+                # Only if language is not English, show translation
+                if st.session_state.language != "en":
+                    st.markdown("---")
+                    st.markdown("**" + translate_text("Translation") + ":**")
+                    st.write(translated_text)
+            else:
+                st.write(message["content"])
 
     # Chat input
-    if query := st.chat_input(translate_text("Type your question here...")):
-        st.session_state.is_first_message = False
-        
-        # Immediately display user message
+    if prompt := st.chat_input(translate_text("Type your question here...")):
+        if not st.session_state.chat_history:
+            st.session_state.is_first_message = False
+            
+        # Process the query and update chat history in one go
         with st.chat_message("user"):
-            st.write(query)
-
-        # Add user message to chat history
-        st.session_state.chat_history.append({"role": "user", "content": query})
-        
+            st.write(prompt)
+            
         # Show thinking animation
-        display_thinking_animation()
-        
-        # Add state context to the query
-        contextualized_query = f"For someone in {st.session_state.user_state}: {query}"
+        thinking_container = display_thinking_animation()
         
         # Get response
+        contextualized_query = f"For someone in {st.session_state.user_state}: {prompt}"
         response_data = process_query(contextualized_query)
-
-        # Display assistant response
+        
+        # Remove thinking animation
+        thinking_container.empty()
+        
+        # Display response
         with st.chat_message("assistant"):
-            st.write(response_data["response"])
-
-        # Add assistant response to chat history
-        st.session_state.chat_history.append(
-            {"role": "assistant", "content": response_data["response"]}
-        )
-
+            # Store original English response
+            original_response = response_data["response"]
+            
+            # Display original English first
+            st.write(original_response)
+            
+            # Only if language is not English, show translation
+            if st.session_state.language != "en":
+                st.markdown("---")
+                st.markdown("**" + translate_text("Translation") + ":**")
+                st.write(translate_text(original_response))
+        
+        # Update chat history with original English response
+        st.session_state.chat_history.extend([
+            {"role": "user", "content": prompt},
+            {"role": "assistant", "content": original_response}
+        ])
+        
         # Show conversation summary in sidebar
         with st.sidebar:
             with st.expander(translate_text("Conversation Summary"), expanded=False):
-                st.write(response_data["conversation_summary"])
-
-        # Rerun to update chat display
-        st.rerun()
+                if st.session_state.language != "en":
+                    st.write(response_data["conversation_summary"])  # Original English
+                    st.divider()
+                    st.caption(translate_text("Translation:"))
+                    st.write(translate_text(response_data["conversation_summary"]))  # Translated
+                else:
+                    st.write(response_data["conversation_summary"])
 
     # Add/modify the CSS for chat messages
     st.markdown("""
