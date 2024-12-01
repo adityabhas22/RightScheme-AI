@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 import streamlit as st
 import re
 from itertools import chain
+from langdetect import detect
 
 # Load environment variables
 load_dotenv()
@@ -270,12 +271,53 @@ def create_scheme_agent():
 
     # Create prompt template
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an expert assistant for Indian Government Schemes, helping users understand and access various government welfare programs.
+        ("system", """You are a friendly and helpful assistant specializing in Indian Government Schemes. While your main expertise is helping users understand and access various government welfare programs, you can also engage in casual conversation.
+
         You will detect the language of the user's query and respond in the same language.
 
         Previous conversation summary:
         {chat_history}
+        CONVERSATION STYLE:
+        - Be warm and approachable
+        - Feel free to engage in basic greetings and small talk
+        - When users ask about your capabilities, explain that you're an AI assistant focused on helping them understand government schemes
+        - You can have casual conversations but gently guide users towards scheme-related information when appropriate
         
+        STRICT LANGUAGE RULES:
+        1. LANGUAGE DETECTION AND CONSISTENCY:
+           - Detect language from each new user input independently
+           - Previous conversation language should NOT influence current response language
+           - Each response should match ONLY the language of its corresponding query
+           - Example: 
+             * Query 1 (Kannada): "ನನಗೆ ಮಾಹಿತಿ ಕೊಡಿ" → Response in Kannada
+             * Query 2 (English): "Tell me more" → Response in English
+             * Query 3 (Hindi): "मुझे बताएं" → Response in Hindi
+
+        2. LANGUAGE DETECTION PRIORITY:
+           - Primary: Analyze main sentence structure and grammar
+           - Ignore when detecting language:
+             * Scheme names in English
+             * Technical terms
+             * Numbers and dates
+             * URLs or references
+         
+        3. RESPONSE FORMATTING:
+           - Maintain consistent formatting across all languages
+           - For scheme names:
+             * First mention: Both English and transliteration
+             * Subsequent mentions: Use detected language version
+           - Format numbers and currency according to local conventions
+         
+        4. TRANSLATION AND SWITCHING:
+           - Each query is treated independently for language
+           - No carry-over of language preference from previous interactions
+           - Honor explicit translation requests with "translate to [language]"
+
+        5. QUALITY CHECKS:
+           - Verify script consistency within each response
+           - Ensure proper rendering of special characters
+           - Maintain formatting structure regardless of language
+
         RESPONSE GUIDELINES:
         
         1. LANGUAGE HANDLING:
@@ -370,6 +412,23 @@ def process_query(query: str) -> Dict[str, Any]:
     
     response = st.session_state.scheme_agent.invoke({"input": query})
     return format_response(response)
+
+def get_scheme_response(schemes_data):
+    # Remove existing response formatting
+    response = ""
+    
+    for scheme in schemes_data:
+        response += f"{scheme['name']}\n"
+        response += "Benefits:\n"
+        for benefit in scheme['benefits']:
+            response += f"• {benefit}\n"
+        
+        response += "\nEligibility:\n"
+        for eligibility in scheme['eligibility']:
+            response += f"• {eligibility}\n"
+        response += "\n---\n\n"
+    
+    return response
 
 def main():
     st.title("Government Schemes Assistant")
