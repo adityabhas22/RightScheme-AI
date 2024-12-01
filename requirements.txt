@@ -13,3 +13,4 @@ tqdm>=4.65.0
 python-docx
 deep-translator>=1.11.0
 langdetect
+
