@@ -417,7 +417,7 @@ def process_query(query: str) -> Dict[str, Any]:
     response = st.session_state.scheme_agent.invoke({"input": query})
     return format_response(response)
 
-def get_scheme_response(schemes_data):
+async def get_scheme_response(schemes_data):
     # Remove existing response formatting
     response = ""
     
