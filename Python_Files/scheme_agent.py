@@ -411,11 +411,20 @@ def format_response(response: Dict[str, Any]) -> Dict[str, Any]:
 
 def process_query(query: str) -> Dict[str, Any]:
     """Process a query and return the formatted response."""
-    if not st.session_state.scheme_agent:
-        st.session_state.scheme_agent = create_scheme_agent()
-    
-    response = st.session_state.scheme_agent.invoke({"input": query})
-    return format_response(response)
+    try:
+        if not st.session_state.find_schemes["scheme_agent"]:
+            st.session_state.find_schemes["scheme_agent"] = create_scheme_agent()
+        
+        response = st.session_state.find_schemes["scheme_agent"].invoke({"input": query})
+        return {
+            "response": response["output"],
+            "conversation_summary": get_conversation_summary(st.session_state.find_schemes["scheme_agent"])
+        }
+    except Exception as e:
+        return {
+            "response": f"I apologize, but I encountered an error: {str(e)}",
+            "conversation_summary": ""
+        }
 
 async def get_scheme_response(schemes_data):
     # Remove existing response formatting

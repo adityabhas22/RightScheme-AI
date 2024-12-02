@@ -1,7 +1,7 @@
 import streamlit as st
 from typing import Dict, List
 from utils.common import initialize_session_state, display_state_selector, translate_text
-from Python_Files.scheme_agent import process_query, create_scheme_agent, SchemeAgent
+from Python_Files.scheme_agent import process_query, create_scheme_agent
 from Python_Files.scheme_matcher import SchemeCategory, SchemeMatch, SchemeMatcher, UserProfile
 from Python_Files.translation_utils import translate_text, translate_to_english
 from utils.logging_utils import logger
@@ -12,9 +12,16 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize session state for scheme_agent if not already present
-if "scheme_agent" not in st.session_state:
-    st.session_state.scheme_agent = SchemeAgent()
+# Initialize all required session state variables at the start
+if "find_schemes" not in st.session_state:
+    st.session_state.find_schemes = {
+        "chat_history": [],
+        "scheme_agent": create_scheme_agent(),  # Initialize with the agent
+        "is_first_message": True,
+        "current_question": 0,
+        "user_responses": {},
+        "questionnaire_completed": False
+    }
 
 def initialize_questionnaire_state():
     if "current_question" not in st.session_state:
@@ -225,7 +232,7 @@ def main():
             # Only clear Find Schemes state
             st.session_state.find_schemes = {
                 "chat_history": [],
-                "scheme_agent": None,
+                "scheme_agent": create_scheme_agent(),  # Initialize with the agent
                 "is_first_message": True,
                 "current_question": 0,
                 "user_responses": {},
