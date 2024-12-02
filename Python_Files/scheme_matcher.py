@@ -47,7 +47,7 @@ class SchemeMatcher:
     def __init__(self):
         self.pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
         self.index = self.pc.Index(os.getenv('PINECONE_INDEX_NAME'))
-        self.llm = ChatOpenAI(temperature=0, model="gpt-4")
+        self.llm = ChatOpenAI(temperature=0, model="gpt-4o-mini")
         
         # Create agent with tools
         self.agent_executor = self._create_agent()
