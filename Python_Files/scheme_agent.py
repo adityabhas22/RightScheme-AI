@@ -230,6 +230,40 @@ class SchemeTools:
         )
         return response
 
+class SelectiveConversationMemory(ConversationSummaryMemory):
+    """A memory class that selectively retains important parts of conversations."""
+    
+    def _get_important_parts(self, text: str) -> bool:
+        """Determine if a conversation part is important enough to retain."""
+        important_indicators = [
+            "scheme",
+            "eligibility",
+            "documents",
+            "apply",
+            "benefit",
+            "criteria",
+            "requirement",
+            "process",
+            "subsidy",
+            "assistance",
+            "welfare",
+            "income",
+            "category",
+            "deadline",
+        ]
+        
+        # Check if the text contains any important indicators
+        return any(indicator in text.lower() for indicator in important_indicators)
+    
+    def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
+        """Save context from this conversation to buffer. Override to filter."""
+        input_str = inputs['input']
+        output_str = outputs['output']
+        
+        # Only save if either input or output contains important information
+        if self._get_important_parts(input_str) or self._get_important_parts(output_str):
+            super().save_context(inputs, outputs)
+
 def create_scheme_agent():
     # Initialize tools
     tools_instance = SchemeTools()
@@ -261,8 +295,8 @@ def create_scheme_agent():
     # Initialize LLM
     llm = ChatOpenAI(temperature=0.7, model="gpt-4o-mini")
 
-    # Initialize ConversationSummaryMemory
-    memory = ConversationSummaryMemory(
+    # Initialize SelectiveConversationMemory
+    memory = SelectiveConversationMemory(
         llm=llm,
         memory_key="chat_history",
         return_messages=True,
@@ -284,39 +318,9 @@ def create_scheme_agent():
         - You can have casual conversations but gently guide users towards scheme-related information when appropriate
         
         STRICT LANGUAGE RULES:
-        1. LANGUAGE DETECTION AND CONSISTENCY:
-           - Detect language from each new user input independently
-           - Previous conversation language should NOT influence current response language
-           - Each response should match ONLY the language of its corresponding query
-           - Example: 
-             * Query 1 (Kannada): "ನನಗೆ ಮಾಹಿತಿ ಕೊಡಿ" → Response in Kannada
-             * Query 2 (English): "Tell me more" → Response in English
-             * Query 3 (Hindi): "मुझे बताएं" → Response in Hindi
-
-        2. LANGUAGE DETECTION PRIORITY:
-           - Primary: Analyze main sentence structure and grammar
-           - Ignore when detecting language:
-             * Scheme names in English
-             * Technical terms
-             * Numbers and dates
-             * URLs or references
-         
-        3. RESPONSE FORMATTING:
-           - Maintain consistent formatting across all languages
-           - For scheme names:
-             * First mention: Both English and transliteration
-             * Subsequent mentions: Use detected language version
-           - Format numbers and currency according to local conventions
-         
-        4. TRANSLATION AND SWITCHING:
-           - Each query is treated independently for language
-           - No carry-over of language preference from previous interactions
-           - Honor explicit translation requests with "translate to [language]"
-
-        5. QUALITY CHECKS:
-           - Verify script consistency within each response
-           - Ensure proper rendering of special characters
-           - Maintain formatting structure regardless of language
+        - Always respond in English, regardless of the language of the user query
+        - Never respond in any Indian language directly; instead, always include English transliteration
+        
 
         RESPONSE GUIDELINES:
         
@@ -461,4 +465,3 @@ def main():
 
 if __name__ == "__main__":
     main() 
-
