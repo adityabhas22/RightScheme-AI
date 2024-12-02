@@ -21,49 +21,20 @@ LANGUAGES = {
     "te": "తెలుగు"
 }
 
-class BaseAgent:
-    def __init__(self):
-        self._is_loading = False
-
-    def set_loading(self, state: bool):
-        self._is_loading = state
-
-    def is_loading(self) -> bool:
-        return self._is_loading
-
-    # Make sure any response processing clears the loading state
-    async def process_response(self, response):
-        try:
-            return await self._process_response_impl(response)
-        finally:
-            self.set_loading(False)
-
 def initialize_session_state():
-    """Initialize all session state variables with separate contexts."""
+    """Initialize all session state variables"""
     defaults = {
-        # Shared state
+        "scheme_agent": None,
+        "chat_history": [],
         "user_state": None,
-        "language": "en",
-        
-        # Semantic Search specific state
-        "semantic_search": {
-            "chat_history": [],
-            "scheme_agent": None,
-            "is_first_message": True
-        },
-        
-        # Find Right Schemes specific state
-        "find_schemes": {
-            "chat_history": [],
-            "scheme_agent": None,
-            "is_first_message": True,
-            "current_question": 0,
-            "user_responses": {},
-            "questionnaire_completed": False
-        }
+        "is_first_message": True,
     }
     
-    # Initialize each state variable if not present
+    # Initialize language settings if not present
+    if "language" not in st.session_state:
+        st.session_state["language"] = "en"
+    
+    # Initialize other session state variables
     for key, default_value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = default_value

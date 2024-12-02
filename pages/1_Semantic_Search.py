@@ -2,7 +2,6 @@ import streamlit as st
 from utils.common import initialize_session_state, display_state_selector
 from Python_Files.scheme_agent import process_query, create_scheme_agent
 from Python_Files.translation_utils import translate_text
-from utils.logging_utils import logger
 
 st.set_page_config(
     page_title="Semantic Search - RightScheme AI",
@@ -42,12 +41,9 @@ def main():
     
     with st.sidebar:
         if st.button(translate_text("Clear Conversation")):
-            # Only clear Semantic Search state
-            st.session_state.semantic_search = {
-                "chat_history": [],
-                "scheme_agent": None,
-                "is_first_message": True
-            }
+            st.session_state.chat_history = []
+            st.session_state.scheme_agent = None
+            st.session_state.is_first_message = True
             st.rerun()
 
     # Main chat interface
@@ -56,7 +52,7 @@ def main():
         st.stop()
 
     # Display welcome message for first-time users
-    if st.session_state.semantic_search["is_first_message"]:
+    if st.session_state.is_first_message:
         welcome_message = translate_text(
             f"👋 Welcome! I'll help you find government schemes available in {st.session_state.user_state} "
             "and central schemes that you can benefit from."
@@ -72,7 +68,7 @@ def main():
         st.chat_message("assistant").write(welcome_message)
 
     # Display chat history with translations
-    for message in st.session_state.semantic_search["chat_history"]:
+    for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
             if message["role"] == "assistant" and st.session_state.language != "en":
                 original_text = message["content"]
@@ -91,8 +87,8 @@ def main():
 
     # Chat input
     if prompt := st.chat_input(translate_text("Type your question here...")):
-        if not st.session_state.semantic_search["chat_history"]:
-            st.session_state.semantic_search["is_first_message"] = False
+        if not st.session_state.chat_history:
+            st.session_state.is_first_message = False
             
         # Process the query and update chat history in one go
         with st.chat_message("user"):
@@ -104,18 +100,6 @@ def main():
         # Get response
         contextualized_query = f"For someone in {st.session_state.user_state}: {prompt}"
         response_data = process_query(contextualized_query)
-        
-        # Log the conversation
-        logger.log_conversation(
-            conversation_type="semantic_search",
-            user_query=prompt,
-            response=response_data["response"],
-            metadata={
-                "state": st.session_state.user_state,
-                "language": st.session_state.language,
-                "contextualized_query": contextualized_query
-            }
-        )
         
         # Remove thinking animation
         thinking_container.empty()
@@ -134,8 +118,8 @@ def main():
                 st.markdown("**" + translate_text("Translation") + ":**")
                 st.write(translate_text(original_response))
         
-        # Update semantic search chat history
-        st.session_state.semantic_search["chat_history"].extend([
+        # Update chat history with original English response
+        st.session_state.chat_history.extend([
             {"role": "user", "content": prompt},
             {"role": "assistant", "content": original_response}
         ])
