@@ -274,11 +274,6 @@ def main():
                     st.session_state.find_schemes["current_question"] -= 1
                     st.rerun()
     
-    # Display chat interface
-    for message in st.session_state.find_schemes["chat_history"]:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-
     # Process initial query or handle user input
     if st.session_state.find_schemes["questionnaire_completed"]:
         if st.session_state.find_schemes["is_first_message"]:
@@ -299,9 +294,7 @@ def main():
                 }
             )
 
-            with st.chat_message("assistant"):
-                st.write(response_data["response"])
-
+            # Add to chat history
             st.session_state.find_schemes["chat_history"].append(
                 {"role": "assistant", "content": response_data["response"]}
             )
@@ -312,10 +305,6 @@ def main():
         if query := st.chat_input(translate_text("Ask follow-up questions about schemes...")):
             # Translate query to English if in another language
             english_query = translate_to_english(query) if st.session_state.language != "en" else query
-            
-            # Display original query
-            with st.chat_message("user"):
-                st.write(query)
             
             # Add to chat history
             st.session_state.find_schemes["chat_history"].append({"role": "user", "content": query})
@@ -343,16 +332,13 @@ def main():
                     "contextualized_query": contextualized_query
                 }
             )
-
-            # Display bilingual response
-            display_bilingual_message(response_data["response"], "assistant")
             
             # Add to chat history
             st.session_state.find_schemes["chat_history"].append(
                 {"role": "assistant", "content": response_data["response"]}
             )
 
-    # Display chat history with translations
+    # Display chat history ONCE with translations
     for message in st.session_state.find_schemes["chat_history"]:
         display_bilingual_message(message["content"], message["role"])
 
