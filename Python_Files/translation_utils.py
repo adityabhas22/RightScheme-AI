@@ -1,6 +1,7 @@
 from deep_translator import GoogleTranslator
 import streamlit as st
 import time
+from langdetect import detect
 
 # Supported Languages with their native names
 LANGUAGES = {
@@ -53,3 +54,19 @@ def translate_text(text, target_lang=None):
     except Exception as e:
         print(f"Translation error: {e}")
         return text  # Fallback to original text if translation fails
+
+def translate_to_english(text: str) -> str:
+    """Translate text from any language to English."""
+    try:
+        # Detect language
+        source_lang = detect(text)
+        if source_lang == 'en':
+            return text
+            
+        # Translate to English using your translation service
+        translator = GoogleTranslator(source=source_lang, target='en')
+        translated = translator.translate(text)
+        return translated.text
+    except Exception as e:
+        print(f"Translation error: {str(e)}")
+        return text  # Return original text if translation fails
