@@ -1,15 +1,25 @@
 import streamlit as st
 from PIL import Image
 import base64
-from utils.common import initialize_session_state, display_state_selector, translate_text, INDIAN_STATES
+from utils.common import initialize_session_state, translate_text, display_state_selector
 
 def main():
+    # Initialize sidebar state for home page
+    if "sidebar_state" not in st.session_state:
+        st.session_state.sidebar_state = "expanded"
+    
     st.set_page_config(
         page_title="RightScheme AI",
         page_icon="🏛️",
         layout="wide",
-        initial_sidebar_state="collapsed"
+        initial_sidebar_state=st.session_state.sidebar_state
     )
+    
+    # Initialize session state
+    initialize_session_state()
+    
+    # Add state and language selection to sidebar
+    display_state_selector()
     
     # Force light mode
     st.markdown("""
@@ -45,9 +55,6 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Initialize session state
-    initialize_session_state()
-    
     # Custom CSS
     st.markdown("""
     <style>
@@ -224,10 +231,11 @@ def main():
         }
 
         .mission-text {
-            font-size: 1.125rem !important;
-            color: #2D3748 !important;
-            line-height: 1.7 !important;
-            margin-bottom: 1rem !important;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #2D3748;
+            margin: 1.5rem auto 4rem auto;
+            max-width: 800px;
         }
 
         .highlight {
@@ -235,18 +243,11 @@ def main():
             font-weight: 600 !important;
         }
 
-        .state-prompt {
-            font-size: 0.875rem !important;
-            color: #2D3748 !important;
-            font-style: italic !important;
-            margin: 1rem 0 !important;
-        }
-
-        /* Custom selectbox styling */
+        /* Custom styling for select box */
         .stSelectbox > div > div {
             background-color: white;
-            border-radius: 0.5rem;
             border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
         }
         
         /* Container styles */
@@ -290,26 +291,10 @@ def main():
             font-weight: 600;
         }
         
-        /* State prompt */
-        .state-prompt {
-            font-size: 0.875rem;
-            color: #2D3748;
-            text-align: center;
-            font-style: italic;
-            margin: 1rem 0;
-        }
-        
         /* Selectbox container */
         .select-container {
             max-width: 400px;
             margin: 0 auto;
-        }
-        
-        /* Custom styling for select box */
-        .stSelectbox > div > div {
-            background-color: white;
-            border: 1px solid #E2E8F0;
-            border-radius: 0.5rem;
         }
         
         /* Title container styles */
@@ -347,7 +332,7 @@ def main():
             font-size: 1.25rem;
             line-height: 1.6;
             color: #2D3748;
-            margin: 1.5rem auto;
+            margin: 1.5rem auto 4rem auto;
             max-width: 800px;
         }
         
@@ -441,33 +426,10 @@ def main():
         We're bridging the gap between people and policies, making welfare schemes 
         <span class="highlight">accessible to everyone</span>.
     </div>
+    
+    <!-- Add spacing div -->
+    <div style="margin: 60px 0;"></div>
     """, unsafe_allow_html=True)
-
-    # State Selection
-    states = INDIAN_STATES
-
-    # Center the select box
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        # Get current index from session state
-        current_index = states.index(st.session_state.user_state) if st.session_state.user_state in states else 0
-                
-        selected_state = st.selectbox(
-            "",
-            options=states,
-            index=current_index,
-            key="state_selector"
-        )
-        
-        # Update session state if selection changes
-        if selected_state != st.session_state.user_state:
-            st.session_state.user_state = selected_state
-            if selected_state != "Select your state":
-                st.success(f"Showing schemes available in {selected_state} and Central Schemes")
-                st.rerun()
-
-    # Add spacing after the selectbox
-    st.markdown("<div style='height: 40px'></div>", unsafe_allow_html=True)
 
     # Feature Cards
     col1, col2, col3 = st.columns(3)

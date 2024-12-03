@@ -431,12 +431,14 @@ async def get_scheme_response(schemes_data):
     response = ""
     
     for scheme in schemes_data:
-        response += f"{scheme['name']}\n"
-        response += "Benefits:\n"
+        response += f"📋 {scheme['name']}\n\n"
+        
+        response += "KEY BENEFITS:\n"
         for benefit in scheme['benefits']:
             response += f"• {benefit}\n"
+        response += "\n"
         
-        response += "\nEligibility:\n"
+        response += "ELIGIBILITY:\n"
         for eligibility in scheme['eligibility']:
             response += f"• {eligibility}\n"
         response += "\n---\n\n"

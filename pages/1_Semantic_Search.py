@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.common import initialize_session_state, display_state_selector
+from utils.common import initialize_session_state, display_state_selector, check_state_selection, get_greeting_message
 from Python_Files.scheme_agent import process_query, create_scheme_agent
 from Python_Files.translation_utils import translate_text
 from utils.logging_utils import logger
@@ -8,7 +8,7 @@ st.set_page_config(
     page_title="Smart Search - RightScheme AI",
     page_icon="🔍",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # Force light mode
@@ -236,6 +236,8 @@ def display_thinking_animation():
 
 def main():
     initialize_session_state()
+    display_state_selector()
+    
     # Add semantic search icon styling
     st.markdown("""
         <style>
@@ -269,57 +271,30 @@ def main():
     """, unsafe_allow_html=True)
     st.write(translate_text("Ask me anything about Indian Government Schemes!"))
     
-    # State selection in sidebar
-    selected_state = display_state_selector()
-    
+    # Add reset button to sidebar
     with st.sidebar:
-        if st.button(translate_text("Clear Conversation")):
-            # Only clear Semantic Search state
+        if st.button(translate_text("Start New Search")):
+            # Reset the chat history
             st.session_state.semantic_search = {
                 "chat_history": [],
-                "scheme_agent": None,
                 "is_first_message": True
             }
             st.rerun()
-
-    # Main chat interface
-    if st.session_state.user_state is None:
-        st.info(translate_text("👆 Please select your state from the sidebar to get started!"))
-        st.stop()
-
-    # Display welcome message for first-time users
-    if st.session_state.semantic_search["is_first_message"]:
-        welcome_message = translate_text(
-            f"👋 Welcome! I'll help you find government schemes available in {st.session_state.user_state} "
-            "and central schemes that you can benefit from."
-        ) + "\n\n" + translate_text(
-            "You can ask me about:"
-        ) + "\n" + translate_text(
-            "• Available schemes in your state\n"
-            "• Eligibility criteria\n"
-            "• Application process\n"
-            "• Required documents\n"
-            "• Benefits and features"
-        )
-        st.chat_message("assistant").write(welcome_message)
-
-    # Display chat history with translations
+    
+    # Check state selection before proceeding
+    if not check_state_selection():
+        return
+        
+    # Display chat history
+    if not st.session_state.semantic_search["chat_history"]:
+        # Only add welcome message if chat history is empty
+        welcome_msg = f"👋 Welcome! I'll help you find government schemes available in {st.session_state.user_state} and central schemes that you can benefit from.\n\nYou can ask me about: • Available schemes in your state • Eligibility criteria • Application process • Required documents • Benefits and features"
+        st.session_state.semantic_search["chat_history"].append({"role": "assistant", "content": welcome_msg})
+    
+    # Display chat history - remove the container and columns
     for message in st.session_state.semantic_search["chat_history"]:
         with st.chat_message(message["role"]):
-            if message["role"] == "assistant" and st.session_state.language != "en":
-                original_text = message["content"]
-                translated_text = translate_text(original_text)
-                
-                # Display original English text
-                st.write(original_text)
-                
-                # Only if language is not English, show translation
-                if st.session_state.language != "en":
-                    st.markdown("---")
-                    st.markdown("**" + translate_text("Translation") + ":**")
-                    st.write(translated_text)
-            else:
-                st.write(message["content"])
+            st.write(message["content"])
 
     # Chat input
     if prompt := st.chat_input(translate_text("Type your question here...")):
@@ -383,48 +358,29 @@ def main():
                 else:
                     st.write(response_data["conversation_summary"])
 
-    # Add/modify the CSS for chat messages
+    # Update the chat message styling
     st.markdown("""
-    <style>
-        /* Base styles for chat messages */
-        div.stChatMessage {
-            padding: 1rem 1.5rem !important;
-            margin: 0.5rem 0 !important;
-            max-width: 80% !important;
-            border-radius: 10px !important;
-        }
-        
-        /* Assistant messages - left aligned */
-        div.stChatMessage[data-testid="chat-message-assistant"] {
-            margin-right: auto !important;
-            margin-left: 1.5rem !important;
-            background-color: #f0f2f6 !important;
-        }
-        
-        /* User messages - right aligned */
-        div.stChatMessage[data-testid="chat-message-user"] {
-            margin-left: auto !important;
-            margin-right: 1.5rem !important;
-            background-color: #e3f2fd !important;
-        }
-        
-        /* Optimize for mobile */
-        @media (max-width: 768px) {
+        <style>
+            /* Base styles for chat messages */
             div.stChatMessage {
-                max-width: 90% !important;
+                padding: 1rem 1.5rem !important;
+                border-radius: 10px !important;
+                border: 1px solid #E2E8F0 !important;
             }
             
-            div.stChatMessage [data-testid="chatAvatarIcon-user"],
-            div.stChatMessage [data-testid="chatAvatarIcon-assistant"] {
-                padding: 0 !important;
+            /* Assistant messages */
+            div.stChatMessage[data-testid="chat-message-assistant"] {
+                background-color: #FFFFFF !important;
+                color: #2D3748 !important;
+                box-shadow: 0 2px 4px rgba(44, 72, 117, 0.1) !important;
             }
             
-            div.stChatMessage [data-testid="StMarkdownContainer"] {
-                margin-left: 0.5rem !important;
-                margin-right: 0.5rem !important;
+            /* User messages */
+            div.stChatMessage[data-testid="chat-message-user"] {
+                background-color: #2C4875 !important;
+                color: #FFFFFF !important;
             }
-        }
-    </style>
+        </style>
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":

@@ -3,10 +3,10 @@ from utils.common import initialize_session_state, display_state_selector, trans
 
 # Set page config
 st.set_page_config(
-    page_title="Compare & Choose - RightScheme AI",
+    page_title="Compare Schemes - RightScheme AI",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # Add after the page config
@@ -148,6 +148,7 @@ st.markdown("""
 
 def main():
     initialize_session_state()
+    display_state_selector()
     
     st.markdown('<h1 style="color: #2C4875;">📊 Compare Schemes</h1>', unsafe_allow_html=True)
     st.markdown('<p style="color: #2D3748; font-size: 1.1rem;">Compare different government schemes side by side to make informed decisions.</p>', unsafe_allow_html=True)

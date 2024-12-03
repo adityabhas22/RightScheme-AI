@@ -1,16 +1,16 @@
 import streamlit as st
 from typing import Dict, List
-from utils.common import initialize_session_state, display_state_selector, translate_text
+from utils.common import initialize_session_state, display_state_selector, translate_text, check_state_selection, get_greeting_message
 from Python_Files.scheme_agent import process_query, create_scheme_agent
 from Python_Files.scheme_matcher import SchemeCategory, SchemeMatch, SchemeMatcher, UserProfile
 from Python_Files.translation_utils import translate_text, translate_to_english
 from utils.logging_utils import logger
 
 st.set_page_config(
-    page_title="Perfect Match - RightScheme AI",
+    page_title="Find Right Scheme - RightScheme AI",
     page_icon="🎯",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # Add after the page config
@@ -74,7 +74,7 @@ st.markdown("""
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin: 1rem 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(44, 72, 117, 0.1);
         }
         
         /* Radio button styling */
@@ -346,6 +346,24 @@ def display_scheme_results(grouped_schemes: Dict[SchemeCategory, Dict[str, List[
 def main():
     initialize_session_state()
     
+    # Display state selector once and store result
+    selected_state = display_state_selector()
+    
+    # Add reset button to sidebar
+    with st.sidebar:
+        if st.button(translate_text("Start New Search")):
+            # Only clear Find Schemes state
+            st.session_state.find_schemes = {
+                "chat_history": [],
+                "scheme_agent": create_scheme_agent(),
+                "is_first_message": True,
+                "current_question": 0,
+                "user_responses": {},
+                "questionnaire_completed": False
+            }
+            st.rerun()
+    
+    # Title and description first
     st.markdown("""
         <div style="display: flex; align-items: center; gap: 10px; pointer-events: none;">
             <div style="pointer-events: none;">
@@ -360,23 +378,11 @@ def main():
     """, unsafe_allow_html=True)
     st.write(translate_text("Answer a few questions to discover the perfect schemes for you."))
     
-    # State selection in sidebar
-    selected_state = display_state_selector()
-    
-    with st.sidebar:
-        if st.button(translate_text("Start New Search")):
-            # Only clear Find Schemes state
-            st.session_state.find_schemes = {
-                "chat_history": [],
-                "scheme_agent": create_scheme_agent(),  # Initialize with the agent
-                "is_first_message": True,
-                "current_question": 0,
-                "user_responses": {},
-                "questionnaire_completed": False
-            }
-            st.rerun()
-    
-    # Rest of the code remains same but use st.session_state.find_schemes instead
+    # Check state selection before proceeding
+    if not check_state_selection():
+        return
+        
+    # Rest of the questionnaire code...
     if not st.session_state.find_schemes["questionnaire_completed"]:
         questions = get_questions()
         

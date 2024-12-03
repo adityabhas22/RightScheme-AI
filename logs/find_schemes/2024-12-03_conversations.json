@@ -60,5 +60,25 @@
       "english_query": "I'm from Karnataka",
       "contextualized_query": "For someone in None: I'm from Karnataka"
     }
+  },
+  {
+    "conversation_id": "3472a2b9-9965-45bc-9362-aa78d7dce52d",
+    "timestamp": "2024-12-03T20:29:29.877173",
+    "type": "find_schemes",
+    "user_query": "I am a 22 year old male from Karnataka, belonging to General category. My annual household income is Rs. 0 and I am student by occupation. My education level is Below 10th. Please suggest government schemes that I am eligible for.",
+    "response": "Based on your circumstances, here are some government schemes in Karnataka that may be helpful for you:\n\n### 1. **Post-Matric Scholarships for Backward Classes**\n📋 **Scheme Overview:**\nThis scheme provides financial assistance to students from backward classes who are pursuing post-matric courses. \n\n💰 **Key Benefits:**\n- Monthly stipend of ₹1,500 for 10 months (totaling ₹15,000 per annum).\n- Financial assistance for food and accommodation expenses.\n- Direct crediting of funds to the student's bank account.\n\n🎯 **Eligibility:**\n- Must be a citizen of India and a permanent resident of Karnataka.\n- Must belong to backward classes listed by the Government.\n- Must not have secured admission in any departmental or government-funded student hostel and should be studying in post-matric courses.\n\n### 2. **Free Bus Pass Scheme**\n📋 **Scheme Overview:**\nThis scheme provides free bus passes to students in Karnataka, helping to mitigate transportation costs.\n\n💰 **Key Benefits:**\n- Free bus passes for students, enabling them to travel without any expenses.\n\n🎯 **Eligibility:**\n- All students enrolled in government schools and colleges are eligible.\n\n### 3. **Karnataka Arogya Scheme**\n📋 **Scheme Overview:**\nThis health scheme ensures primary, secondary, and tertiary healthcare facilities for all citizens.\n\n💰 **Key Benefits:**\n- Access to healthcare services without financial burden.\n\n🎯 **Eligibility:**\n- All citizens of Karnataka can avail this scheme.\n\nSince you mentioned that you are currently a student below the 10th grade, the Post-Matric Scholarships may not directly apply to you unless you plan to continue your education. However, the Free Bus Pass Scheme can be useful for your daily commuting needs.\n\nIf you need more details about applying for these schemes or have other questions, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "age": 22,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 0,
+        "occupation": "Student",
+        "education_level": "Below 10th"
+      },
+      "interaction_type": "initial_questionnaire"
+    }
   }
 ]
