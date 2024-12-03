@@ -1,0 +1,290 @@
+[
+  {
+    "conversation_id": "91dc7818-b711-4fe7-b100-49fcc576ccd7",
+    "timestamp": "2024-12-03T16:26:48.140018",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "I apologize, but I encountered an error: Cannot hash argument 'agent' (of type `langchain.agents.agent.AgentExecutor`) in 'get_conversation_summary'.\n\nTo address this, you can tell Streamlit not to hash this argument by adding a\nleading underscore to the argument's name in the function signature:\n\n```\n@st.cache_data\ndef get_conversation_summary(_agent, ...):\n    ...\n```\n            ",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "5b92f39c-069b-4a06-94a8-29dfcce65a36",
+    "timestamp": "2024-12-03T16:27:42.687973",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "I apologize, but I encountered an error: Cannot hash argument 'agent' (of type `langchain.agents.agent.AgentExecutor`) in 'get_conversation_summary'.\n\nTo address this, you can tell Streamlit not to hash this argument by adding a\nleading underscore to the argument's name in the function signature:\n\n```\n@st.cache_data\ndef get_conversation_summary(_agent, ...):\n    ...\n```\n            ",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "01470795-604d-4116-bc2b-9c9c4ed4a971",
+    "timestamp": "2024-12-03T16:29:33.309277",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! It's great to hear from you! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "e672631a-f3fa-4de4-a47c-f7dd85d02ce8",
+    "timestamp": "2024-12-03T16:29:49.572091",
+    "type": "semantic_search",
+    "user_query": "Schemes for rural students",
+    "response": "Hello! It's great to hear from you! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Schemes for rural students"
+    }
+  },
+  {
+    "conversation_id": "19bf85b3-c8ba-4c02-a803-0686d6c504f1",
+    "timestamp": "2024-12-03T17:25:42.013747",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "882b898a-cffd-4e3b-ba8f-12e532804593",
+    "timestamp": "2024-12-03T17:29:52.377807",
+    "type": "semantic_search",
+    "user_query": "HI",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: HI"
+    }
+  },
+  {
+    "conversation_id": "d1e6556e-72c3-4fbf-ab6a-08b31733c45c",
+    "timestamp": "2024-12-03T18:50:34.156702",
+    "type": "semantic_search",
+    "user_query": "What state am I from?",
+    "response": "I apologize, but I am specifically designed to help with Indian government schemes and welfare programs. I cannot assist with identifying your state. However, I'd be happy to help you learn about government schemes that might be relevant to your needs! If you let me know your state, I can provide more specific information.",
+    "metadata": {
+      "state": "Select State",
+      "language": "en",
+      "contextualized_query": "For someone in Select State: What state am I from?"
+    }
+  },
+  {
+    "conversation_id": "e5966da2-ed2c-4b21-9755-71bf47fe0248",
+    "timestamp": "2024-12-03T18:50:50.335630",
+    "type": "semantic_search",
+    "user_query": "So you don't know which state I'm from?",
+    "response": "That's correct! I'm specifically designed to assist with information about Indian government schemes and welfare programs, but I don't have the ability to identify your state. However, if you let me know which state you're from, I can provide you with relevant government schemes that may be available to you. How can I help you today?",
+    "metadata": {
+      "state": "Select State",
+      "language": "en",
+      "contextualized_query": "For someone in Select State: So you don't know which state I'm from?"
+    }
+  },
+  {
+    "conversation_id": "49f998e3-a313-4720-a8a1-c4cc3bf53651",
+    "timestamp": "2024-12-03T18:52:21.853428",
+    "type": "semantic_search",
+    "user_query": "Schemes for rural women",
+    "response": "Sure! There are several government schemes aimed at supporting rural women across India. Here’s an overview of some important schemes:\n\n📋 SCHEME OVERVIEW:\n1. **Deen Dayal Antyodaya Yojana – National Rural Livelihoods Mission (DAY-NRLM)**: This scheme aims to reduce poverty by promoting self-employment and organization of rural poor into Self-Help Groups (SHGs).\n\n💰 KEY BENEFITS:\n- Provides skill training and capacity building.\n- Offers financial assistance through SHGs.\n- Promotes sustainable livelihoods.\n\n🎯 ELIGIBILITY:\n- Rural women aged 18 and above.\n- Must belong to Below Poverty Line (BPL) households.\n\n2. **Mahila Kisan Sashaktikaran Pariyojana (MKSP)**: This scheme focuses on empowering women in agriculture and enhancing their productivity.\n\n💰 KEY BENEFITS:\n- Provides training in sustainable agricultural practices.\n- Offers credit support for agricultural activities.\n\n🎯 ELIGIBILITY:\n- Women farmers in rural areas.\n\n3. **Beti Bachao Beti Padhao**: Aimed at promoting the education and welfare of the girl child, this scheme also indirectly supports women by addressing gender discrimination.\n\n💰 KEY BENEFITS:\n- Financial assistance for education.\n- Awareness programs on the importance of education for girls.\n\n🎯 ELIGIBILITY:\n- Families with girl children, primarily in rural areas.\n\nIf you have a specific state in mind, I can provide more detailed information on the schemes available there. Would you like to know about any specific state or scheme?",
+    "metadata": {
+      "state": "Select your state",
+      "language": "en",
+      "contextualized_query": "For someone in Select your state: Schemes for rural women"
+    }
+  },
+  {
+    "conversation_id": "75e52721-c62c-47c5-b2dc-c5172cabff96",
+    "timestamp": "2024-12-03T19:13:01.995960",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about Indian government schemes or welfare programs, feel free to ask!",
+    "metadata": {
+      "state": "Select your state",
+      "language": "en",
+      "contextualized_query": "For someone in Select your state: Hi"
+    }
+  },
+  {
+    "conversation_id": "f2ed8ba6-fb82-4895-9ee6-c033ca776adb",
+    "timestamp": "2024-12-03T19:20:01.635047",
+    "type": "semantic_search",
+    "user_query": "what state am I from>",
+    "response": "I apologize, but I am specifically designed to help with Indian government schemes and welfare programs. I cannot assist with your location or state selection. However, I'd be happy to help you learn about government schemes that might be relevant to your needs based on your state. Could you please mention which state you are in?",
+    "metadata": {
+      "state": "Select your state",
+      "language": "en",
+      "contextualized_query": "For someone in Select your state: what state am I from>"
+    }
+  },
+  {
+    "conversation_id": "c6ee4ad8-43ed-4468-b8b0-209eb162dfe2",
+    "timestamp": "2024-12-03T20:31:39.305096",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes or programs in Karnataka, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "547c14aa-baec-4f9c-a8ee-590025394d9e",
+    "timestamp": "2024-12-03T20:31:48.424622",
+    "type": "semantic_search",
+    "user_query": "Whats up?",
+    "response": "Hello! I'm here to help you with any questions you have about government schemes or programs in Karnataka. How can I assist you today?",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Whats up?"
+    }
+  },
+  {
+    "conversation_id": "0c55b5c8-bf2e-437a-8946-027b56772b4a",
+    "timestamp": "2024-12-03T20:32:26.822091",
+    "type": "semantic_search",
+    "user_query": "hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes or programs in Karnataka, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: hi"
+    }
+  },
+  {
+    "conversation_id": "ab98aa02-7027-4b9d-a864-75afc085575d",
+    "timestamp": "2024-12-03T20:35:15.671450",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "89547e81-6e58-44fb-85ff-d895082e1519",
+    "timestamp": "2024-12-03T20:36:56.331634",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Haryana or anything else related, feel free to ask!",
+    "metadata": {
+      "state": "Haryana",
+      "language": "en",
+      "contextualized_query": "For someone in Haryana: Hi"
+    }
+  },
+  {
+    "conversation_id": "81852a7c-92cb-4232-83a6-1f83a93a6f43",
+    "timestamp": "2024-12-03T20:37:59.513135",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Maharashtra or need information on welfare programs, feel free to ask!",
+    "metadata": {
+      "state": "Maharashtra",
+      "language": "en",
+      "contextualized_query": "For someone in Maharashtra: Hi"
+    }
+  },
+  {
+    "conversation_id": "89e7bf12-bc9a-4353-b1ca-c63d0f81fb92",
+    "timestamp": "2024-12-03T20:38:05.893273",
+    "type": "semantic_search",
+    "user_query": "What's up?",
+    "response": "Hello! I'm here to help you with any questions you might have about government schemes and welfare programs in Maharashtra. How can I assist you today? 😊",
+    "metadata": {
+      "state": "Maharashtra",
+      "language": "en",
+      "contextualized_query": "For someone in Maharashtra: What's up?"
+    }
+  },
+  {
+    "conversation_id": "2dfa521a-1b4b-4fba-9138-5cd38950de81",
+    "timestamp": "2024-12-03T20:39:22.354763",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? Are you looking for information about government schemes in Karnataka, or is there something else on your mind?",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "08b66865-d8f9-49e1-86a4-fbce6c845bfa",
+    "timestamp": "2024-12-03T20:39:40.282980",
+    "type": "semantic_search",
+    "user_query": "Can you suggest schemes for students looking to get a job?",
+    "response": "Absolutely! There are several government schemes in Karnataka designed to help students with job placement and skill development. Here are a couple of notable ones:\n\n📋 **Karnataka Skill Development Corporation (KSDC) Programs**:\nThese programs aim to enhance the employability of students through skill training.\n\n💰 **KEY BENEFITS**:\n• Free skill development training\n• Placement assistance after training\n• Development of industry-relevant skills\n\n🎯 **ELIGIBILITY**:\n• Students aged 15 years and above\n• No specific educational qualifications are required, but some programs may have prerequisites based on the skill set being taught.\n\n📋 **Sakala Scheme**:\nThis scheme provides a single-window clearance for various government services, including employment services.\n\n💰 **KEY BENEFITS**:\n• Simplified access to multiple government services\n• Time-bound services\n\n🎯 **ELIGIBILITY**:\n• Any resident of Karnataka seeking government services.\n\nIf you're interested in more details about the application processes or specific programs, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Can you suggest schemes for students looking to get a job?"
+    }
+  },
+  {
+    "conversation_id": "fe14e354-dd0c-4392-bfba-73993410907c",
+    "timestamp": "2024-12-03T20:42:14.347860",
+    "type": "semantic_search",
+    "user_query": "Schemes for students looking for a job",
+    "response": "In Karnataka, there are several government schemes designed to help students looking for jobs. Here are a few notable ones:\n\n📋 **SCHEME OVERVIEW:**\n1. **Karnataka Skill Development Corporation (KSDC)**: This scheme provides skill development training to enhance employability among the youth.\n\n💰 **KEY BENEFITS:**\n- Training in various skills relevant to the job market.\n- Support for placements in industries.\n- Financial assistance for certain training programs.\n\n🎯 **ELIGIBILITY:**\n- Open to students who have completed their education.\n- Must be a resident of Karnataka.\n\n---\n\n2. **Mukhyamantri Yuva Shakti Yojane**: This scheme aims to empower the youth by providing support for self-employment and entrepreneurship.\n\n💰 **KEY BENEFITS:**\n- Financial assistance for starting a business.\n- Skill development programs.\n- Guidance and mentorship for young entrepreneurs.\n\n🎯 **ELIGIBILITY:**\n- Youth aged 18 to 35 years.\n- Must be a resident of Karnataka.\n\n---\n\nIf you would like more detailed information about the application process, required documents, or any specific scheme, please let me know!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Schemes for students looking for a job"
+    }
+  },
+  {
+    "conversation_id": "c8c4f139-0676-4493-8fb2-fa666c16bc83",
+    "timestamp": "2024-12-03T20:42:44.663791",
+    "type": "semantic_search",
+    "user_query": "What are the requirements for the KSDC",
+    "response": "Here are the eligibility requirements for the Karnataka Skill Development Corporation (KSDC):\n\n🎯 **ELIGIBILITY:**\n- **Age Limit:** Applicants should be between 18 and 55 years old.\n- **Residency:** Must be a permanent resident of Karnataka.\n- **Community:** Applicants should belong to a religious minority community in the state.\n- **Income Limit:** Family income from all sources should not exceed ₹3.50 lakh per annum.\n- **Previous Benefits:** The applicant or their family members should not have availed benefits under any other scheme of KMDCL in the last 5 years (excluding the Arivu Scheme).\n- **Employment Status:** No member of the applicant's family should be an employee of the State/Central Government or Government Public Sector Units.\n- **Loan Status:** The applicant should not be a loan defaulter in KMDC.\n\nIf you need more information about the application process or required documents, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: What are the requirements for the KSDC"
+    }
+  },
+  {
+    "conversation_id": "b7e8ffdd-5c6c-4c85-af47-4327fc63ae72",
+    "timestamp": "2024-12-03T20:44:19.827190",
+    "type": "semantic_search",
+    "user_query": "Schemes for BPL families",
+    "response": "Here are some government schemes for Below Poverty Line (BPL) families in Karnataka:\n\n1. **Housing Scheme for BPL Families**\n   📋 **Overview**: The Karnataka government is introducing a housing scheme aimed at providing homes for BPL families. Each house will be around 300 square feet, with a single bedroom.\n   💰 **Key Benefits**:\n   - Houses will be provided to eligible families.\n   - Affordable long-term housing loans will be available.\n   🎯 **Eligibility**:\n   - Must belong to the BPL category.\n   - Domicile in the city for at least five years.\n   - Aadhaar number required for registration.\n\n2. **Indira Vastra Bhagya Scheme**\n   📋 **Overview**: This scheme provides free sarees and panches to BPL families.\n   💰 **Key Benefits**:\n   - Men will receive a set of panche and shirt piece; women will receive sarees and blouse pieces.\n   - Benefit for around 1.10 crore BPL families with a budget of ₹550 crore.\n   🎯 **Eligibility**:\n   - Households must fall under the BPL category.\n\n3. **Gas Bhagya Scheme**\n   📋 **Overview**: This scheme aims to provide free LPG connections to women from BPL households.\n   💰 **Key Benefits**:\n   - Cooking stove and domestic LPG connection provided to eligible women.\n   - Targets around 1 crore BPL families currently using firewood or other traditional cooking methods.\n   🎯 **Eligibility**:\n   - Must be a woman member of a BPL family.\n\n4. **Mathrushree Scheme**\n   📋 **Overview**: A maternity benefit scheme offering ₹6,000 to pregnant women from BPL families.\n   💰 **Key Benefits**:\n   - Amount given in six installments (₹1,000 per month for six months).\n   - Direct transfer to Aadhaar-linked bank accounts.\n   🎯 **Eligibility**:\n   - Applicable for the first two deliveries of pregnant women from BPL families.\n\nThese schemes aim to uplift the living standards of BPL families in Karnataka. If you need more details about any specific scheme, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "hi",
+      "contextualized_query": "For someone in Karnataka: Schemes for BPL families"
+    }
+  },
+  {
+    "conversation_id": "a8913ecb-fa29-49d0-8759-57d027c5187b",
+    "timestamp": "2024-12-03T20:49:22.110309",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  }
+]

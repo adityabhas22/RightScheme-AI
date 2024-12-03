@@ -1,6 +1,6 @@
 import streamlit as st
 from typing import Dict, List
-from utils.common import initialize_session_state, display_state_selector, translate_text
+from utils.common import initialize_session_state, display_state_selector, translate_text, check_state_selection, get_greeting_message
 from Python_Files.scheme_agent import process_query, create_scheme_agent
 from Python_Files.scheme_matcher import SchemeCategory, SchemeMatch, SchemeMatcher, UserProfile
 from Python_Files.translation_utils import translate_text, translate_to_english
@@ -9,8 +9,133 @@ from utils.logging_utils import logger
 st.set_page_config(
     page_title="Find Right Scheme - RightScheme AI",
     page_icon="🎯",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+
+# Add after the page config
+st.markdown("""
+    <style>
+        /* Prevent link styling on hover */
+        div[data-testid="stMarkdown"] div {
+            pointer-events: none !important;
+        }
+        
+        /* Only allow pointer events on actual buttons/links */
+        a, .card-button, button {
+            pointer-events: auto !important;
+        }
+        
+        /* Global styles */
+        [data-testid="stAppViewContainer"] {
+            background-color: #F8FAFC;
+        }
+        
+        /* Sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+        }
+        
+        [data-testid="stSidebar"] h1 {
+            color: #000000 !important;
+            font-size: 1.5rem !important;
+            font-weight: 600 !important;
+            padding: 1rem 0 0.5rem 0 !important;
+        }
+        
+        [data-testid="stSidebar"] .stSelectbox label {
+            color: #000000 !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+        }
+        
+        [data-testid="stSidebar"] .stSelectbox > div > div {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 0.5rem !important;
+            color: #000000 !important;
+        }
+        
+        /* Main content styling */
+        .main-content {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E2E8F0;
+        }
+        
+        /* Question card styling */
+        .question-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(44, 72, 117, 0.1);
+        }
+        
+        /* Radio button styling */
+        .stRadio > div {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            transition: all 0.2s ease;
+        }
+        
+        .stRadio > div:hover {
+            border-color: #5785D9;
+            background-color: rgba(87, 133, 217, 0.05);
+        }
+        
+        /* Progress bar styling */
+        .stProgress > div > div {
+            background-color: #5785D9 !important;
+        }
+        
+        /* Button styling */
+        .stButton button {
+            background-color: #2C4875 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            border-radius: 0.5rem !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .stButton button:hover {
+            background-color: #5785D9 !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Headers and text */
+        h1, h2, h3 {
+            color: #2C4875 !important;
+            font-weight: 600 !important;
+        }
+        
+        
+        
+        /* Info messages */
+        .stAlert {
+            background-color: rgba(143, 184, 237, 0.1) !important;
+            border: 1px solid #8FB8ED !important;
+            color: #2C4875 !important;
+            border-radius: 0.5rem !important;
+            padding: 1rem !important;
+        }
+        
+        /* Loading animation */
+        .stSpinner > div {
+            border-top-color: #5785D9 !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Initialize all required session state variables at the start
 if "find_schemes" not in st.session_state:
@@ -219,20 +344,19 @@ def display_scheme_results(grouped_schemes: Dict[SchemeCategory, Dict[str, List[
                             st.markdown("<br>", unsafe_allow_html=True)
 
 def main():
+    # Set current page for unique widget keys
+    st.session_state['current_page'] = 'find_schemes'
+    
     initialize_session_state()
+    display_state_selector()
     
-    st.title(translate_text("🎯 Find Right Scheme"))
-    st.write(translate_text("Answer a few questions to discover the perfect schemes for you."))
-    
-    # State selection in sidebar
-    selected_state = display_state_selector()
-    
+    # Add reset button to sidebar
     with st.sidebar:
         if st.button(translate_text("Start New Search")):
             # Only clear Find Schemes state
             st.session_state.find_schemes = {
                 "chat_history": [],
-                "scheme_agent": create_scheme_agent(),  # Initialize with the agent
+                "scheme_agent": create_scheme_agent(),
                 "is_first_message": True,
                 "current_question": 0,
                 "user_responses": {},
@@ -240,7 +364,26 @@ def main():
             }
             st.rerun()
     
-    # Rest of the code remains same but use st.session_state.find_schemes instead
+    # Title and description first
+    st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; pointer-events: none;">
+            <div style="pointer-events: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2C4875" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <h1 style="margin: 0; color: #2C4875; line-height: 32px;">""" + translate_text("Find Right Scheme") + """</h1>
+        </div>
+    """, unsafe_allow_html=True)
+    st.write(translate_text("Answer a few questions to discover the perfect schemes for you."))
+    
+    # Check state selection before proceeding
+    if not check_state_selection():
+        return
+        
+    # Rest of the questionnaire code...
     if not st.session_state.find_schemes["questionnaire_completed"]:
         questions = get_questions()
         
