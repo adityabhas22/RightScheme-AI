@@ -12,6 +12,16 @@ st.set_page_config(
 # Add after the page config
 st.markdown("""
     <style>
+        /* Prevent link styling on hover */
+        div[data-testid="stMarkdown"] div {
+            pointer-events: none !important;
+        }
+        
+        /* Only allow pointer events on actual buttons/links */
+        a, .card-button, button {
+            pointer-events: auto !important;
+        }
+        
         /* Global styles */
         [data-testid="stAppViewContainer"] {
             background-color: #F8FAFC;
@@ -108,9 +118,7 @@ st.markdown("""
             font-weight: 600 !important;
         }
         
-        p {
-            color: #2D3748 !important;
-        }
+        
         
         /* Info messages */
         .stAlert {

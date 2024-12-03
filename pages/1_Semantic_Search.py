@@ -168,9 +168,7 @@ st.markdown("""
             font-weight: 600 !important;
         }
         
-        p {
-            color: #2D3748 !important;
-        }
+        
         
         /* Info messages */
         .stAlert {
@@ -178,6 +176,16 @@ st.markdown("""
             border: 1px solid #8FB8ED !important;
             color: #2C4875 !important;
             border-radius: 0.5rem !important;
+        }
+        
+        /* Prevent link styling on hover */
+        div[data-testid="stMarkdown"] div {
+            pointer-events: none !important;
+        }
+        
+        /* Only allow pointer events on actual buttons/links */
+        a, .card-button, button {
+            pointer-events: auto !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -228,8 +236,37 @@ def display_thinking_animation():
 
 def main():
     initialize_session_state()
-    
-    st.title(translate_text("🔍 Semantic Search"))
+    # Add semantic search icon styling
+    st.markdown("""
+        <style>
+            .semantic-search-icon {
+                width: 48px;
+                height: 48px;
+                margin: 0;
+                display: inline-block;
+                stroke: #2C4875;
+                vertical-align: middle;
+                margin-right: 1rem;
+            }
+            .title-container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+            .title-container h1 {
+                display: inline;
+                margin: 0;
+            }
+        </style>
+        
+        <div class="title-container">
+            <svg class="semantic-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <h1>""" + translate_text("Semantic Search") + """</h1>
+        </div>
+    """, unsafe_allow_html=True)
     st.write(translate_text("Ask me anything about Indian Government Schemes!"))
     
     # State selection in sidebar

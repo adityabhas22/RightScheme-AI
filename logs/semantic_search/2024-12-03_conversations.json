@@ -70,5 +70,53 @@
       "language": "en",
       "contextualized_query": "For someone in Karnataka: HI"
     }
+  },
+  {
+    "conversation_id": "d1e6556e-72c3-4fbf-ab6a-08b31733c45c",
+    "timestamp": "2024-12-03T18:50:34.156702",
+    "type": "semantic_search",
+    "user_query": "What state am I from?",
+    "response": "I apologize, but I am specifically designed to help with Indian government schemes and welfare programs. I cannot assist with identifying your state. However, I'd be happy to help you learn about government schemes that might be relevant to your needs! If you let me know your state, I can provide more specific information.",
+    "metadata": {
+      "state": "Select State",
+      "language": "en",
+      "contextualized_query": "For someone in Select State: What state am I from?"
+    }
+  },
+  {
+    "conversation_id": "e5966da2-ed2c-4b21-9755-71bf47fe0248",
+    "timestamp": "2024-12-03T18:50:50.335630",
+    "type": "semantic_search",
+    "user_query": "So you don't know which state I'm from?",
+    "response": "That's correct! I'm specifically designed to assist with information about Indian government schemes and welfare programs, but I don't have the ability to identify your state. However, if you let me know which state you're from, I can provide you with relevant government schemes that may be available to you. How can I help you today?",
+    "metadata": {
+      "state": "Select State",
+      "language": "en",
+      "contextualized_query": "For someone in Select State: So you don't know which state I'm from?"
+    }
+  },
+  {
+    "conversation_id": "49f998e3-a313-4720-a8a1-c4cc3bf53651",
+    "timestamp": "2024-12-03T18:52:21.853428",
+    "type": "semantic_search",
+    "user_query": "Schemes for rural women",
+    "response": "Sure! There are several government schemes aimed at supporting rural women across India. Here’s an overview of some important schemes:\n\n📋 SCHEME OVERVIEW:\n1. **Deen Dayal Antyodaya Yojana – National Rural Livelihoods Mission (DAY-NRLM)**: This scheme aims to reduce poverty by promoting self-employment and organization of rural poor into Self-Help Groups (SHGs).\n\n💰 KEY BENEFITS:\n- Provides skill training and capacity building.\n- Offers financial assistance through SHGs.\n- Promotes sustainable livelihoods.\n\n🎯 ELIGIBILITY:\n- Rural women aged 18 and above.\n- Must belong to Below Poverty Line (BPL) households.\n\n2. **Mahila Kisan Sashaktikaran Pariyojana (MKSP)**: This scheme focuses on empowering women in agriculture and enhancing their productivity.\n\n💰 KEY BENEFITS:\n- Provides training in sustainable agricultural practices.\n- Offers credit support for agricultural activities.\n\n🎯 ELIGIBILITY:\n- Women farmers in rural areas.\n\n3. **Beti Bachao Beti Padhao**: Aimed at promoting the education and welfare of the girl child, this scheme also indirectly supports women by addressing gender discrimination.\n\n💰 KEY BENEFITS:\n- Financial assistance for education.\n- Awareness programs on the importance of education for girls.\n\n🎯 ELIGIBILITY:\n- Families with girl children, primarily in rural areas.\n\nIf you have a specific state in mind, I can provide more detailed information on the schemes available there. Would you like to know about any specific state or scheme?",
+    "metadata": {
+      "state": "Select your state",
+      "language": "en",
+      "contextualized_query": "For someone in Select your state: Schemes for rural women"
+    }
+  },
+  {
+    "conversation_id": "75e52721-c62c-47c5-b2dc-c5172cabff96",
+    "timestamp": "2024-12-03T19:13:01.995960",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about Indian government schemes or welfare programs, feel free to ask!",
+    "metadata": {
+      "state": "Select your state",
+      "language": "en",
+      "contextualized_query": "For someone in Select your state: Hi"
+    }
   }
 ]

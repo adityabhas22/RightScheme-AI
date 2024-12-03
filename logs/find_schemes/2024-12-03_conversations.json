@@ -18,5 +18,47 @@
       },
       "interaction_type": "initial_questionnaire"
     }
+  },
+  {
+    "conversation_id": "f81d33b8-922b-4b5b-8e21-d8aafdb98182",
+    "timestamp": "2024-12-03T18:46:54.174534",
+    "type": "find_schemes",
+    "user_query": "I am a 25 year old male from None, belonging to General category. My annual household income is Rs. 0 and I am student by occupation. My education level is Below 10th. Please suggest government schemes that I am eligible for.",
+    "response": "Based on your details, here are some government schemes that might be relevant for you:\n\n### 📚 Free Education Scheme\nThis scheme aims to provide free education for children from economically backward classes, allowing them to build a better future. \n\n💰 **Key Benefits:**\n- Free education until Class 12th\n- Accessible training for good job placements in both private and government sectors\n\n🎯 **Eligibility:**\n- Students belonging to economically backward classes\n- General category students can also apply\n\n---\n\n### 🎓 Bihar Mukhyamantri Civil Service Protsahan Yojana\nAlthough this scheme is primarily for students after Class 12, it highlights the support for students in lower income brackets.\n\n💰 **Key Benefits:**\n- One-time grant of Rs. 50,000 for SC/ST candidates clearing BPSC prelims\n- Rs. 1 lakh for UPSC prelims\n- Assistance for those living in hostels for SC/ST students\n\n🎯 **Eligibility:**\n- Primarily for SC/ST students, but highlights support for lower-income families.\n\n---\n\n### 🎒 Assam Fee Waiver Scheme\nThis scheme allows students to potentially receive free admission based on their family's income.\n\n💰 **Key Benefits:**\n- Free admission for students whose family income is below Rs. 2 lakh per annum\n\n🎯 **Eligibility:**\n- Students whose family income is less than Rs. 2 lakh\n- General category students may also apply depending on discretion\n\n---\n\n### 🏫 Delhi Free Coaching Scheme\nWhile primarily for students preparing for competitive exams, this scheme can provide financial support for coaching.\n\n💰 **Key Benefits:**\n- Financial support for coaching centers\n- Aims at improving performance in competitive exams\n\n🎯 **Eligibility:**\n- Must belong to SC/ST/OBC/General (EWS) category\n- Family income less than Rs. 8 lakh\n\n---\n\nI recommend checking with local government offices or their websites for more detailed eligibility requirements and application procedures. If you need assistance with a specific scheme, feel free to ask!",
+    "metadata": {
+      "state": null,
+      "language": "en",
+      "user_profile": {
+        "age": 25,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 0,
+        "occupation": "Student",
+        "education_level": "Below 10th"
+      },
+      "interaction_type": "initial_questionnaire"
+    }
+  },
+  {
+    "conversation_id": "5abdede7-0ee2-4f2d-962e-f52e84668d51",
+    "timestamp": "2024-12-03T18:47:17.832931",
+    "type": "find_schemes",
+    "user_query": "I'm from Karnataka",
+    "response": "That's great to know you are from Karnataka! Karnataka has several government schemes aimed at supporting students and individuals in need. Since you're a student, here are a few schemes you might find helpful:\n\n📋 **Karnataka Free Education Scheme**\nThis scheme aims to provide free education to students from economically weaker sections.\n\n💰 **Key Benefits:**\n• Free education in government schools\n• Scholarships for higher education\n\n🎯 **Eligibility:**\n• Students from economically backward families\n• Must be enrolled in a recognized institution\n\n📋 **Karnataka Mukhyamantri Vidyashree Scheme**\nThis scheme offers financial assistance for students pursuing higher education.\n\n💰 **Key Benefits:**\n• Financial support for educational expenses\n\n🎯 **Eligibility:**\n• Students from families with low income\n• Must be pursuing higher education\n\nWould you like more information about a specific scheme, such as the application process or required documents?",
+    "metadata": {
+      "state": null,
+      "language": "en",
+      "user_profile": {
+        "age": 25,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 0,
+        "occupation": "Student",
+        "education_level": "Below 10th"
+      },
+      "interaction_type": "follow_up",
+      "english_query": "I'm from Karnataka",
+      "contextualized_query": "For someone in None: I'm from Karnataka"
+    }
   }
 ]

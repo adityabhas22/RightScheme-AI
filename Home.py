@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import base64
-from utils.common import initialize_session_state, display_state_selector, translate_text
+from utils.common import initialize_session_state, display_state_selector, translate_text, INDIAN_STATES
 
 def main():
     st.set_page_config(
@@ -51,6 +51,17 @@ def main():
     # Custom CSS
     st.markdown("""
     <style>
+        /* Prevent link styling on hover */
+        div[data-testid="stMarkdown"] * {
+            text-decoration: none !important;
+            cursor: default !important;
+        }
+        
+        /* Only allow link styling on actual buttons/links */
+        a, .card-button {
+            cursor: pointer !important;
+        }
+        
         /* Main heading styles */
         .main-heading {
             color: #2C4875;
@@ -300,42 +311,160 @@ def main():
             border: 1px solid #E2E8F0;
             border-radius: 0.5rem;
         }
+        
+        /* Title container styles */
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-top: 32px;
+        }
+        
+        /* Gradient text effect */
+        .title-container h1 {
+            font-size: 48px;
+            margin: 0;
+            background: linear-gradient(90deg, #2C4875 0%, #5785D9 50%, #8FB8ED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        /* Container styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            text-align: center;
+        }
+        
+        /* Mission text styles */
+        .mission-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #2D3748;
+            margin: 1.5rem auto;
+            max-width: 800px;
+        }
+        
+        /* Highlight text */
+        .highlight {
+            color: #5785D9;
+            font-weight: 600;
+        }
     </style>
     """, unsafe_allow_html=True)
 
-    # Hero Section HTML
+    # Custom CSS for the hero section
     st.markdown("""
-    <div class="container">
-        <svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="#2C4875" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .flag-icon {
+            width: 48px;
+            height: 48px;
+            stroke: #2C4875;
+        }
+        
+        .site-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(90deg, #2C4875 0%, #5785D9 50%, #8FB8ED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .mission-text {
+            font-size: 24px;
+            line-height: 1.5;
+            color: #2D3748;
+            margin: 0 auto 24px;
+            max-width: 900px;
+        }
+        
+        .highlight {
+            color: #2C4875 !important;
+            font-weight: 800;
+            font-size: 110%;
+            text-shadow: 0 1px 2px rgba(44, 72, 117, 0.1);
+            padding: 0 4px;
+        }
+        
+        .state-prompt {
+            font-size: 16px;
+            color: #4A5568;
+            font-style: italic;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Title and Icon
+    st.markdown("""
+    <div style="display: flex; align-items: center; justify-content: center; padding: 40px 0;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2C4875" stroke-width="2" style="margin-right: 16px;">
             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
             <line x1="4" y1="22" x2="4" y2="15"></line>
         </svg>
-        <h1 class="main-title">RightScheme AI</h1>
-        <div class="mission-text">
-            Empowering citizens with <span class="highlight">intelligent access</span> to government welfare schemes.<br>
-            We're bridging the gap between people and policies, making welfare schemes 
-            <span class="highlight">accessible to everyone</span>.
-        </div>
-        <p class="state-prompt">
-            Select your state to discover schemes available in your region
-        </p>
+        <div style="
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2C4875 0%, #5785D9 50%, #8FB8ED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        ">RightScheme AI</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Mission Text
+    st.markdown("""
+    <div class="mission-text">
+        Empowering citizens with <span class="highlight">intelligent access</span> to government welfare schemes.<br>
+        We're bridging the gap between people and policies, making welfare schemes 
+        <span class="highlight">accessible to everyone</span>.
     </div>
     """, unsafe_allow_html=True)
 
     # State Selection
-    states = [
-        "Select your state",
-        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-        "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-        "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-        "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-    ]
+    states = INDIAN_STATES
 
     # Center the select box
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        selected_state = st.selectbox("", states, index=0, key="state_selector")
+        # Get current index from session state
+        current_index = states.index(st.session_state.user_state) if st.session_state.user_state in states else 0
+                
+        selected_state = st.selectbox(
+            "",
+            options=states,
+            index=current_index,
+            key="state_selector"
+        )
+        
+        # Update session state if selection changes
+        if selected_state != st.session_state.user_state:
+            st.session_state.user_state = selected_state
+            if selected_state != "Select your state":
+                st.success(f"Showing schemes available in {selected_state} and Central Schemes")
+                st.rerun()
 
     # Add spacing after the selectbox
     st.markdown("<div style='height: 40px'></div>", unsafe_allow_html=True)

@@ -16,6 +16,16 @@ st.set_page_config(
 # Add after the page config
 st.markdown("""
     <style>
+        /* Prevent link styling on hover */
+        div[data-testid="stMarkdown"] div {
+            pointer-events: none !important;
+        }
+        
+        /* Only allow pointer events on actual buttons/links */
+        a, .card-button, button {
+            pointer-events: auto !important;
+        }
+        
         /* Global styles */
         [data-testid="stAppViewContainer"] {
             background-color: #F8FAFC;
@@ -109,9 +119,7 @@ st.markdown("""
             font-weight: 600 !important;
         }
         
-        p {
-            color: #2D3748 !important;
-        }
+        
         
         /* Info messages */
         .stAlert {
@@ -338,7 +346,18 @@ def display_scheme_results(grouped_schemes: Dict[SchemeCategory, Dict[str, List[
 def main():
     initialize_session_state()
     
-    st.title(translate_text("🎯 Find Right Scheme"))
+    st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; pointer-events: none;">
+            <div style="pointer-events: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2C4875" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <h1 style="margin: 0; color: #2C4875; line-height: 32px;">""" + translate_text("Find Right Scheme") + """</h1>
+        </div>
+    """, unsafe_allow_html=True)
     st.write(translate_text("Answer a few questions to discover the perfect schemes for you."))
     
     # State selection in sidebar
