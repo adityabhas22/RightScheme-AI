@@ -134,6 +134,58 @@ st.markdown("""
         .stSpinner > div {
             border-top-color: #5785D9 !important;
         }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            /* Adjust question cards */
+            .question-card {
+                padding: 1rem;
+                margin: 0.5rem 0;
+            }
+            
+            /* Adjust input fields */
+            .stTextInput input,
+            .stSelectbox select,
+            .stNumberInput input {
+                font-size: 1rem !important;
+            }
+            
+            /* Adjust buttons */
+            .stButton button {
+                width: 100% !important;
+                padding: 0.5rem !important;
+                margin: 0.25rem 0 !important;
+            }
+            
+            /* Adjust scheme results */
+            .scheme-container {
+                padding: 0.75rem;
+            }
+            
+            /* Adjust expandable sections */
+            .streamlit-expanderHeader {
+                font-size: 1rem !important;
+            }
+            
+            /* Adjust scheme details */
+            .scheme-details {
+                padding: 0.5rem;
+            }
+            
+            /* Optimize progress indicators */
+            .stProgress {
+                margin: 0.5rem 0 !important;
+            }
+            
+            /* Adjust text sizes */
+            .card-title {
+                font-size: 1.2rem !important;
+            }
+            
+            .card-description {
+                font-size: 0.9rem !important;
+            }
+        }
     </style>
 """, unsafe_allow_html=True)
 

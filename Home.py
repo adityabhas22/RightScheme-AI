@@ -514,5 +514,85 @@ def main():
     </script>
     """, unsafe_allow_html=True)
 
+    # Add these mobile-specific styles to your existing CSS
+    st.markdown("""
+        <style>
+            /* Mobile optimizations */
+            @media (max-width: 768px) {
+                /* Adjust main heading size */
+                .main-heading {
+                    font-size: 2rem !important;
+                    padding: 0 10px;
+                }
+                
+                /* Adjust subheading size */
+                .subheading {
+                    font-size: 1.2rem !important;
+                    padding: 0 10px;
+                }
+                
+                /* Make cards full width on mobile */
+                .card-container {
+                    margin: 0.5rem 0;
+                    height: auto;
+                    min-height: 300px;
+                    padding: 1rem;
+                }
+                
+                /* Adjust card title size */
+                .card-title {
+                    font-size: 1.4rem;
+                }
+                
+                /* Adjust card description */
+                .card-description {
+                    font-size: 0.9rem;
+                    padding: 0 5px;
+                }
+                
+                /* Adjust card button */
+                .card-button {
+                    width: calc(100% - 20px);
+                    left: 10px;
+                    padding: 10px 0;
+                    font-size: 1rem;
+                }
+                
+                /* Adjust spacing for mobile */
+                .block-container {
+                    padding-top: 1rem;
+                    padding-left: 0.5rem;
+                    padding-right: 0.5rem;
+                }
+                
+                /* Adjust hero section */
+                .hero-container {
+                    padding: 1rem 0.5rem;
+                }
+                
+                /* Adjust title container */
+                .title-container {
+                    gap: 0.5rem;
+                }
+                
+                .title-icon {
+                    width: 2.5rem;
+                    height: 2.5rem;
+                }
+                
+                .gradient-text {
+                    font-size: 1.8rem !important;
+                }
+                
+                /* Adjust mission text */
+                .mission-text {
+                    font-size: 1rem;
+                    padding: 0 1rem;
+                    margin: 1rem auto 2rem auto;
+                }
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
 if __name__ == "__main__":
     main()

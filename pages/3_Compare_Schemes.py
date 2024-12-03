@@ -143,6 +143,48 @@ st.markdown("""
         li {
             margin-bottom: 0.5rem !important;
         }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            /* Adjust comparison cards */
+            .comparison-card {
+                padding: 1rem;
+                margin: 0.5rem 0;
+            }
+            
+            /* Adjust tables for mobile */
+            .stTable {
+                font-size: 0.9rem !important;
+                overflow-x: auto !important;
+            }
+            
+            .stTable th,
+            .stTable td {
+                padding: 0.5rem !important;
+                min-width: 120px !important;
+            }
+            
+            /* Adjust headers */
+            h1 {
+                font-size: 1.5rem !important;
+                margin: 0.5rem 0 !important;
+            }
+            
+            h2 {
+                font-size: 1.2rem !important;
+            }
+            
+            /* Adjust content spacing */
+            .main .block-container {
+                padding: 0.5rem !important;
+            }
+            
+            /* Make buttons more touch-friendly */
+            .stButton button {
+                min-height: 44px !important;
+                width: 100% !important;
+            }
+        }
     </style>
 """, unsafe_allow_html=True)
 
