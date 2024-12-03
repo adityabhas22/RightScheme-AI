@@ -344,10 +344,11 @@ def display_scheme_results(grouped_schemes: Dict[SchemeCategory, Dict[str, List[
                             st.markdown("<br>", unsafe_allow_html=True)
 
 def main():
-    initialize_session_state()
+    # Set current page for unique widget keys
+    st.session_state['current_page'] = 'find_schemes'
     
-    # Display state selector once and store result
-    selected_state = display_state_selector()
+    initialize_session_state()
+    display_state_selector()
     
     # Add reset button to sidebar
     with st.sidebar:

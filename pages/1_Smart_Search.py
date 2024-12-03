@@ -235,6 +235,9 @@ def display_thinking_animation():
     return thinking_container
 
 def main():
+    # Set current page for unique widget keys
+    st.session_state['current_page'] = 'smart_search'
+    
     initialize_session_state()
     display_state_selector()
     

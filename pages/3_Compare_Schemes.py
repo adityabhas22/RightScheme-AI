@@ -147,14 +147,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def main():
+    # Set current page for unique widget keys
+    st.session_state['current_page'] = 'compare_schemes'
+    
     initialize_session_state()
     display_state_selector()
     
     st.markdown('<h1 style="color: #2C4875;">📊 Compare Schemes</h1>', unsafe_allow_html=True)
     st.markdown('<p style="color: #2D3748; font-size: 1.1rem;">Compare different government schemes side by side to make informed decisions.</p>', unsafe_allow_html=True)
-    
-    # State selection in sidebar
-    selected_state = display_state_selector()
     
     if st.session_state.user_state is None:
         st.markdown("""

@@ -4,6 +4,9 @@ import base64
 from utils.common import initialize_session_state, translate_text, display_state_selector
 
 def main():
+    # Set current page for unique widget keys
+    st.session_state['current_page'] = 'home'
+    
     # Initialize sidebar state for home page
     if "sidebar_state" not in st.session_state:
         st.session_state.sidebar_state = "expanded"
@@ -12,7 +15,12 @@ def main():
         page_title="RightScheme AI",
         page_icon="🏛️",
         layout="wide",
-        initial_sidebar_state=st.session_state.sidebar_state
+        initial_sidebar_state=st.session_state.sidebar_state,
+        menu_items={
+            'Get Help': None,
+            'Report a bug': None,
+            'About': None
+        }
     )
     
     # Initialize session state
@@ -24,34 +32,38 @@ def main():
     # Force light mode
     st.markdown("""
         <style>
-            [data-testid="stAppViewContainer"] {
-                background-color: #FFFFFF;
+            /* Force light mode */
+            :root {
+                --background-color: #ffffff;
+                --secondary-background-color: #f0f2f6;
+                --text-color: #2D3748;
+                --font: "Source Sans Pro", sans-serif;
             }
-            
+
+            /* Override dark mode */
+            [data-testid="stAppViewContainer"], 
+            [data-testid="stHeader"],
+            [data-testid="stToolbar"],
+            [data-testid="stMetricValue"],
+            [data-testid="stMarkdown"],
+            [data-testid="baseButton-secondary"],
+            .stTextInput > div > div > input,
+            .stSelectbox > div > div,
+            .stTextArea > div > div > textarea {
+                background-color: #ffffff !important;
+                color: #2D3748 !important;
+            }
+
             [data-testid="stSidebar"] {
-                background-color: #FFFFFF;
+                background-color: #f0f2f6 !important;
+                color: #2D3748 !important;
             }
+
             
-            [data-testid="stHeader"] {
-                background-color: #FFFFFF;
-            }
-            
-            .stButton button {
-                background-color: #FFFFFF;
-                color: #2C4875;
-            }
-            
-            .stTextInput input {
-                background-color: #FFFFFF;
-            }
-            
-            .stSelectbox select {
-                background-color: #FFFFFF;
-            }
-            
+
+            /* Hide theme menu */
             #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
+            [data-testid="collapsedControl"] {display: none}
         </style>
     """, unsafe_allow_html=True)
 
@@ -447,7 +459,7 @@ def main():
                 <h2 class="card-title">Smart Search</h2>
                 <p class="card-description">Ask anything about government schemes and get instant, accurate answers</p>
             </div>
-            <a href="/Semantic_Search" target="_self" class="card-button">Start Searching</a>
+            <a href="/Smart_Search" target="_self" class="card-button">Start Searching</a>
         </div>
         """, unsafe_allow_html=True)
 

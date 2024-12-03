@@ -93,11 +93,15 @@ def display_state_selector():
         # Get current index from core_state
         current_index = INDIAN_STATES.index(st.session_state.core_state["user_state"]) if st.session_state.core_state["user_state"] in INDIAN_STATES else 0
         
+        # Add a unique key for each page
+        page_name = st.session_state.get('current_page', 'home')
+        selector_key = f"state_selector_{page_name}"
+        
         selected_state = st.selectbox(
             translate_text("Select your state"),
             options=INDIAN_STATES,
             index=current_index,
-            key="state_selector"
+            key=selector_key
         )
         
         # Update both session state and core state if selection changes

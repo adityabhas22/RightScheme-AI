@@ -80,5 +80,47 @@
       },
       "interaction_type": "initial_questionnaire"
     }
+  },
+  {
+    "conversation_id": "43846bef-83fd-4dd2-8b55-e21b704d536c",
+    "timestamp": "2024-12-03T20:59:41.238285",
+    "type": "find_schemes",
+    "user_query": "I am a 25 year old male from Karnataka, belonging to General category. My annual household income is Rs. 500000 and I am farmer by occupation. My education level is Below 10th. Please suggest government schemes that I am eligible for.",
+    "response": "Based on your profile as a 25-year-old farmer from Karnataka, here are some government schemes that you might be eligible for:\n\n### 1. **Raita Belaku Scheme**\n📋 **Scheme Overview:**\nThis scheme aims to encourage dryland farmers by providing them with an assured annual income.\n\n💰 **Key Benefits:**\n- Guaranteed income of Rs. 5,000 to Rs. 10,000 per hectare.\n- Designed to benefit around 70 lakh farmers across the state.\n\n🎯 **Eligibility:**\n- Farmers engaged in dry land farming in Karnataka.\n\n---\n\n### 2. **Gruhalaxmi Crop Loan Scheme**\n📋 **Scheme Overview:**\nThis scheme provides loans to farmers at lower interest rates by mortgaging their ornaments.\n\n💰 **Key Benefits:**\n- Loans available at a reduced interest rate of only 3%.\n- Helps farmers access funds without the burden of high-interest rates.\n\n🎯 **Eligibility:**\n- All farmers in Karnataka can apply for this scheme.\n\n---\n\n### 3. **Arogya Karnataka Scheme**\n📋 **Scheme Overview:**\nAimed at providing universal health coverage to citizens, ensuring health for all.\n\n💰 **Key Benefits:**\n- Access to health services and treatments at little or no cost.\n\n🎯 **Eligibility:**\n- All residents of Karnataka, including farmers.\n\n---\n\n### 4. **Krishi Bhagya Yojana**\n📋 **Scheme Overview:**\nThis initiative promotes sustainable farming practices.\n\n💰 **Key Benefits:**\n- Financial support for implementing irrigation and other agricultural practices.\n\n🎯 **Eligibility:**\n- Farmers in Karnataka.\n\n---\n\n### Next Steps:\nIf you need more detailed information about the application process, required documents, or any other assistance related to these schemes, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "age": 25,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 500000,
+        "occupation": "Farmer",
+        "education_level": "Below 10th"
+      },
+      "interaction_type": "initial_questionnaire"
+    }
+  },
+  {
+    "conversation_id": "39168c20-cf61-421c-9e1b-9deeb8d5ad85",
+    "timestamp": "2024-12-03T21:00:07.880007",
+    "type": "find_schemes",
+    "user_query": "Tell me about Arogya karnataka scheme",
+    "response": "Sure! The **Arogya Karnataka Scheme** is a comprehensive health coverage initiative launched by the Karnataka government aimed at providing healthcare facilities to all families in the state, regardless of their income. Here’s a detailed overview:\n\n📋 **SCHEME OVERVIEW:**\nThe Arogya Karnataka Scheme is part of the Universal Health Coverage (UHC) initiative, ensuring cashless medical treatment for eligible families in government hospitals and empaneled private hospitals. The scheme provides extensive healthcare services, including primary, secondary, and tertiary hospitalization benefits.\n\n💰 **KEY BENEFITS:**\n- **Cashless Treatment:** Families can avail cashless medical treatment in all government and empaneled private hospitals.\n- **Financial Support:** Below Poverty Line (BPL) families can receive free treatment up to Rs. 1.5 lakh. Above Poverty Line (APL) families can receive 30% reimbursement for treatment costs, also up to Rs. 1.5 lakh.\n- **Wide Coverage:** Approximately 1.05 crore households are expected to benefit from this scheme, which covers a range of medical procedures.\n\n🎯 **ELIGIBILITY:**\n- The scheme is applicable to all residents of Karnataka, irrespective of their income level. \n- Families must apply for the UHC Card to avail the benefits.\n\nIf you need any more details, such as the application process or required documents, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "age": 25,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 500000,
+        "occupation": "Farmer",
+        "education_level": "Below 10th"
+      },
+      "interaction_type": "follow_up",
+      "english_query": "Tell me about Arogya karnataka scheme",
+      "contextualized_query": "For someone in Karnataka: Tell me about Arogya karnataka scheme"
+    }
   }
 ]
