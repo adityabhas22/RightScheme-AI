@@ -5,10 +5,203 @@ from Python_Files.translation_utils import translate_text
 from utils.logging_utils import logger
 
 st.set_page_config(
-    page_title="Semantic Search - RightScheme AI",
+    page_title="Smart Search - RightScheme AI",
     page_icon="🔍",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
+
+# Force light mode
+st.markdown("""
+    <style>
+        [data-testid="stAppViewContainer"] {
+            background-color: #FFFFFF;
+        }
+        
+        [data-testid="stSidebar"] {
+            background-color: #FFFFFF;
+        }
+        
+        [data-testid="stHeader"] {
+            background-color: #FFFFFF;
+        }
+        
+        .stButton button {
+            background-color: #FFFFFF;
+            color: #2C4875;
+        }
+        
+        .stTextInput input {
+            background-color: #FFFFFF;
+        }
+        
+        .stSelectbox select {
+            background-color: #FFFFFF;
+        }
+        
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
+
+# Add after the page config
+st.markdown("""
+    <style>
+        /* Global styles */
+        [data-testid="stAppViewContainer"] {
+            background-color: #F8FAFC;
+        }
+        
+        /* Sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+        }
+        
+        [data-testid="stSidebar"] h1 {
+            color: #000000 !important;
+            font-size: 1.5rem !important;
+            font-weight: 600 !important;
+            padding: 1rem 0 0.5rem 0 !important;
+        }
+        
+        [data-testid="stSidebar"] .stSelectbox label {
+            color: #000000 !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+        }
+        
+        [data-testid="stSidebar"] .stSelectbox > div > div {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 0.5rem !important;
+            color: #000000 !important;
+        }
+        
+        /* Chat interface styling */
+        [data-testid="stChatMessage"] {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 0.75rem !important;
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        /* User message styling */
+        [data-testid="stChatMessage"][data-testid="user"] {
+            background-color: #2C4875 !important;
+            color: #FFFFFF !important;
+        }
+        
+        [data-testid="stChatMessage"][data-testid="user"] p {
+            color: #FFFFFF !important;
+        }
+        
+        /* Assistant message styling */
+        [data-testid="stChatMessage"][data-testid="assistant"] {
+            background-color: #FFFFFF !important;
+        }
+        
+        [data-testid="stChatMessage"][data-testid="assistant"] p {
+            color: #2D3748 !important;
+        }
+        
+        /* Input field styling */
+        .stTextInput input {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 0.5rem !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 1rem !important;
+            color: #2D3748 !important;
+        }
+        
+        .stTextInput input:focus {
+            border-color: #5785D9 !important;
+            box-shadow: 0 0 0 2px rgba(87, 133, 217, 0.2) !important;
+        }
+        
+        /* Button styling */
+        .stButton button {
+            background-color: #2C4875 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            border-radius: 0.5rem !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .stButton button:hover {
+            background-color: #5785D9 !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Thinking animation styling */
+        .thinking-animation {
+            color: #5785D9 !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            padding: 0.5rem 0 !important;
+        }
+        
+        /* Search results styling */
+        .search-result {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-result:hover {
+            border-color: #5785D9;
+            box-shadow: 0 4px 6px rgba(87, 133, 217, 0.1);
+        }
+        
+        /* Headers and text */
+        h1, h2, h3 {
+            color: #2C4875 !important;
+            font-weight: 600 !important;
+        }
+        
+        p {
+            color: #2D3748 !important;
+        }
+        
+        /* Info messages */
+        .stAlert {
+            background-color: rgba(143, 184, 237, 0.1) !important;
+            border: 1px solid #8FB8ED !important;
+            color: #2C4875 !important;
+            border-radius: 0.5rem !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Update the search box styling
+st.markdown("""
+    <style>
+        .search-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(44, 72, 117, 0.1), 0 2px 4px -1px rgba(44, 72, 117, 0.06);
+            border: 1px solid #E2E8F0;
+            margin: 2rem 0;
+        }
+        
+        .search-title {
+            color: #2C4875;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 def display_thinking_animation():
     """Display a simple thinking text with fade animation."""
@@ -21,10 +214,12 @@ def display_thinking_animation():
                 <style>
                     .thinking-animation {{
                         animation: thinking 1.5s ease-in-out infinite;
-                        color: #666;
+                        color: #5785D9;
+                        font-weight: 500;
+                        padding: 0.5rem 0;
                     }}
                     @keyframes thinking {{
-                        0%, 100% {{ opacity: 0.3; }}
+                        0%, 100% {{ opacity: 0.5; }}
                         50% {{ opacity: 1; }}
                     }}
                 </style>

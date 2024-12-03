@@ -7,10 +7,127 @@ from Python_Files.translation_utils import translate_text, translate_to_english
 from utils.logging_utils import logger
 
 st.set_page_config(
-    page_title="Find Right Scheme - RightScheme AI",
+    page_title="Perfect Match - RightScheme AI",
     page_icon="🎯",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
+
+# Add after the page config
+st.markdown("""
+    <style>
+        /* Global styles */
+        [data-testid="stAppViewContainer"] {
+            background-color: #F8FAFC;
+        }
+        
+        /* Sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+        }
+        
+        [data-testid="stSidebar"] h1 {
+            color: #000000 !important;
+            font-size: 1.5rem !important;
+            font-weight: 600 !important;
+            padding: 1rem 0 0.5rem 0 !important;
+        }
+        
+        [data-testid="stSidebar"] .stSelectbox label {
+            color: #000000 !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+        }
+        
+        [data-testid="stSidebar"] .stSelectbox > div > div {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 0.5rem !important;
+            color: #000000 !important;
+        }
+        
+        /* Main content styling */
+        .main-content {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E2E8F0;
+        }
+        
+        /* Question card styling */
+        .question-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Radio button styling */
+        .stRadio > div {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            transition: all 0.2s ease;
+        }
+        
+        .stRadio > div:hover {
+            border-color: #5785D9;
+            background-color: rgba(87, 133, 217, 0.05);
+        }
+        
+        /* Progress bar styling */
+        .stProgress > div > div {
+            background-color: #5785D9 !important;
+        }
+        
+        /* Button styling */
+        .stButton button {
+            background-color: #2C4875 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            border-radius: 0.5rem !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .stButton button:hover {
+            background-color: #5785D9 !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Headers and text */
+        h1, h2, h3 {
+            color: #2C4875 !important;
+            font-weight: 600 !important;
+        }
+        
+        p {
+            color: #2D3748 !important;
+        }
+        
+        /* Info messages */
+        .stAlert {
+            background-color: rgba(143, 184, 237, 0.1) !important;
+            border: 1px solid #8FB8ED !important;
+            color: #2C4875 !important;
+            border-radius: 0.5rem !important;
+            padding: 1rem !important;
+        }
+        
+        /* Loading animation */
+        .stSpinner > div {
+            border-top-color: #5785D9 !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Initialize all required session state variables at the start
 if "find_schemes" not in st.session_state:

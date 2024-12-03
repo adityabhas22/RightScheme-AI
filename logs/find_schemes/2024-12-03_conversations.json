@@ -1,0 +1,22 @@
+[
+  {
+    "conversation_id": "a8139e0e-cdba-49fd-8309-fb696d9b31af",
+    "timestamp": "2024-12-03T17:26:38.876062",
+    "type": "find_schemes",
+    "user_query": "I am a 35 year old male from Karnataka, belonging to General category. My annual household income is Rs. 0 and I am student by occupation. My education level is Below 10th. Please suggest government schemes that I am eligible for.",
+    "response": "Thank you for sharing your details! Based on your situation as a student from Karnataka with an annual household income of Rs. 0 and an education level below 10th, there are several government schemes you may be eligible for. Here are a couple of relevant schemes:\n\n### 1. **Karnataka Vidyasiri Scheme**\n📋 **Scheme Overview:**\nThis scheme provides financial assistance to students belonging to economically weaker sections to pursue education.\n\n💰 **Key Benefits:**\n- Financial support for educational expenses.\n- Hostel fees and maintenance expenses covered.\n\n🎯 **Eligibility:**\n- Students from economically weaker sections.\n- Must be pursuing education in government or recognized institutions.\n\n### 2. **Post Matric Scholarship for SC/ST Students**\n📋 **Scheme Overview:**\nWhile you mentioned you belong to the General category, if you are from a scheduled caste or tribe, this scheme provides financial aid for education at various levels.\n\n💰 **Key Benefits:**\n- Covers tuition fees and other educational expenses.\n- Provides a monthly stipend.\n\n🎯 **Eligibility:**\n- Must be a student of SC/ST category.\n- Must have enrolled in post-matriculation courses.\n\n### 3. **Skill Development Schemes**\n📋 **Scheme Overview:**\nVarious skill development programs are available for youth to enhance their skills and employability.\n\n💰 **Key Benefits:**\n- Free skill development training.\n- Certificates that improve job prospects.\n\n🎯 **Eligibility:**\n- Youth between 18 to 35 years.\n- Must be willing to learn new skills.\n\nIf you would like more specific information on how to apply for any of these schemes, or if you want details about other schemes, just let me know!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "age": 35,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 0,
+        "occupation": "Student",
+        "education_level": "Below 10th"
+      },
+      "interaction_type": "initial_questionnaire"
+    }
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "conversation_id": "91dc7818-b711-4fe7-b100-49fcc576ccd7",
+    "timestamp": "2024-12-03T16:26:48.140018",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "I apologize, but I encountered an error: Cannot hash argument 'agent' (of type `langchain.agents.agent.AgentExecutor`) in 'get_conversation_summary'.\n\nTo address this, you can tell Streamlit not to hash this argument by adding a\nleading underscore to the argument's name in the function signature:\n\n```\n@st.cache_data\ndef get_conversation_summary(_agent, ...):\n    ...\n```\n            ",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "5b92f39c-069b-4a06-94a8-29dfcce65a36",
+    "timestamp": "2024-12-03T16:27:42.687973",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "I apologize, but I encountered an error: Cannot hash argument 'agent' (of type `langchain.agents.agent.AgentExecutor`) in 'get_conversation_summary'.\n\nTo address this, you can tell Streamlit not to hash this argument by adding a\nleading underscore to the argument's name in the function signature:\n\n```\n@st.cache_data\ndef get_conversation_summary(_agent, ...):\n    ...\n```\n            ",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "01470795-604d-4116-bc2b-9c9c4ed4a971",
+    "timestamp": "2024-12-03T16:29:33.309277",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! It's great to hear from you! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "e672631a-f3fa-4de4-a47c-f7dd85d02ce8",
+    "timestamp": "2024-12-03T16:29:49.572091",
+    "type": "semantic_search",
+    "user_query": "Schemes for rural students",
+    "response": "Hello! It's great to hear from you! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Schemes for rural students"
+    }
+  },
+  {
+    "conversation_id": "19bf85b3-c8ba-4c02-a803-0686d6c504f1",
+    "timestamp": "2024-12-03T17:25:42.013747",
+    "type": "semantic_search",
+    "user_query": "Hi",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: Hi"
+    }
+  },
+  {
+    "conversation_id": "882b898a-cffd-4e3b-ba8f-12e532804593",
+    "timestamp": "2024-12-03T17:29:52.377807",
+    "type": "semantic_search",
+    "user_query": "HI",
+    "response": "Hello! How can I assist you today? If you have any questions about government schemes in Karnataka or anything else, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "contextualized_query": "For someone in Karnataka: HI"
+    }
+  }
+]
