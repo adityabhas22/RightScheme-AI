@@ -269,7 +269,7 @@ def main():
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <h1>""" + translate_text("Semantic Search") + """</h1>
+            <h1>""" + translate_text("Smart Search") + """</h1>
         </div>
     """, unsafe_allow_html=True)
     st.write(translate_text("Ask me anything about Indian Government Schemes!"))
