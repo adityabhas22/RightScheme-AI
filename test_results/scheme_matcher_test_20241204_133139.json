@@ -1,0 +1,172 @@
+{
+  "timestamp": "2024-12-04T13:30:20.050964",
+  "total_profiles": 4,
+  "profile_results": [
+    {
+      "profile": {
+        "occupation": "Student",
+        "state": "Maharashtra",
+        "category": "SC",
+        "age": 22,
+        "gender": "Female",
+        "annual_income": 150000,
+        "interests": "education scholarship"
+      },
+      "search_query": "education scholarship schemes for female SC category schemes schemes for age 22 lower middle income schemes education scholarship academic Undergraduate level education support student financial assistance schemes in Maharashtra",
+      "initial_schemes_count": 12,
+      "recommendations_count": 0,
+      "recommendations": [],
+      "debug_info": {
+        "initial_schemes": [
+          "Punjabrao Deshmukh Scheme",
+          "Swadhar Yojana 2019-20",
+          "Hirakani Maharashtrachi Scheme",
+          "Kanyashree Scheme",
+          "Udaan Scheme",
+          "Delhi Overseas Scholarship Scheme",
+          "Unknown Scheme",
+          "Prabuddha Scheme",
+          "Mahila Kisan Yojana",
+          "Asmita Scheme",
+          "Unknown Scheme",
+          "Unknown Scheme"
+        ],
+        "vector_search_scores": [
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283,
+          0.849418283
+        ]
+      }
+    },
+    {
+      "profile": {
+        "occupation": "Farmer",
+        "state": "Punjab",
+        "category": "General",
+        "age": 35,
+        "gender": "Male",
+        "annual_income": 300000,
+        "interests": "agricultural support"
+      },
+      "search_query": "agricultural support schemes for male General category schemes schemes for age 35 lower middle income schemes agricultural farming subsidy krishi farm equipment support crop insurance schemes agricultural loans schemes in Punjab",
+      "initial_schemes_count": 8,
+      "recommendations_count": 0,
+      "recommendations": [],
+      "debug_info": {
+        "initial_schemes": [
+          "Chandranna Rythu Kshetralu",
+          "Zero Budget Natural Farming",
+          "Pattadar Passbook",
+          "Punjab Farm Loan Waiver Scheme 2017",
+          "Punjab Debt Waiver Scheme (Kisan Karj Mafi Yojana)",
+          "Krishi Rin Samadhan Yojana",
+          "Krishak Samriddhi Yojana",
+          "Mukhyamantri Kalyani Sahayata Yojana"
+        ],
+        "vector_search_scores": [
+          0.855653763,
+          0.855653763,
+          0.855653763,
+          0.855653763,
+          0.855653763,
+          0.855653763,
+          0.855653763,
+          0.855653763
+        ]
+      }
+    },
+    {
+      "profile": {
+        "occupation": "Self-employed",
+        "state": "Gujarat",
+        "category": "OBC",
+        "age": 28,
+        "gender": "Female",
+        "annual_income": 250000,
+        "interests": "business loan"
+      },
+      "search_query": "business loan schemes for female OBC category schemes schemes for age 28 lower middle income schemes business entrepreneurship startup msme small business loans business development schemes schemes in Gujarat",
+      "initial_schemes_count": 6,
+      "recommendations_count": 0,
+      "recommendations": [],
+      "debug_info": {
+        "initial_schemes": [
+          "Start-Up India Scheme for Women Entrepreneurs",
+          "Stand Up India Loan Scheme",
+          "Unknown Scheme",
+          "MUDRA Loan Scheme for Small and Marginal Fisherman",
+          "Women Entrepreneurship Scheme",
+          "Mukhyamantri Gramoday Yojana"
+        ],
+        "vector_search_scores": [
+          0.841115296,
+          0.841115296,
+          0.841115296,
+          0.841115296,
+          0.841115296,
+          0.841115296
+        ]
+      }
+    },
+    {
+      "profile": {
+        "occupation": "Unemployed",
+        "state": "Jharkhand",
+        "category": "ST",
+        "age": 45,
+        "gender": "Male",
+        "annual_income": 180000,
+        "interests": "disability support employment"
+      },
+      "search_query": "disability support employment schemes for male ST category schemes schemes for age 45 lower middle income schemes employment generation skill development vocational training job assistance Physical assistance schemes schemes in Jharkhand",
+      "initial_schemes_count": 6,
+      "recommendations_count": 0,
+      "recommendations": [],
+      "debug_info": {
+        "initial_schemes": [
+          "Indira Gandhi National Disability Pension Scheme",
+          "Deen Dayal Divyangjan Sahajya Scheme",
+          "Jharkhand Divyang Jan Adhikar Niyamavali \u2013 2018",
+          "Indira Gandhi National Disability Pension Scheme",
+          "Unknown Scheme",
+          "Delhi SC / ST / OBC / Minority Vocational Training Scheme"
+        ],
+        "vector_search_scores": [
+          0.849303663,
+          0.849303663,
+          0.849303663,
+          0.849303663,
+          0.849303663,
+          0.849303663
+        ]
+      }
+    }
+  ],
+  "debug_logs": [
+    "Processing profile: Student from Maharashtra",
+    "Generated search query: education scholarship schemes for female SC category schemes schemes for age 22 lower middle income schemes education scholarship academic Undergraduate level education support student financial assistance schemes in Maharashtra",
+    "Found 12 initial schemes",
+    "Generated 0 final recommendations",
+    "Processing profile: Farmer from Punjab",
+    "Generated search query: agricultural support schemes for male General category schemes schemes for age 35 lower middle income schemes agricultural farming subsidy krishi farm equipment support crop insurance schemes agricultural loans schemes in Punjab",
+    "Found 8 initial schemes",
+    "Generated 0 final recommendations",
+    "Processing profile: Self-employed from Gujarat",
+    "Generated search query: business loan schemes for female OBC category schemes schemes for age 28 lower middle income schemes business entrepreneurship startup msme small business loans business development schemes schemes in Gujarat",
+    "Found 6 initial schemes",
+    "Generated 0 final recommendations",
+    "Processing profile: Unemployed from Jharkhand",
+    "Generated search query: disability support employment schemes for male ST category schemes schemes for age 45 lower middle income schemes employment generation skill development vocational training job assistance Physical assistance schemes schemes in Jharkhand",
+    "Found 6 initial schemes",
+    "Generated 0 final recommendations"
+  ]
+}

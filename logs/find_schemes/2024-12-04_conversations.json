@@ -1,0 +1,288 @@
+[
+  {
+    "conversation_id": "a2cabb6d-463d-4da7-ba82-88f8b81b5406",
+    "timestamp": "2024-12-04T12:14:52.841132",
+    "type": "find_schemes",
+    "user_query": "I am a 18 year old male from Karnataka, belonging to ST category. My annual household income is Rs. 300000 and I am student by occupation. My education level is School (11-12). I am specifically looking for: student loan. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "student loan",
+        "age": 18,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "ST",
+        "annual_income": 300000,
+        "occupation": "Student",
+        "education_level": "School (11-12)",
+        "institution_type": "Government",
+        "scholarship_interest": "Yes",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "48bac225-0f2c-4b5a-98fd-95cbfd61aa52",
+    "timestamp": "2024-12-04T12:16:10.367574",
+    "type": "find_schemes",
+    "user_query": "What are the eligibility criteria for Credit Guarantee Fund Scheme for Education Loans (CGFEL)",
+    "response": "Certainly! Here are the eligibility criteria for the **Credit Guarantee Fund Scheme for Education Loans (CGFEL)**:\n\n🎓 **ELIGIBILITY:**\n- **Students**: The scheme is primarily for students who wish to take education loans.\n- **Loan Amount**: Students can avail loans up to ₹7.5 lakh.\n- **Courses**: It covers loans for pursuing professional and technical courses from institutions accredited by NAAC/NBA or Central Funded Technical Institutions (CFTIs).\n- **Moratorium Period**: There is a moratorium period of one year after course completion before repayment begins.\n\nThis scheme is designed to promote quality education and make it easier for students to access loans for higher studies. If you need more information or assistance with the application process, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "student loan",
+        "age": 18,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "ST",
+        "annual_income": 300000,
+        "occupation": "Student",
+        "education_level": "School (11-12)",
+        "institution_type": "Government",
+        "scholarship_interest": "Yes",
+        "disability_status": "No"
+      },
+      "interaction_type": "follow_up",
+      "english_query": "What are the eligibility criteria for Credit Guarantee Fund Scheme for Education Loans (CGFEL)",
+      "contextualized_query": "For someone in Karnataka: What are the eligibility criteria for Credit Guarantee Fund Scheme for Education Loans (CGFEL)"
+    }
+  },
+  {
+    "conversation_id": "20f1d668-e97a-40d3-929e-5318aa3a0807",
+    "timestamp": "2024-12-04T12:19:02.280134",
+    "type": "find_schemes",
+    "user_query": "I am a 45 year old male from Karnataka, belonging to OBC category. My annual household income is Rs. 300000 and I am farmer by occupation. My education level is not specified. I am specifically looking for: farming subsidies. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "farming subsidies",
+        "age": 45,
+        "gender": "Male",
+        "marital_status": "Married",
+        "category": "OBC",
+        "annual_income": 300000,
+        "occupation": "Farmer",
+        "land_ownership": "Yes",
+        "land_area": 5,
+        "farming_type": "Organic",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "277140b9-c30f-4701-9179-51736442c58b",
+    "timestamp": "2024-12-04T12:28:21.081738",
+    "type": "find_schemes",
+    "user_query": "I am a 65 year old male from Bihar, belonging to General category. My annual household income is Rs. 300000 and I am other by occupation. My education level is not specified. I am specifically looking for: disability benefits. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Bihar",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "disability benefits",
+        "age": 65,
+        "gender": "Male",
+        "marital_status": "Married",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Other",
+        "disability_status": "Yes"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "8c3e8749-1397-4003-98cd-85de8255f941",
+    "timestamp": "2024-12-04T12:30:48.524595",
+    "type": "find_schemes",
+    "user_query": "I am a 35 year old male from Punjab, belonging to General category. My annual household income is Rs. 300000 and I am farmer by occupation. My education level is not specified. I am specifically looking for: Farming subsidies. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Punjab",
+      "language": "en",
+      "user_profile": {
+        "age": 35,
+        "gender": "Male",
+        "marital_status": "Married",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Farmer",
+        "land_ownership": "Yes",
+        "land_area": 3,
+        "farming_type": "Traditional",
+        "disability_status": "No",
+        "looking_for": "Farming subsidies"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "1bdf24a2-6c90-4f74-ac49-09514aa37273",
+    "timestamp": "2024-12-04T13:21:11.907086",
+    "type": "find_schemes",
+    "user_query": "I am a 35 year old male from Karnataka, belonging to General category. My annual household income is Rs. 300000 and I am farmer by occupation. My education level is not specified. I am specifically looking for: farming subsidies. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "farming subsidies",
+        "age": 35,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Farmer",
+        "land_ownership": "Yes",
+        "land_area": 3,
+        "farming_type": "Traditional",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "e41f3693-cceb-4d27-b8a3-e7ef371cd19d",
+    "timestamp": "2024-12-04T13:21:58.045933",
+    "type": "find_schemes",
+    "user_query": "Mukhyamantri Kalyani Sahayata Yojana eligibility criteria",
+    "response": "Here's the eligibility criteria for the **Mukhyamantri Kalyani Sahayata Yojana** in Karnataka:\n\n🎯 **Eligibility:**\n- Women must be more than 15 years of age.\n- Candidates should have passed all subjects in the National Skill Qualification Framework (NSQF) course list.\n- Required documents include:\n  - Aadhar Card\n  - Voter Card\n  - Caste Certificate\n  - Training Certificate (if applicable)\n\nThis scheme aims to enhance employment opportunities for women and provide them with free training that lasts from 15 days to 9 months. It also supports women who have had to leave their studies due to family or social restrictions.\n\nIf you have any more questions or need information about the application process, feel free to ask!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "farming subsidies",
+        "age": 35,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Farmer",
+        "land_ownership": "Yes",
+        "land_area": 3,
+        "farming_type": "Traditional",
+        "disability_status": "No"
+      },
+      "interaction_type": "follow_up",
+      "english_query": "Mukhyamantri Kalyani Sahayata Yojana eligibility criteria",
+      "contextualized_query": "For someone in Karnataka: Mukhyamantri Kalyani Sahayata Yojana eligibility criteria"
+    }
+  },
+  {
+    "conversation_id": "59d052a2-c15c-4189-aac7-db543f2c9a65",
+    "timestamp": "2024-12-04T13:22:31.171959",
+    "type": "find_schemes",
+    "user_query": "what if I am a male?",
+    "response": "The Mukhyamantri Kalyani Sahayata Yojana is specifically designed to support women in Karnataka by providing them with training and enhancing their employment opportunities. Unfortunately, this scheme is not applicable to males.\n\nHowever, there are other government schemes aimed at providing financial assistance, skill development, and employment opportunities for men as well. If you’re interested, I can share information about those schemes! Would you like to learn more about any specific area?",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "farming subsidies",
+        "age": 35,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Farmer",
+        "land_ownership": "Yes",
+        "land_area": 3,
+        "farming_type": "Traditional",
+        "disability_status": "No"
+      },
+      "interaction_type": "follow_up",
+      "english_query": "what if I am a male?",
+      "contextualized_query": "For someone in Karnataka: what if I am a male?"
+    }
+  },
+  {
+    "conversation_id": "80df5cdc-a3b3-4fd7-9af2-91c99149c609",
+    "timestamp": "2024-12-04T13:50:57.173962",
+    "type": "find_schemes",
+    "user_query": "I am a 19 year old male from Karnataka, belonging to General category. My annual household income is Rs. 300000 and I am student by occupation. My education level is School (11-12). I am specifically looking for: student loan. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "student loan",
+        "age": 19,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Student",
+        "education_level": "School (11-12)",
+        "institution_type": "Government",
+        "scholarship_interest": "Yes",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "a9cd4a9d-3894-4e18-b9f2-263ed98fb124",
+    "timestamp": "2024-12-04T13:52:37.658309",
+    "type": "find_schemes",
+    "user_query": "I am a 19 year old male from Karnataka, belonging to General category. My annual household income is Rs. 300000 and I am student by occupation. My education level is School (11-12). I am specifically looking for: student loan. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "student loan",
+        "age": 19,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Student",
+        "education_level": "School (11-12)",
+        "institution_type": "Government",
+        "scholarship_interest": "Yes",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "8e272d04-b6d6-446b-bbf1-844357a1288d",
+    "timestamp": "2024-12-04T13:54:18.626281",
+    "type": "find_schemes",
+    "user_query": "I am a 22 year old female from Goa, belonging to General category. My annual household income is Rs. 500000 and I am student by occupation. My education level is Undergraduate. I am specifically looking for: student loan. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Goa",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "student loan",
+        "age": 22,
+        "gender": "Female",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 500000,
+        "occupation": "Student",
+        "education_level": "Undergraduate",
+        "institution_type": "Private",
+        "scholarship_interest": "Yes",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  }
+]

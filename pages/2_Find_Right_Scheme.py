@@ -1,10 +1,11 @@
 import streamlit as st
-from typing import Dict, List
+from typing import Dict, List, Any
+from Python_Files.scheme_semantic_matcher import SemanticSchemeMatcher, UserProfile, SchemeRecommendation
+from Python_Files.scheme_matcher import SchemeCategory, SchemeMatch
 from utils.common import initialize_session_state, display_state_selector, translate_text, check_state_selection, get_greeting_message
-from Python_Files.scheme_agent import process_query, create_scheme_agent
-from Python_Files.scheme_matcher import SchemeCategory, SchemeMatch, SchemeMatcher, UserProfile
-from Python_Files.translation_utils import translate_text, translate_to_english
 from utils.logging_utils import logger
+from Python_Files.scheme_agent import process_query, create_scheme_agent
+from Python_Files.translation_utils import translate_to_english
 
 st.set_page_config(
     page_title="Find Right Scheme - RightScheme AI",
@@ -193,11 +194,13 @@ st.markdown("""
 if "find_schemes" not in st.session_state:
     st.session_state.find_schemes = {
         "chat_history": [],
-        "scheme_agent": create_scheme_agent(),  # Initialize with the agent
+        "scheme_agent": create_scheme_agent(),
+        "scheme_matcher": SemanticSchemeMatcher(),
         "is_first_message": True,
         "current_question": 0,
         "user_responses": {},
-        "questionnaire_completed": False
+        "questionnaire_completed": False,
+        "recommendations": None
     }
 
 def initialize_questionnaire_state():
@@ -214,11 +217,14 @@ def initialize_questionnaire_state():
     if "is_first_message" not in st.session_state:
         st.session_state.is_first_message = True
 
-def show_scheme_details(scheme: SchemeMatch):
+def show_scheme_details(scheme: SchemeRecommendation):
     """Display detailed information about a scheme in a modal."""
     with st.expander(f"Details for {scheme.scheme_name}", expanded=True):
         st.markdown(f"""
         ### 📋 Scheme Details
+        
+        #### Why Recommended
+        {scheme.why_recommended}
         
         #### Benefits
         {chr(10).join([f"• {benefit}" for benefit in scheme.benefits])}
@@ -226,26 +232,38 @@ def show_scheme_details(scheme: SchemeMatch):
         #### Eligibility Status
         """)
         
-        # Display eligibility criteria with checkmarks/crosses
-        for criterion, matches in scheme.eligibility_match.items():
+        # Update to use eligibility_requirements and eligibility_status
+        for criterion, requirement in scheme.eligibility_requirements.items():
+            matches = scheme.eligibility_status.get(criterion, False)
             icon = "✅" if matches else "❌"
-            st.markdown(f"{icon} {criterion}")
+            st.markdown(f"{icon} **{criterion}**: {requirement}")
         
         st.markdown("#### How to Apply")
-        st.write(scheme.application_process)
+        for step in scheme.application_process:
+            st.markdown(f"• {step}")
         
         # Add relevance score visualization
         st.progress(scheme.relevance_score)
         st.caption(f"Match Score: {scheme.relevance_score:.0%}")
 
-def get_questions() -> List[Dict]:
-    """Return the list of questionnaire questions."""
-    return [
+def get_dynamic_questions(responses: Dict) -> List[Dict]:
+    """Return dynamic questions based on previous responses."""
+    base_questions = [
+        {
+            "id": "looking_for",
+            "text": translate_text("What kind of support or schemes are you looking for?"),
+            "type": "text",
+            "placeholder": translate_text("Examples: student loan, farming subsidies, business startup support, disability benefits"),
+            "required": True,
+            "category": "Interest Information"
+        },
         {
             "id": "age",
             "text": translate_text("What is your age?"),
             "type": "number",
-            "validation": lambda x: 0 <= x <= 120
+            "validation": lambda x: 0 <= x <= 120,
+            "required": True,
+            "category": "Basic Information"
         },
         {
             "id": "gender",
@@ -255,7 +273,22 @@ def get_questions() -> List[Dict]:
                 translate_text("Male"),
                 translate_text("Female"),
                 translate_text("Other")
-            ]
+            ],
+            "required": True,
+            "category": "Basic Information"
+        },
+        {
+            "id": "marital_status",
+            "text": translate_text("What is your marital status?"),
+            "type": "select",
+            "options": [
+                translate_text("Single"),
+                translate_text("Married"),
+                translate_text("Widowed"),
+                translate_text("Divorced")
+            ],
+            "required": True,
+            "category": "Basic Information"
         },
         {
             "id": "category",
@@ -266,37 +299,236 @@ def get_questions() -> List[Dict]:
                 translate_text("SC"),
                 translate_text("ST"),
                 translate_text("OBC")
-            ]
+            ],
+            "required": True,
+            "category": "Basic Information"
         },
         {
             "id": "annual_income",
             "text": translate_text("What is your annual household income (in INR)?"),
             "type": "number",
-            "validation": lambda x: x >= 0
+            "validation": lambda x: x >= 0,
+            "required": True,
+            "category": "Financial Information"
         },
         {
             "id": "occupation",
             "text": translate_text("What is your primary occupation?"),
             "type": "select",
             "options": [
-                translate_text(opt) for opt in [
-                    "Student", "Farmer", "Self-employed",
-                    "Salaried", "Unemployed", "Other"
-                ]
-            ]
-        },
-        {
-            "id": "education_level",
-            "text": translate_text("What is your highest education level?"),
-            "type": "select",
-            "options": [
-                translate_text(opt) for opt in [
-                    "Below 10th", "10th Pass", "12th Pass",
-                    "Graduate", "Post Graduate", "Other"
-                ]
-            ]
+                translate_text("Student"),
+                translate_text("Farmer"),
+                translate_text("Self-employed"),
+                translate_text("Salaried"),
+                translate_text("Unemployed"),
+                translate_text("Other")
+            ],
+            "required": True,
+            "category": "Occupation Details"
         }
     ]
+
+    # Add occupation-specific questions based on previous response
+    if "occupation" in responses:
+        if responses["occupation"] == "Student":
+            base_questions.extend([
+                {
+                    "id": "education_level",
+                    "text": translate_text("What is your current education level?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("School (1-8)"),
+                        translate_text("School (9-10)"),
+                        translate_text("School (11-12)"),
+                        translate_text("Undergraduate"),
+                        translate_text("Postgraduate"),
+                        translate_text("PhD")
+                    ],
+                    "category": "Education Details"
+                },
+                {
+                    "id": "institution_type",
+                    "text": translate_text("What type of institution do you study in?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Government"),
+                        translate_text("Private"),
+                        translate_text("Aided")
+                    ],
+                    "category": "Education Details"
+                },
+                {
+                    "id": "scholarship_interest",
+                    "text": translate_text("Are you interested in scholarship schemes?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Yes"),
+                        translate_text("No")
+                    ],
+                    "category": "Education Details"
+                }
+            ])
+
+        elif responses["occupation"] == "Farmer":
+            base_questions.extend([
+                {
+                    "id": "land_ownership",
+                    "text": translate_text("Do you own agricultural land?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Yes"),
+                        translate_text("No")
+                    ],
+                    "category": "Agricultural Details"
+                },
+                {
+                    "id": "land_area",
+                    "text": translate_text("How many acres of land do you cultivate?"),
+                    "type": "number",
+                    "validation": lambda x: x >= 0,
+                    "category": "Agricultural Details"
+                },
+                {
+                    "id": "farming_type",
+                    "text": translate_text("What type of farming do you practice?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Traditional"),
+                        translate_text("Organic"),
+                        translate_text("Mixed")
+                    ],
+                    "category": "Agricultural Details"
+                }
+            ])
+
+        elif responses["occupation"] == "Self-employed":
+            base_questions.extend([
+                {
+                    "id": "business_type",
+                    "text": translate_text("What type of business do you run?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Retail"),
+                        translate_text("Service"),
+                        translate_text("Manufacturing"),
+                        translate_text("Other")
+                    ],
+                    "category": "Business Details"
+                },
+                {
+                    "id": "business_size",
+                    "text": translate_text("What is the size of your business?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Micro"),
+                        translate_text("Small"),
+                        translate_text("Medium")
+                    ],
+                    "category": "Business Details"
+                }
+            ])
+
+    # Add disability-related question for all
+    base_questions.append({
+        "id": "disability_status",
+        "text": translate_text("Do you have any disabilities?"),
+        "type": "select",
+        "options": [
+            translate_text("No"),
+            translate_text("Yes")
+        ],
+        "category": "Health Information"
+    })
+
+    # Add disability-specific questions if applicable
+    if "disability_status" in responses and responses["disability_status"] == "Yes":
+        base_questions.append({
+            "id": "disability_type",
+            "text": translate_text("What type of disability do you have?"),
+            "type": "multiselect",
+            "options": [
+                translate_text("Physical"),
+                translate_text("Visual"),
+                translate_text("Hearing"),
+                translate_text("Cognitive"),
+                translate_text("Other")
+            ],
+            "category": "Health Information"
+        })
+
+    return base_questions
+
+def display_questionnaire():
+    """Display the dynamic questionnaire with progress bar."""
+    questions = get_dynamic_questions(st.session_state.find_schemes["user_responses"])
+    total_questions = len(questions)
+    current_q_index = st.session_state.find_schemes["current_question"]
+    
+    # Display progress bar
+    progress = (current_q_index) / total_questions
+    st.progress(progress)
+    st.markdown(f"Question {current_q_index + 1} of {total_questions}")
+    
+    if current_q_index < total_questions:
+        current_q = questions[current_q_index]
+        
+        # Display category header if it's the first question of a category
+        if current_q_index == 0 or questions[current_q_index - 1]["category"] != current_q["category"]:
+            st.markdown(f"### {translate_text(current_q['category'])}")
+        
+        # Display the question in a card
+        with st.container():
+            st.markdown("""
+                <div class="question-card">
+            """, unsafe_allow_html=True)
+            
+            if current_q["type"] == "text":
+                response = st.text_input(
+                    current_q["text"],
+                    placeholder=current_q.get("placeholder", ""),
+                    key=f"input_{current_q['id']}"
+                )
+            elif current_q["type"] == "select":
+                response = st.selectbox(
+                    current_q["text"],
+                    options=current_q["options"],
+                    key=f"input_{current_q['id']}"
+                )
+            elif current_q["type"] == "multiselect":
+                response = st.multiselect(
+                    current_q["text"],
+                    options=current_q["options"],
+                    key=f"input_{current_q['id']}"
+                )
+            elif current_q["type"] == "number":
+                response = st.number_input(
+                    current_q["text"],
+                    min_value=0,
+                    key=f"input_{current_q['id']}"
+                )
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Navigation buttons
+        col1, col2, col3 = st.columns([1, 1, 4])
+        
+        if col1.button("Previous", key="prev_button", disabled=current_q_index == 0):
+            st.session_state.find_schemes["current_question"] -= 1
+            st.rerun()
+            
+        if col2.button("Next", key="next_button"):
+            st.session_state.find_schemes["user_responses"][current_q["id"]] = response
+            st.session_state.find_schemes["current_question"] += 1
+            
+            if current_q_index == total_questions - 1:
+                st.session_state.find_schemes["questionnaire_completed"] = True
+                if handle_questionnaire_completion(
+                    st.session_state.find_schemes["user_responses"],
+                    st.session_state.user_state
+                ):
+                    st.rerun()
+            else:
+                st.rerun()
 
 def format_initial_query(responses: Dict, state: str) -> str:
     """Format user responses into an initial query string."""
@@ -306,21 +538,50 @@ def format_initial_query(responses: Dict, state: str) -> str:
         f"My annual household income is Rs. {responses['annual_income']} "
         f"and I am {responses['occupation'].lower()} by occupation. "
         f"My education level is {responses.get('education_level', 'not specified')}. "
-        f"Please suggest government schemes that I am eligible for."
+        f"I am specifically looking for: {responses.get('looking_for', '')}. "
+        f"Please suggest government schemes that I am eligible for, particularly related to what I am looking for."
     )
 
 def create_user_profile(responses: Dict, state: str) -> UserProfile:
     """Create a UserProfile instance from questionnaire responses."""
+    specific_needs = []
+    
+    # Add disability information if present
+    if responses.get('disability_status') == "Yes":
+        specific_needs.extend(responses.get('disability_type', []))
+    
+    # Add occupation-specific details
+    occupation_details = {}
+    if responses['occupation'] == "Student":
+        occupation_details = {
+            'education_level': responses.get('education_level'),
+            'institution_type': responses.get('institution_type'),
+            'scholarship_interest': responses.get('scholarship_interest')
+        }
+    elif responses['occupation'] == "Farmer":
+        occupation_details = {
+            'land_ownership': responses.get('land_ownership'),
+            'land_area': responses.get('land_area'),
+            'farming_type': responses.get('farming_type')
+        }
+    elif responses['occupation'] == "Self-employed":
+        occupation_details = {
+            'business_type': responses.get('business_type'),
+            'business_size': responses.get('business_size')
+        }
+
     return UserProfile(
         age=int(responses['age']),
         gender=responses['gender'],
         category=responses['category'],
         annual_income=float(responses['annual_income']),
         occupation=responses['occupation'],
+        occupation_details=occupation_details,
         state=state,
         education_level=responses.get('education_level'),
         marital_status=responses.get('marital_status'),
-        specific_needs=responses.get('specific_needs', [])
+        specific_needs=specific_needs,
+        interests=responses.get('looking_for', ''),
     )
 
 def display_thinking_animation():
@@ -352,48 +613,100 @@ def display_bilingual_message(message: str, role: str):
             st.markdown(f"**{translate_text('Translation')}:**")
             st.write(translate_text(message))
 
-def display_scheme_results(grouped_schemes: Dict[SchemeCategory, Dict[str, List[SchemeMatch]]]):
-    """Display matched schemes organized by category and priority."""
-    for category, priority_groups in grouped_schemes.items():
-        st.header(f"📑 {category.value}")
-        
-        for priority_level in ["Highly Recommended", "Potentially Eligible", "Limited Eligibility"]:
-            schemes = priority_groups[priority_level]
-            if schemes:
-                with st.expander(f"{priority_level} ({len(schemes)} schemes)"):
-                    for scheme in schemes:
-                        with st.container():
-                            # Scheme Name
-                            st.markdown(f"""
-                            <h2 style='color: #1f77b4;'>{scheme.scheme_name}</h2>
-                            """, unsafe_allow_html=True)
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            
-                            # Overview section
-                            st.markdown("### Overview")
-                            st.write(scheme.application_process)
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            
-                            # Benefits section
-                            st.markdown("### Benefits")
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            for benefit in scheme.benefits:
-                                st.markdown(f"• {benefit}")
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            
-                            # Eligibility section
-                            st.markdown("### Eligibility")
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            for criterion, matches in scheme.eligibility_match.items():
-                                if criterion != "reason":
-                                    status = "✅" if matches else "❌"
-                                    criterion_text = criterion.replace('_', ' ').title()
-                                    st.markdown(f"• {status} {criterion_text}")
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            
-                            # Simple divider
-                            st.markdown("-----------------")
-                            st.markdown("<br>", unsafe_allow_html=True)
+def display_recommendations(recommendations: List[SchemeRecommendation]):
+    """Display scheme recommendations in an organized manner."""
+    st.markdown("### 🎯 Top Recommended Schemes")
+    
+    for i, scheme in enumerate(recommendations, 1):
+        with st.expander(f"{i}. {scheme.scheme_name}", expanded=i==1):
+            # Why recommended section
+            st.markdown("#### 💡 Why This Scheme")
+            st.write(scheme.why_recommended)
+            
+            # Benefits section
+            st.markdown("#### 📋 Key Benefits")
+            for benefit in scheme.benefits:
+                st.markdown(f"• {benefit}")
+            
+            # Eligibility section with detailed criteria
+            st.markdown("#### ✅ Eligibility Status")
+            
+            # Create two columns for better organization
+            col1, col2 = st.columns(2)
+            
+            # Split eligibility criteria between columns
+            criteria_items = list(scheme.eligibility_requirements.items())
+            mid_point = len(criteria_items) // 2
+            
+            with col1:
+                for criterion, requirement in list(criteria_items[:mid_point]):
+                    matches = scheme.eligibility_status.get(criterion, False)
+                    icon = "✅" if matches else "❌"
+                    criterion_text = criterion.replace('_', ' ').title()
+                    st.markdown(f"{icon} **{criterion_text}**")
+                    st.markdown(f"   *Requirement: {requirement}*")
+            
+            with col2:
+                for criterion, requirement in list(criteria_items[mid_point:]):
+                    matches = scheme.eligibility_status.get(criterion, False)
+                    icon = "✅" if matches else "❌"
+                    criterion_text = criterion.replace('_', ' ').title()
+                    st.markdown(f"{icon} **{criterion_text}**")
+                    st.markdown(f"   *Requirement: {requirement}*")
+            
+            # Application process
+            st.markdown("#### 📝 How to Apply")
+            for step in scheme.application_process:
+                st.markdown(f"• {step}")
+            
+            # Show relevance score
+            st.progress(scheme.relevance_score)
+            st.caption(f"Match Score: {scheme.relevance_score:.0%}")
+
+def handle_questionnaire_completion(responses: Dict, state: str):
+    """Handle the completion of the questionnaire."""
+    try:
+        with st.spinner("Finding the best schemes for you..."):
+            # Create user profile
+            user_profile = create_user_profile(responses, state)
+            
+            # Get scheme recommendations
+            matcher = st.session_state.find_schemes["scheme_matcher"]
+            recommendations = matcher.get_scheme_recommendations(user_profile)
+            
+            if not recommendations:
+                st.warning("No matching schemes found. Please try adjusting your responses.")
+                return False
+            
+            # Store recommendations in session state
+            st.session_state.find_schemes["recommendations"] = recommendations
+            
+            # Format initial query for chat
+            initial_query = format_initial_query(responses, state)
+            st.session_state.find_schemes["chat_history"].append(
+                {"role": "user", "content": initial_query}
+            )
+            
+            # Log the interaction
+            logger.log_conversation(
+                conversation_type="find_schemes",
+                user_query=initial_query,
+                response="Recommendations generated",
+                metadata={
+                    "state": state,
+                    "language": st.session_state.language,
+                    "user_profile": responses,
+                    "interaction_type": "initial_questionnaire",
+                    "num_recommendations": len(recommendations)
+                }
+            )
+            
+            return True
+            
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+        logger.log_error("find_schemes", str(e), {"state": state})
+        return False
 
 def main():
     # Set current page for unique widget keys
@@ -409,10 +722,12 @@ def main():
             st.session_state.find_schemes = {
                 "chat_history": [],
                 "scheme_agent": create_scheme_agent(),
+                "scheme_matcher": SemanticSchemeMatcher(),
                 "is_first_message": True,
                 "current_question": 0,
                 "user_responses": {},
-                "questionnaire_completed": False
+                "questionnaire_completed": False,
+                "recommendations": None
             }
             st.rerun()
     
@@ -437,66 +752,20 @@ def main():
         
     # Rest of the questionnaire code...
     if not st.session_state.find_schemes["questionnaire_completed"]:
-        questions = get_questions()
-        
-        if st.session_state.find_schemes["current_question"] < len(questions):
-            current_q = questions[st.session_state.find_schemes["current_question"]]
-            response = st.selectbox(current_q["text"], 
-                                  options=current_q.get("options", []),
-                                  key=f"input_{current_q['id']}") if current_q["type"] == "select" else \
-                      st.number_input(current_q["text"], 
-                                    min_value=0, 
-                                    key=f"input_{current_q['id']}")
-            
-            col1, col2 = st.columns([1, 5])
-            
-            if col1.button("Next"):
-                st.session_state.find_schemes["user_responses"][current_q["id"]] = response
-                st.session_state.find_schemes["current_question"] += 1
-                
-                if st.session_state.find_schemes["current_question"] == len(questions):
-                    st.session_state.find_schemes["questionnaire_completed"] = True
-                    # Format and add initial query to chat history
-                    initial_query = format_initial_query(
-                        st.session_state.find_schemes["user_responses"],
-                        st.session_state.user_state
-                    )
-                    st.session_state.find_schemes["chat_history"].append({"role": "user", "content": initial_query})
-                st.rerun()
-                
-            if st.session_state.find_schemes["current_question"] > 0:
-                if col1.button("Previous"):
-                    st.session_state.find_schemes["current_question"] -= 1
-                    st.rerun()
+        display_questionnaire()
     
-    # Process initial query or handle user input
+    # Process recommendations and handle chat
     if st.session_state.find_schemes["questionnaire_completed"]:
-        if st.session_state.find_schemes["is_first_message"]:
-            display_thinking_animation()
-            initial_query = st.session_state.find_schemes["chat_history"][-1]["content"]
-            response_data = process_query(initial_query)
-
-            # Log initial questionnaire response
-            logger.log_conversation(
-                conversation_type="find_schemes",
-                user_query=initial_query,
-                response=response_data["response"],
-                metadata={
-                    "state": st.session_state.user_state,
-                    "language": st.session_state.language,
-                    "user_profile": st.session_state.find_schemes["user_responses"],
-                    "interaction_type": "initial_questionnaire"
-                }
-            )
-
-            # Add to chat history
-            st.session_state.find_schemes["chat_history"].append(
-                {"role": "assistant", "content": response_data["response"]}
-            )
-            st.session_state.find_schemes["is_first_message"] = False
-            st.rerun()
-
-        # Handle follow-up questions
+        # Display recommendations if available
+        if st.session_state.find_schemes["recommendations"]:
+            display_recommendations(st.session_state.find_schemes["recommendations"])
+            
+            # Add a separator
+            st.markdown("---")
+            st.markdown("### 💬 Ask Follow-up Questions")
+            st.markdown("Feel free to ask specific questions about any scheme or explore more options.")
+        
+        # Handle chat interface
         if query := st.chat_input(translate_text("Ask follow-up questions about schemes...")):
             # Translate query to English if in another language
             english_query = translate_to_english(query) if st.session_state.language != "en" else query

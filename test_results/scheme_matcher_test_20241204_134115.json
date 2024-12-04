@@ -1,0 +1,678 @@
+{
+  "timestamp": "2024-12-04T13:37:05.013036",
+  "total_profiles": 4,
+  "profile_results": [
+    {
+      "profile": {
+        "occupation": "Student",
+        "state": "Maharashtra",
+        "category": "SC",
+        "age": 22,
+        "gender": "Female",
+        "annual_income": 150000,
+        "interests": "education scholarship"
+      },
+      "search_query": "education scholarship schemes for female SC category schemes schemes for age 22 lower middle income schemes education scholarship academic Undergraduate level education support student financial assistance schemes in Maharashtra",
+      "initial_schemes_count": 16,
+      "recommendations_count": 5,
+      "recommendations": [
+        {
+          "scheme_name": "Maharashtra Swadhar Yojana 2019-20",
+          "relevance_score": 0.9,
+          "why_recommended": "The user is a 22-year-old female student from the Scheduled Caste category with an eligible income, making her well-suited for this scholarship scheme intended for students like her.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Financial assistance of \u20b951,000 per year",
+            "Support for lodging, boarding, and miscellaneous expenses",
+            "Additional financial support for engineering and medical courses"
+          ],
+          "application_process": [
+            "Check eligibility criteria",
+            "Gather required documents (Aadhaar, bank account details)",
+            "Fill out the application form online",
+            "Submit the application along with required documents"
+          ]
+        },
+        {
+          "scheme_name": "Kanyashree Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "The user is a female student from an SC background, which makes her eligible for this scheme aimed at promoting education among girls. The scheme directly supports her interest in educational scholarships.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": false,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Incentives for continuing education",
+            "Direct cash transfers to bank accounts",
+            "Support for girls to avoid early marriage",
+            "Encouragement of skills and knowledge acquisition for economic independence"
+          ],
+          "application_process": [
+            "Check eligibility criteria",
+            "Gather necessary documents",
+            "Apply online through the official portal",
+            "Receive confirmation and updates on application status"
+          ]
+        },
+        {
+          "scheme_name": "Udaan Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "The Udaan Scheme is highly relevant for you as a female student from the SC category with an interest in education scholarships. This scheme specifically aims to support girls like you in pursuing higher technical education, which aligns with your educational goals.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Scholarships for higher education",
+            "Mentoring support for transitioning to technical education",
+            "Access to online resources for mathematics and science"
+          ],
+          "application_process": [
+            "Visit the official website",
+            "Find the Udaan Scheme application section",
+            "Fill out the application form with the required details",
+            "Submit necessary documents as specified",
+            "Wait for confirmation and further instructions"
+          ]
+        },
+        {
+          "scheme_name": "Higher Education Loan Scheme for Women",
+          "relevance_score": 0.9,
+          "why_recommended": "This scheme is tailored for women pursuing higher education, providing financial support which aligns with your interest in education scholarships.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Financial support for higher education abroad",
+            "Encouragement for female education",
+            "Opportunity for personal growth and empowerment"
+          ],
+          "application_process": [
+            "Visit the official government website",
+            "Fill out the application form",
+            "Submit required documents",
+            "Await approval and disbursement of funds"
+          ]
+        },
+        {
+          "scheme_name": "Asmita Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "The Asmita Scheme is specifically designed to support female students in rural areas by providing affordable sanitary products, promoting hygiene and reducing dropout rates. As a female student from an SC background, you are eligible for this scheme, which will benefit you during your menstruation period.",
+          "benefits_count": 5,
+          "eligibility_match": {
+            "age": true,
+            "income": false,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Access to affordable sanitary pads",
+            "Promotion of menstrual hygiene",
+            "Support for women empowerment",
+            "Reduction in school dropout rates",
+            "Awareness programs on reproductive health"
+          ],
+          "application_process": [
+            "Visit the official portal mahaasmita.mahaonline.gov.in",
+            "Register or create an account if necessary",
+            "Provide your details as required by the scheme",
+            "Select the type of sanitary pads needed",
+            "Make a minimal payment if applicable",
+            "Submit your application and wait for confirmation"
+          ]
+        }
+      ],
+      "debug_info": {
+        "initial_schemes": [
+          "Punjabrao Deshmukh Scheme",
+          "Swadhar Yojana 2019-20",
+          "Hirakani Maharashtrachi Scheme",
+          "Kanyashree Scheme",
+          "Udaan Scheme",
+          "Delhi Overseas Scholarship Scheme",
+          "Delhi Financial Assistance To SC Students For Pursuing Higher Studies Abroad Scheme",
+          "Post-Matric Scholarship Scheme for Backward Classes",
+          "Prabuddha Scheme",
+          "Mahila Kisan Yojana",
+          "Higher Education Loan Scheme for Women",
+          "Asmita Scheme",
+          "Delhi Government Merit cum Means scholarship scheme",
+          "Delhi Overseas Scholarship Scheme 2020",
+          "Central Sector Interest Subsidy Scheme (CSIS)",
+          "Education Loan Guarantee Scheme"
+        ],
+        "vector_search_scores": [
+          0.870730817,
+          0.864170313,
+          0.85848546,
+          0.858466446,
+          0.857702494,
+          0.855343163,
+          0.855272,
+          0.852686465,
+          0.851706,
+          0.851513267,
+          0.849654436,
+          0.849418283,
+          0.849007487,
+          0.847351789,
+          0.847293079,
+          0.84717077
+        ]
+      }
+    },
+    {
+      "profile": {
+        "occupation": "Farmer",
+        "state": "Punjab",
+        "category": "General",
+        "age": 35,
+        "gender": "Male",
+        "annual_income": 300000,
+        "interests": "agricultural support"
+      },
+      "search_query": "agricultural support schemes for male General category schemes schemes for age 35 lower middle income schemes agricultural farming subsidy krishi farm equipment support crop insurance schemes agricultural loans schemes in Punjab",
+      "initial_schemes_count": 9,
+      "recommendations_count": 5,
+      "recommendations": [
+        {
+          "scheme_name": "Punjab Farm Loan Waiver Scheme 2017",
+          "relevance_score": 1.0,
+          "why_recommended": "The scheme is designed specifically for farmers in Punjab, making it highly relevant for you as a farmer living in the state. Your annual income and occupation align with the intended beneficiaries of this scheme, providing necessary debt relief.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Waiver of crop loans up to \u20b92 lakh",
+            "Direct financial support for farmers",
+            "Reduction of financial burden on small and marginal farmers",
+            "Additional benefits due to waiver of interest from 1st April 2017 onwards"
+          ],
+          "application_process": [
+            "Visit the official website of the Punjab government",
+            "Fill out the application form for the farm loan waiver",
+            "Submit required documents, including proof of land ownership and bank details",
+            "Await verification from the authorities",
+            "Receive the loan waiver benefit if eligible"
+          ]
+        },
+        {
+          "scheme_name": "Crop Investment Support Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "The scheme directly supports farmers with financial assistance for crop investment, which aligns with the user's occupation and interests in agricultural support.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Financial assistance of Rs. 8,000 per acre for 2 crops per year",
+            "Pattadar Passbook initiative to end land disputes",
+            "Boost in agricultural production",
+            "Support for farmers in Punjab"
+          ],
+          "application_process": [
+            "Gather necessary documents (identity proof, land records, etc.)",
+            "Visit the local agriculture office or department in Punjab",
+            "Fill out the application form for the Crop Investment Support Scheme",
+            "Submit the application along with required documents",
+            "Await verification and approval from the agriculture department"
+          ]
+        },
+        {
+          "scheme_name": "Punjab Farm Loan Waiver Scheme 2017",
+          "relevance_score": 0.9,
+          "why_recommended": "The user is a farmer with a relevant occupation and income level that allows them to benefit from the debt relief provided by this scheme. Their age and state residency also align with the eligibility criteria, making this scheme highly relevant to their needs.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": false,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Debt relief of up to \u20b92 lakh",
+            "Support in settling crop loans",
+            "Phased payments to banks except cooperative institutions",
+            "Potentially simplified application process through an online portal"
+          ],
+          "application_process": [
+            "Check official announcements about application portal",
+            "Prepare required documents (Aadhaar, bank details)",
+            "Register online once applications are open",
+            "Fill the application form with accurate details",
+            "Submit the application and wait for a confirmation"
+          ]
+        },
+        {
+          "scheme_name": "Krishi Rin Samadhan Yojana",
+          "relevance_score": 0.9,
+          "why_recommended": "The scheme aims to support farmers financially, which aligns with your occupation as a farmer.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Doubling farmers' income",
+            "Direct financial support through bonuses",
+            "Lower interest rates on loans"
+          ],
+          "application_process": [
+            "Visit the official website of the scheme",
+            "Fill out the application form",
+            "Attach necessary documents",
+            "Submit the application",
+            "Wait for verification and approval"
+          ]
+        },
+        {
+          "scheme_name": "Market Assurance Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "The Market Assurance Scheme aims to provide price support and compensation to farmers, which aligns with your occupation as a farmer and your interest in agricultural support.",
+          "benefits_count": 5,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Price support for farmers during distress sales",
+            "30% compensation to state government for procurement losses",
+            "Ensures appropriate pricing for crops",
+            "Encourages agricultural production",
+            "State government's flexibility to sell procured goods"
+          ],
+          "application_process": [
+            "Visit the local agriculture department",
+            "Obtain the application form for the Market Assurance Scheme",
+            "Fill out the application form with necessary details",
+            "Submit the application form along with required documents to the local agriculture office",
+            "Await confirmation and further updates regarding the scheme"
+          ]
+        }
+      ],
+      "debug_info": {
+        "initial_schemes": [
+          "Chandranna Rythu Kshetralu and Polam Pilusthondi",
+          "Crop Investment Support Scheme",
+          "Punjab Farm Loan Waiver Scheme 2017",
+          "Punjab Farm Loan Waiver Scheme 2017",
+          "Krishi Rin Samadhan Yojana",
+          "Farm Loan Waiver Scheme",
+          "Punjab Debt Waiver Scheme",
+          "Market Assurance Scheme",
+          "Krishi Sanjivani Yojana"
+        ],
+        "vector_search_scores": [
+          0.869840384,
+          0.868476,
+          0.863340199,
+          0.862309039,
+          0.859511912,
+          0.857743204,
+          0.856020629,
+          0.855653763,
+          0.854426682
+        ]
+      }
+    },
+    {
+      "profile": {
+        "occupation": "Self-employed",
+        "state": "Gujarat",
+        "category": "OBC",
+        "age": 28,
+        "gender": "Female",
+        "annual_income": 250000,
+        "interests": "business loan"
+      },
+      "search_query": "business loan schemes for female OBC category schemes schemes for age 28 lower middle income schemes business entrepreneurship startup msme small business loans business development schemes schemes in Gujarat",
+      "initial_schemes_count": 7,
+      "recommendations_count": 4,
+      "recommendations": [
+        {
+          "scheme_name": "Start-Up India Scheme for Women Entrepreneurs",
+          "relevance_score": 0.9,
+          "why_recommended": "The scheme specifically targets women entrepreneurs, and as a self-employed woman in the OBC category with a startup interest, this scheme is highly relevant to your profile.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Instant mentorship from eminent women personalities",
+            "Opportunities to interact with investors, successful entrepreneurs, and legal specialists",
+            "Support for developing skills and strategies for business growth"
+          ],
+          "application_process": [
+            "Visit the official website (startupindia.gov.in)",
+            "Register for the Speed Mentoring session",
+            "Provide necessary documentation and details about your startup",
+            "Participate in the mentoring sessions"
+          ]
+        },
+        {
+          "scheme_name": "Startup Scheme for Entrepreneurs",
+          "relevance_score": 0.9,
+          "why_recommended": "The scheme is designed to support self-employed individuals and entrepreneurs, which directly aligns with your interest in business loans and starting a venture.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Financial assistance for starting business",
+            "Mentorship and guidance",
+            "Networking opportunities",
+            "Workshops and training programs"
+          ],
+          "application_process": [
+            "Visit the official website of the Gujarat startup scheme",
+            "Register as a new user",
+            "Fill in the application form with required details",
+            "Submit necessary documents proving eligibility",
+            "Wait for approval and further instructions"
+          ]
+        },
+        {
+          "scheme_name": "Women Entrepreneurship Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "This scheme is aimed at empowering women entrepreneurs and providing them with the necessary support to scale their businesses, making it highly relevant for someone who is self-employed and interested in business loans.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Access to funding and loans for business expansion",
+            "Skill development and training resources",
+            "Networking opportunities with other women entrepreneurs",
+            "Support in scaling innovative ideas"
+          ],
+          "application_process": [
+            "Visit the official website wep.gov.in",
+            "Register on the portal",
+            "Submit an application form with required documents",
+            "Wait for approval and funding assistance"
+          ]
+        },
+        {
+          "scheme_name": "Mukhyamantri Gramoday Yojana",
+          "relevance_score": 0.9,
+          "why_recommended": "The scheme offers financial support through interest subsidies which can significantly benefit a self-employed individual looking for business loans.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Interest subsidy up to 6% for traditionally employed businessmen",
+            "Additional interest subsidy of 2% for Sakhi Mandal groups",
+            "Support for small scale industries",
+            "Capacity building for sustainable livelihoods"
+          ],
+          "application_process": [
+            "Check eligibility criteria",
+            "Fill out the application form for Mukhyamantri Gramoday Yojana",
+            "Submit necessary documents (ID proof, income proof, etc.)",
+            "Await approval from the concerned department",
+            "Receive the allocated interest subsidy upon approval"
+          ]
+        }
+      ],
+      "debug_info": {
+        "initial_schemes": [
+          "Start-Up India Scheme for Women Entrepreneurs",
+          "Stand Up India Loan Scheme",
+          "Startup Scheme",
+          "MUDRA Loan Scheme for Small and Marginal Fisherman",
+          "Women Entrepreneurship Scheme",
+          "Mukhyamantri Gramoday Yojana",
+          "Delhi Self Employment Loan Scheme"
+        ],
+        "vector_search_scores": [
+          0.856354773,
+          0.851894617,
+          0.846141815,
+          0.845976,
+          0.845903516,
+          0.841455936,
+          0.838050663
+        ]
+      }
+    },
+    {
+      "profile": {
+        "occupation": "Unemployed",
+        "state": "Jharkhand",
+        "category": "ST",
+        "age": 45,
+        "gender": "Male",
+        "annual_income": 180000,
+        "interests": "disability support employment"
+      },
+      "search_query": "disability support employment schemes for male ST category schemes schemes for age 45 lower middle income schemes employment generation skill development vocational training job assistance Physical assistance schemes schemes in Jharkhand",
+      "initial_schemes_count": 10,
+      "recommendations_count": 5,
+      "recommendations": [
+        {
+          "scheme_name": "Deen Dayal Divyangjan Sahajya Scheme (DDDSS)",
+          "relevance_score": 0.9,
+          "why_recommended": "This scheme is specifically aimed at the welfare of persons with disabilities, aligning with the user's interest in disability support employment. The user, being from the Scheduled Tribe category and having a lower income, meets eligibility criteria for government support.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Financial assistance for employment opportunities",
+            "Skill development programs",
+            "Access to resources and support for disabled individuals"
+          ],
+          "application_process": [
+            "Visit the official website of the Jharkhand government",
+            "Fill out the online application form",
+            "Submit required documents including proof of disability and income certificate",
+            "Attend an interview/assessment if required",
+            "Wait for approval and further instructions"
+          ]
+        },
+        {
+          "scheme_name": "Jharkhand Divyang Jan Adhikar Niyamavali \u2013 2018",
+          "relevance_score": 0.9,
+          "why_recommended": "The user is unemployed, belongs to the ST category, and has a low annual income, which aligns with the objectives of the scheme to provide support and equal opportunities for persons with disabilities.",
+          "benefits_count": 5,
+          "eligibility_match": {
+            "category": true,
+            "state": true,
+            "occupation": true
+          },
+          "benefits": [
+            "Equal opportunities in government and private jobs",
+            "Support for survival and well-being",
+            "Resolution of complaints and queries related to disabilities",
+            "Revised stipends for persons with disabilities",
+            "Special education and rehabilitation services"
+          ],
+          "application_process": [
+            "Visit the official government website for disability support in Jharkhand",
+            "Gather necessary documentation regarding disability",
+            "Fill out the application form for the Jharkhand Divyang Jan Adhikar Niyamavali \u2013 2018",
+            "Submit the application through the specified channels (online/offline)",
+            "Attend any follow-up meetings or interviews as required"
+          ]
+        },
+        {
+          "scheme_name": "Jharkhand Pension Scheme for Senior Citizens, Widows, and Disabled",
+          "relevance_score": 0.9,
+          "why_recommended": "The user belongs to the ST category, is unemployed with a low annual income, and is interested in disability support, making them a suitable candidate for the pension scheme that focuses on providing financial assistance to elderly, widows, and disabled individuals.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": false,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Monthly pension of \u20b91000",
+            "Support for disabled individuals",
+            "Financial aid for unemployed individuals in need"
+          ],
+          "application_process": [
+            "Check eligibility criteria",
+            "Gather necessary documents (income proof, caste certificate, etc.)",
+            "Visit the nearest government office or apply online",
+            "Submit the application form",
+            "Await verification and approval"
+          ]
+        },
+        {
+          "scheme_name": "Skill Development Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "This scheme is highly relevant for you as it aims to provide skill development, which can help enhance your employability, especially considering your interests in disability support employment.",
+          "benefits_count": 4,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Skill development training",
+            "Financial assistance for skill development",
+            "Job placement support",
+            "Access to upgraded skill infrastructure"
+          ],
+          "application_process": [
+            "Visit the official website of Kaushal Vikas Nigam",
+            "Register for the skill development courses",
+            "Submit required documents",
+            "Attend interviews for job placement assistance"
+          ]
+        },
+        {
+          "scheme_name": "Jharkhand Viklang Pension Scheme",
+          "relevance_score": 0.9,
+          "why_recommended": "The user is a male from the ST category, unemployed, and living in Jharkhand, making him a suitable candidate for the Viklang (Divyangjan) Pension Scheme due to his socioeconomic background. This scheme specifically aims to provide financial assistance to individuals with disabilities.",
+          "benefits_count": 3,
+          "eligibility_match": {
+            "age": true,
+            "income": true,
+            "category": true,
+            "occupation": true,
+            "state": true
+          },
+          "benefits": [
+            "Increased financial assistance from Rs. 600 to Rs. 1000 per month",
+            "Direct bank transfers to eliminate middlemen",
+            "Support for Persons with Disabilities to improve living standards"
+          ],
+          "application_process": [
+            "Visit the local government office or registered online portal",
+            "Fill out the application form for the Viklang Pension Scheme",
+            "Provide necessary documentation (proof of disability, identity proof, etc.)",
+            "Submit the application form to the appropriate authority",
+            "Wait for approval and bank account credit"
+          ]
+        }
+      ],
+      "debug_info": {
+        "initial_schemes": [
+          "Indira Gandhi National Disability Pension Scheme",
+          "Deen Dayal Divyangjan Sahajya Scheme",
+          "Jharkhand Divyang Jan Adhikar Niyamavali \u2013 2018",
+          "Indira Gandhi National Disability Pension Scheme",
+          "Pension Scheme for Elderly, Widows, and Disabled Persons",
+          "Delhi SC / ST / OBC / Minority Vocational Training Scheme",
+          "Skill Development Scheme",
+          "Higher Education for Persons with Disabilities Scheme (HEPSN)",
+          "Old Age Pension, Widow (Vidhwa) Pension and Viklang (Divyangjan) Pension Scheme",
+          "Revised DDRS Scheme 2018-19"
+        ],
+        "vector_search_scores": [
+          0.862615407,
+          0.857935548,
+          0.85152024,
+          0.851182759,
+          0.849813581,
+          0.849303663,
+          0.848542,
+          0.846212447,
+          0.845949471,
+          0.845663667
+        ]
+      }
+    }
+  ],
+  "debug_logs": [
+    "Processing profile: Student from Maharashtra",
+    "Generated search query: education scholarship schemes for female SC category schemes schemes for age 22 lower middle income schemes education scholarship academic Undergraduate level education support student financial assistance schemes in Maharashtra",
+    "Found 16 initial schemes",
+    "Generated 5 final recommendations",
+    "Processing profile: Farmer from Punjab",
+    "Generated search query: agricultural support schemes for male General category schemes schemes for age 35 lower middle income schemes agricultural farming subsidy krishi farm equipment support crop insurance schemes agricultural loans schemes in Punjab",
+    "Found 9 initial schemes",
+    "Generated 5 final recommendations",
+    "Processing profile: Self-employed from Gujarat",
+    "Generated search query: business loan schemes for female OBC category schemes schemes for age 28 lower middle income schemes business entrepreneurship startup msme small business loans business development schemes schemes in Gujarat",
+    "Found 7 initial schemes",
+    "Generated 4 final recommendations",
+    "Processing profile: Unemployed from Jharkhand",
+    "Generated search query: disability support employment schemes for male ST category schemes schemes for age 45 lower middle income schemes employment generation skill development vocational training job assistance Physical assistance schemes schemes in Jharkhand",
+    "Found 10 initial schemes",
+    "Generated 5 final recommendations"
+  ]
+}

@@ -60,5 +60,15 @@ class ConversationLogger:
         except Exception as e:
             print(f"Error logging conversation: {str(e)}")
 
+    def log_error(self, component: str, error: str, metadata: Dict = None):
+        """Log errors with context."""
+        error_log = {
+            "timestamp": datetime.now().isoformat(),
+            "component": component,
+            "error": str(error),
+            "metadata": metadata or {}
+        }
+        # Add logging implementation
+
 # Global logger instance
 logger = ConversationLogger() 
