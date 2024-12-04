@@ -224,6 +224,27 @@ class SchemeAnalyzer:
                     if user_gender:
                         eligibility_results[criterion] = user_gender in value.lower()
                 
+                # Check marital status criteria
+                elif any(word in criterion_lower for word in ['marital', 'married', 'widow', 'single']):
+                    user_marital_status = user_profile.get('marital_status')
+                    if user_marital_status is not None:
+                        # Convert both to lowercase for comparison
+                        user_status = user_marital_status.lower()
+                        criterion_value = value.lower()
+                        
+                        # Handle various marital status conditions
+                        if 'widow' in criterion_value:
+                            eligibility_results[criterion] = user_status == 'widowed'
+                        elif 'single' in criterion_value:
+                            eligibility_results[criterion] = user_status == 'single'
+                        elif 'married' in criterion_value:
+                            eligibility_results[criterion] = user_status == 'married'
+                        else:
+                            eligibility_results[criterion] = user_status in criterion_value
+                    else:
+                        # If marital status is not provided, we can't determine eligibility
+                        eligibility_results[criterion] = True  # Assume eligible if not specified
+                
                 # Check occupation criteria
                 elif any(word in criterion_lower for word in ['occupation', 'profession', 'employment']):
                     user_occupation = user_profile.get('occupation', '').lower()

@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from pydantic import BaseModel
 from pinecone import Pinecone
 import os
@@ -23,9 +23,9 @@ class UserProfile:
     occupation_details: Dict[str, Any]
     state: str
     education_level: str
-    marital_status: str
     specific_needs: List[str]
     interests: str
+    marital_status: Optional[str] = None
 
 class SchemeRecommendation(BaseModel):
     """Schema for recommended schemes."""
@@ -211,7 +211,14 @@ User Profile:
 - Specific Needs: {', '.join(user_profile.specific_needs) if user_profile.specific_needs else 'None'}
 - Looking for: {user_profile.interests}
 
-For each scheme, analyze if the user is eligible and provide details in this exact format:
+CRITICAL RULES:
+1. Income limits are ABSOLUTE - if user's income exceeds the scheme's limit by ANY amount, DO NOT include the scheme
+2. NO EXCEPTIONS to income criteria
+3. If income limit is mentioned in scheme, you MUST check it
+4. If income information is unclear, assume user is not eligible
+5. Only return schemes where the user meets ALL eligibility criteria, especially income limits
+
+For each ELIGIBLE scheme, provide details in this exact format:
 
 SCHEME NAME: [Exact official name of the scheme]
 RELEVANCE: [Score between 0 and 1]
@@ -233,14 +240,15 @@ HOW TO APPLY:
 Analyze these schemes:
 {json.dumps([{'name': s['scheme_name'], 'details': s['details']} for s in schemes], indent=2)}
 
-Return details for only the top 5 most relevant schemes that the user is eligible for.
+Return details for only the top 5 most relevant schemes where the user meets ALL eligibility criteria, especially income limits.
+DO NOT include any schemes where the user's income exceeds the scheme's limit.
 Separate each scheme with ---"""
 
         try:
             response = self.openai_client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are an expert in Indian government schemes."},
+                    {"role": "system", "content": "You are an expert in Indian government schemes with strict attention to eligibility criteria."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.3
@@ -267,6 +275,7 @@ Separate each scheme with ---"""
                     }
                     
                     current_section = None
+                    income_eligible = None  # Track income eligibility, None means not yet determined
                     
                     for line in lines:
                         line = line.strip()
@@ -299,12 +308,20 @@ Separate each scheme with ---"""
                                     criterion = criterion.strip()
                                     requirement = status.strip()
                                     status = parts[1].strip().lower() == 'yes'
+                                    
+                                    # Check if this is income criterion
+                                    if 'income' in criterion.lower():
+                                        income_eligible = status
+                                    
                                     scheme_data['eligibility_requirements'][criterion] = requirement
                                     scheme_data['eligibility_status'][criterion] = status
                         elif line.startswith(('1.', '2.', '3.')) and current_section == 'process':
                             scheme_data['process'].append(line.strip())
                     
-                    if scheme_data['name']:  # Only add if we have a valid scheme
+                    # Only add scheme if it has a valid name and either:
+                    # 1. Income is explicitly eligible (income_eligible is True)
+                    # 2. No income criteria mentioned (income_eligible is None)
+                    if scheme_data['name'] and (income_eligible is True or income_eligible is None):
                         recommendations.append(SchemeRecommendation(
                             scheme_name=scheme_data['name'],
                             relevance_score=scheme_data['score'],

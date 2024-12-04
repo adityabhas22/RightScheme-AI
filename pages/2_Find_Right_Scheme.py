@@ -250,12 +250,19 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
     """Return dynamic questions based on previous responses."""
     base_questions = [
         {
-            "id": "looking_for",
-            "text": translate_text("What kind of support or schemes are you looking for?"),
-            "type": "text",
-            "placeholder": translate_text("Examples: student loan, farming subsidies, business startup support, disability benefits"),
+            "id": "occupation_category",
+            "text": translate_text("Which category best describes you?"),
+            "type": "select",
+            "options": [
+                translate_text("Student"),
+                translate_text("Employed"),
+                translate_text("Self-employed/Business"),
+                translate_text("Unemployed"),
+                translate_text("Senior Citizen"),
+                translate_text("Farmer/Agricultural Worker")
+            ],
             "required": True,
-            "category": "Interest Information"
+            "category": "Basic Information"
         },
         {
             "id": "age",
@@ -278,21 +285,8 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
             "category": "Basic Information"
         },
         {
-            "id": "marital_status",
-            "text": translate_text("What is your marital status?"),
-            "type": "select",
-            "options": [
-                translate_text("Single"),
-                translate_text("Married"),
-                translate_text("Widowed"),
-                translate_text("Divorced")
-            ],
-            "required": True,
-            "category": "Basic Information"
-        },
-        {
             "id": "category",
-            "text": translate_text("Which category do you belong to?"),
+            "text": translate_text("Which social category do you belong to?"),
             "type": "select",
             "options": [
                 translate_text("General"),
@@ -310,39 +304,22 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
             "validation": lambda x: x >= 0,
             "required": True,
             "category": "Financial Information"
-        },
-        {
-            "id": "occupation",
-            "text": translate_text("What is your primary occupation?"),
-            "type": "select",
-            "options": [
-                translate_text("Student"),
-                translate_text("Farmer"),
-                translate_text("Self-employed"),
-                translate_text("Salaried"),
-                translate_text("Unemployed"),
-                translate_text("Other")
-            ],
-            "required": True,
-            "category": "Occupation Details"
         }
     ]
 
-    # Add occupation-specific questions based on previous response
-    if "occupation" in responses:
-        if responses["occupation"] == "Student":
+    # Add category-specific questions based on occupation_category
+    if "occupation_category" in responses:
+        if responses["occupation_category"] == "Student":
             base_questions.extend([
                 {
                     "id": "education_level",
                     "text": translate_text("What is your current education level?"),
                     "type": "select",
                     "options": [
-                        translate_text("School (1-8)"),
-                        translate_text("School (9-10)"),
-                        translate_text("School (11-12)"),
+                        translate_text("School Student"),
                         translate_text("Undergraduate"),
                         translate_text("Postgraduate"),
-                        translate_text("PhD")
+                        translate_text("Research Scholar")
                     ],
                     "category": "Education Details"
                 },
@@ -358,32 +335,138 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
                     "category": "Education Details"
                 },
                 {
-                    "id": "scholarship_interest",
-                    "text": translate_text("Are you interested in scholarship schemes?"),
-                    "type": "select",
+                    "id": "specific_requirement",
+                    "text": translate_text("What specific support are you looking for?"),
+                    "type": "multiselect",
                     "options": [
-                        translate_text("Yes"),
-                        translate_text("No")
+                        translate_text("Education Loan"),
+                        translate_text("Scholarship"),
+                        translate_text("Skill Development"),
+                        translate_text("Research Funding")
                     ],
-                    "category": "Education Details"
+                    "category": "Requirements"
                 }
             ])
 
-        elif responses["occupation"] == "Farmer":
+        elif responses["occupation_category"] == "Employed":
             base_questions.extend([
                 {
-                    "id": "land_ownership",
-                    "text": translate_text("Do you own agricultural land?"),
+                    "id": "employment_sector",
+                    "text": translate_text("Which sector do you work in?"),
                     "type": "select",
                     "options": [
-                        translate_text("Yes"),
-                        translate_text("No")
+                        translate_text("Government"),
+                        translate_text("Private"),
+                        translate_text("Public Sector")
                     ],
-                    "category": "Agricultural Details"
+                    "category": "Employment Details"
                 },
                 {
-                    "id": "land_area",
-                    "text": translate_text("How many acres of land do you cultivate?"),
+                    "id": "specific_requirement",
+                    "text": translate_text("What specific support are you looking for?"),
+                    "type": "multiselect",
+                    "options": [
+                        translate_text("Housing"),
+                        translate_text("Skill Enhancement"),
+                        translate_text("Business Loan"),
+                        translate_text("Personal Loan")
+                    ],
+                    "category": "Requirements"
+                }
+            ])
+
+        elif responses["occupation_category"] == "Self-employed/Business":
+            base_questions.extend([
+                {
+                    "id": "business_type",
+                    "text": translate_text("What is your business size?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Micro"),
+                        translate_text("Small"),
+                        translate_text("Medium")
+                    ],
+                    "category": "Business Details"
+                },
+                {
+                    "id": "annual_turnover",
+                    "text": translate_text("What is your annual business turnover (in INR)?"),
+                    "type": "number",
+                    "validation": lambda x: x >= 0,
+                    "category": "Business Details"
+                },
+                {
+                    "id": "specific_requirement",
+                    "text": translate_text("What specific support are you looking for?"),
+                    "type": "multiselect",
+                    "options": [
+                        translate_text("Business Loan"),
+                        translate_text("Equipment Purchase"),
+                        translate_text("Working Capital"),
+                        translate_text("Business Expansion")
+                    ],
+                    "category": "Requirements"
+                }
+            ])
+
+        elif responses["occupation_category"] == "Unemployed":
+            base_questions.extend([
+                {
+                    "id": "education_level",
+                    "text": translate_text("What is your highest education level?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Below 10th"),
+                        translate_text("10th Pass"),
+                        translate_text("12th Pass"),
+                        translate_text("Graduate"),
+                        translate_text("Post Graduate")
+                    ],
+                    "category": "Education Details"
+                },
+                {
+                    "id": "specific_requirement",
+                    "text": translate_text("What specific support are you looking for?"),
+                    "type": "multiselect",
+                    "options": [
+                        translate_text("Skill Development"),
+                        translate_text("Self-employment Schemes"),
+                        translate_text("Job Training")
+                    ],
+                    "category": "Requirements"
+                }
+            ])
+
+        elif responses["occupation_category"] == "Senior Citizen":
+            base_questions.extend([
+                {
+                    "id": "living_status",
+                    "text": translate_text("What is your living status?"),
+                    "type": "select",
+                    "options": [
+                        translate_text("Living Alone"),
+                        translate_text("Living with Family")
+                    ],
+                    "category": "Living Details"
+                },
+                {
+                    "id": "specific_requirement",
+                    "text": translate_text("What specific support are you looking for?"),
+                    "type": "multiselect",
+                    "options": [
+                        translate_text("Pension Schemes"),
+                        translate_text("Healthcare"),
+                        translate_text("Financial Security")
+                    ],
+                    "category": "Requirements"
+                }
+            ])
+
+        elif responses["occupation_category"] == "Farmer/Agricultural Worker":
+            base_questions.extend([
+                {
+                    "id": "land_holding",
+                    "text": translate_text("What is your land holding size (in acres)?"),
                     "type": "number",
                     "validation": lambda x: x >= 0,
                     "category": "Agricultural Details"
@@ -398,37 +481,22 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
                         translate_text("Mixed")
                     ],
                     "category": "Agricultural Details"
-                }
-            ])
-
-        elif responses["occupation"] == "Self-employed":
-            base_questions.extend([
-                {
-                    "id": "business_type",
-                    "text": translate_text("What type of business do you run?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Retail"),
-                        translate_text("Service"),
-                        translate_text("Manufacturing"),
-                        translate_text("Other")
-                    ],
-                    "category": "Business Details"
                 },
                 {
-                    "id": "business_size",
-                    "text": translate_text("What is the size of your business?"),
-                    "type": "select",
+                    "id": "specific_requirement",
+                    "text": translate_text("What specific support are you looking for?"),
+                    "type": "multiselect",
                     "options": [
-                        translate_text("Micro"),
-                        translate_text("Small"),
-                        translate_text("Medium")
+                        translate_text("Crop Loans"),
+                        translate_text("Equipment Purchase"),
+                        translate_text("Irrigation Schemes"),
+                        translate_text("Subsidies")
                     ],
-                    "category": "Business Details"
+                    "category": "Requirements"
                 }
             ])
 
-    # Add disability-related question for all
+    # Add disability-related questions for all
     base_questions.append({
         "id": "disability_status",
         "text": translate_text("Do you have any disabilities?"),
@@ -532,19 +600,45 @@ def display_questionnaire():
 
 def format_initial_query(responses: Dict, state: str) -> str:
     """Format user responses into an initial query string."""
+    # Get specific requirements if available
+    specific_reqs = responses.get('specific_requirement', [])
+    specific_reqs_str = ", ".join(specific_reqs) if specific_reqs else "not specified"
+    
+    # Build occupation details string
+    occupation_details = ""
+    if responses.get('occupation_category') == "Student":
+        occupation_details = f"studying in {responses.get('institution_type', 'not specified')} institution"
+    elif responses.get('occupation_category') == "Employed":
+        occupation_details = f"working in {responses.get('employment_sector', 'not specified')} sector"
+    elif responses.get('occupation_category') == "Self-employed/Business":
+        occupation_details = f"running a {responses.get('business_type', 'not specified')} business"
+    elif responses.get('occupation_category') == "Farmer/Agricultural Worker":
+        occupation_details = f"practicing {responses.get('farming_type', 'not specified')} farming"
+    elif responses.get('occupation_category') == "Senior Citizen":
+        occupation_details = f"{responses.get('living_status', 'not specified')}"
+    
+    # Build disability string if applicable
+    disability_str = ""
+    if responses.get('disability_status') == "Yes" and responses.get('disability_type'):
+        disability_str = f" I have {', '.join(responses['disability_type'])} disability."
+    
     return (
         f"I am a {responses['age']} year old {responses['gender'].lower()} from {state}, "
         f"belonging to {responses['category']} category. "
-        f"My annual household income is Rs. {responses['annual_income']} "
-        f"and I am {responses['occupation'].lower()} by occupation. "
-        f"My education level is {responses.get('education_level', 'not specified')}. "
-        f"I am specifically looking for: {responses.get('looking_for', '')}. "
-        f"Please suggest government schemes that I am eligible for, particularly related to what I am looking for."
+        f"My annual household income is Rs. {responses['annual_income']}. "
+        f"I am a {responses['occupation_category']} {occupation_details}. "
+        f"My specific requirements are: {specific_reqs_str}. "
+        f"{disability_str} "
+        f"Please suggest government schemes that I am eligible for, particularly related to my requirements."
     )
 
 def create_user_profile(responses: Dict, state: str) -> UserProfile:
     """Create a UserProfile instance from questionnaire responses."""
     specific_needs = []
+    
+    # Add specific requirements to needs
+    if responses.get('specific_requirement'):
+        specific_needs.extend(responses['specific_requirement'])
     
     # Add disability information if present
     if responses.get('disability_status') == "Yes":
@@ -552,37 +646,62 @@ def create_user_profile(responses: Dict, state: str) -> UserProfile:
     
     # Add occupation-specific details
     occupation_details = {}
-    if responses['occupation'] == "Student":
+    if responses['occupation_category'] == "Student":
         occupation_details = {
             'education_level': responses.get('education_level'),
             'institution_type': responses.get('institution_type'),
-            'scholarship_interest': responses.get('scholarship_interest')
+            'specific_requirements': responses.get('specific_requirement', [])
         }
-    elif responses['occupation'] == "Farmer":
+    elif responses['occupation_category'] == "Employed":
         occupation_details = {
-            'land_ownership': responses.get('land_ownership'),
-            'land_area': responses.get('land_area'),
-            'farming_type': responses.get('farming_type')
+            'employment_sector': responses.get('employment_sector'),
+            'specific_requirements': responses.get('specific_requirement', [])
         }
-    elif responses['occupation'] == "Self-employed":
+    elif responses['occupation_category'] == "Self-employed/Business":
         occupation_details = {
             'business_type': responses.get('business_type'),
-            'business_size': responses.get('business_size')
+            'annual_turnover': responses.get('annual_turnover'),
+            'specific_requirements': responses.get('specific_requirement', [])
+        }
+    elif responses['occupation_category'] == "Farmer/Agricultural Worker":
+        occupation_details = {
+            'land_holding': responses.get('land_holding'),
+            'farming_type': responses.get('farming_type'),
+            'specific_requirements': responses.get('specific_requirement', [])
+        }
+    elif responses['occupation_category'] == "Senior Citizen":
+        occupation_details = {
+            'living_status': responses.get('living_status'),
+            'specific_requirements': responses.get('specific_requirement', [])
+        }
+    elif responses['occupation_category'] == "Unemployed":
+        occupation_details = {
+            'education_level': responses.get('education_level'),
+            'specific_requirements': responses.get('specific_requirement', [])
         }
 
-    return UserProfile(
-        age=int(responses['age']),
-        gender=responses['gender'],
-        category=responses['category'],
-        annual_income=float(responses['annual_income']),
-        occupation=responses['occupation'],
-        occupation_details=occupation_details,
-        state=state,
-        education_level=responses.get('education_level'),
-        marital_status=responses.get('marital_status'),
-        specific_needs=specific_needs,
-        interests=responses.get('looking_for', ''),
-    )
+    # Convert specific_needs list to string for interests
+    interests_str = ", ".join(specific_needs) if specific_needs else ""
+
+    # Only include marital status if provided in responses
+    profile_args = {
+        'age': int(responses['age']),
+        'gender': responses['gender'],
+        'category': responses['category'],
+        'annual_income': float(responses['annual_income']),
+        'occupation': responses['occupation_category'],
+        'occupation_details': occupation_details,
+        'state': state,
+        'education_level': responses.get('education_level'),
+        'specific_needs': specific_needs,
+        'interests': interests_str,  # Now using the string version
+    }
+    
+    # Add marital status only if provided
+    if 'marital_status' in responses:
+        profile_args['marital_status'] = responses['marital_status']
+
+    return UserProfile(**profile_args)
 
 def display_thinking_animation():
     """Display a simple thinking text with fade animation."""

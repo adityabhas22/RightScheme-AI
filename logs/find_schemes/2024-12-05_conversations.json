@@ -1,0 +1,186 @@
+[
+  {
+    "conversation_id": "114a19ee-1701-42f4-9e74-2e8935e68c0b",
+    "timestamp": "2024-12-05T00:02:36.970239",
+    "type": "find_schemes",
+    "user_query": "I am a 45 year old male from Andhra Pradesh, belonging to SC category. My annual household income is Rs. 400000 and I am self-employed by occupation. My education level is not specified. I am specifically looking for: business support. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Andhra Pradesh",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "business support",
+        "age": 45,
+        "gender": "Male",
+        "marital_status": "Married",
+        "category": "SC",
+        "annual_income": 400000,
+        "occupation": "Self-employed",
+        "business_type": "Retail",
+        "business_size": "Micro",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "50a202f3-d465-4f41-9bda-f82c67266777",
+    "timestamp": "2024-12-05T00:27:58.380766",
+    "type": "find_schemes",
+    "user_query": "I am a 22 year old male from Karnataka, belonging to General category. My annual household income is Rs. 500000. I am a Student studying in Private institution. My specific requirements are: Scholarship, Education Loan.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Student",
+        "age": 22,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 500000,
+        "education_level": "Undergraduate",
+        "institution_type": "Private",
+        "specific_requirement": [
+          "Scholarship",
+          "Education Loan"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  },
+  {
+    "conversation_id": "545062cc-7c87-40a1-ac25-14b8014a2d5f",
+    "timestamp": "2024-12-05T00:41:39.798678",
+    "type": "find_schemes",
+    "user_query": "I am a 19 year old male from Karnataka, belonging to General category. My annual household income is Rs. 100000. I am a Student studying in Private institution. My specific requirements are: Scholarship, Education Loan.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Student",
+        "age": 19,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 100000,
+        "education_level": "Undergraduate",
+        "institution_type": "Private",
+        "specific_requirement": [
+          "Scholarship",
+          "Education Loan"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 2
+    }
+  },
+  {
+    "conversation_id": "872bb505-6692-43d4-bc2b-aa3fe5aa575e",
+    "timestamp": "2024-12-05T00:42:08.060121",
+    "type": "find_schemes",
+    "user_query": "Any schemes for scholarship?",
+    "response": "Absolutely! Karnataka has several scholarship schemes to support students in their education. Here’s an overview of some key scholarship schemes available in the state:\n\n📋 SCHEME OVERVIEW:\n1. **Post Matric Scholarship (PMS)**: This scheme is for students belonging to Scheduled Castes, Scheduled Tribes, and Other Backward Classes who are pursuing post-matriculation courses.\n\n2. **Vidyanidhi Scheme**: Aimed at economically weaker sections, this scheme provides financial assistance to students for pursuing higher education.\n\n3. **Sanchi Honnamma Scholarship**: This scholarship is specifically for women students pursuing education after 10th grade.\n\n💰 KEY BENEFITS:\n• Financial assistance for tuition fees and other educational expenses.\n• Support for students from marginalized communities.\n• Encouragement for women's education.\n\n🎯 ELIGIBILITY:\n• **Post Matric Scholarship**: Students belonging to SC/ST/OBC categories, enrolled in recognized post-matric courses.\n• **Vidyanidhi Scheme**: Open to students from economically weaker sections, with a focus on those pursuing higher education.\n• **Sanchi Honnamma Scholarship**: Female students who have completed 10th grade and are enrolled in higher secondary or degree courses.\n\nIf you want more detailed information about any specific scholarship, like the application process or required documents, let me know!",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Student",
+        "age": 19,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 100000,
+        "education_level": "Undergraduate",
+        "institution_type": "Private",
+        "specific_requirement": [
+          "Scholarship",
+          "Education Loan"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "follow_up",
+      "english_query": "Any schemes for scholarship?",
+      "contextualized_query": "For someone in Karnataka: Any schemes for scholarship?"
+    }
+  },
+  {
+    "conversation_id": "4075f3d3-144f-4db3-8d89-446b334ab351",
+    "timestamp": "2024-12-05T00:43:03.660447",
+    "type": "find_schemes",
+    "user_query": "I am a 45 year old male from Karnataka, belonging to General category. My annual household income is Rs. 100000. I am a Self-employed/Business running a Micro business. My specific requirements are: Business Expansion.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Self-employed/Business",
+        "age": 45,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 100000,
+        "business_type": "Micro",
+        "annual_turnover": 2000000,
+        "specific_requirement": [
+          "Business Expansion"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 1
+    }
+  },
+  {
+    "conversation_id": "c349a308-aecb-40df-a5a3-3e30f667c403",
+    "timestamp": "2024-12-05T00:44:21.635484",
+    "type": "find_schemes",
+    "user_query": "I am a 67 year old male from Karnataka, belonging to SC category. My annual household income is Rs. 300001. I am a Farmer/Agricultural Worker practicing Mixed farming. My specific requirements are: Irrigation Schemes.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Farmer/Agricultural Worker",
+        "age": 67,
+        "gender": "Male",
+        "category": "SC",
+        "annual_income": 300001,
+        "land_holding": 4,
+        "farming_type": "Mixed",
+        "specific_requirement": [
+          "Irrigation Schemes"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 1
+    }
+  },
+  {
+    "conversation_id": "95d361d7-cb20-4eb5-af90-c79f5d3793ec",
+    "timestamp": "2024-12-05T00:45:39.523960",
+    "type": "find_schemes",
+    "user_query": "I am a 26 year old male from Karnataka, belonging to General category. My annual household income is Rs. 300000. I am a Unemployed . My specific requirements are: Job Training.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Unemployed",
+        "age": 26,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 300000,
+        "education_level": "Graduate",
+        "specific_requirement": [
+          "Job Training"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
+  }
+]

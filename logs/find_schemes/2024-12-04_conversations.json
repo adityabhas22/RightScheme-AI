@@ -284,5 +284,31 @@
       "interaction_type": "initial_questionnaire",
       "num_recommendations": 5
     }
+  },
+  {
+    "conversation_id": "d79dd1be-37e9-4a8c-977a-9717b08f937e",
+    "timestamp": "2024-12-04T23:58:23.193867",
+    "type": "find_schemes",
+    "user_query": "I am a 21 year old male from Karnataka, belonging to General category. My annual household income is Rs. 300000 and I am student by occupation. My education level is Undergraduate. I am specifically looking for: student loan. Please suggest government schemes that I am eligible for, particularly related to what I am looking for.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "looking_for": "student loan",
+        "age": 21,
+        "gender": "Male",
+        "marital_status": "Single",
+        "category": "General",
+        "annual_income": 300000,
+        "occupation": "Student",
+        "education_level": "Undergraduate",
+        "institution_type": "Private",
+        "scholarship_interest": "Yes",
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
   }
 ]
