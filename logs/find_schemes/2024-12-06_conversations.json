@@ -1,0 +1,55 @@
+[
+  {
+    "conversation_id": "a83b3555-6ad4-4ca0-b29f-47768b8ec34e",
+    "timestamp": "2024-12-06T11:58:26.955925",
+    "type": "find_schemes",
+    "user_query": "I am a 25 year old male from Karnataka, belonging to General category. My annual household income is Rs. 500000. I am a Self-employed/Business running a Micro business. My specific requirements are: Business Loan, Equipment Purchase.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Self-employed/Business",
+        "age": 25,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 500000,
+        "business_type": "Micro",
+        "annual_turnover": 1000000,
+        "specific_requirement": [
+          "Business Loan",
+          "Equipment Purchase"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 2
+    }
+  },
+  {
+    "conversation_id": "4702374b-6758-44cc-9f53-c7a9b5c1e3bf",
+    "timestamp": "2024-12-06T12:07:09.058892",
+    "type": "find_schemes",
+    "user_query": "I am a 26 year old male from Karnataka, belonging to General category. My annual household income is Rs. 500000. I am a Self-employed/Business running a Micro business. My specific requirements are: Business Loan.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "hi",
+      "user_profile": {
+        "occupation_category": "Self-employed/Business",
+        "age": 26,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 500000,
+        "business_type": "Micro",
+        "annual_turnover": 1000000,
+        "specific_requirement": [
+          "Business Loan"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 2
+    }
+  }
+]

@@ -182,5 +182,31 @@
       "interaction_type": "initial_questionnaire",
       "num_recommendations": 5
     }
+  },
+  {
+    "conversation_id": "589a9ef6-81de-4ab0-a04e-7add4c64aa4d",
+    "timestamp": "2024-12-05T01:05:53.553632",
+    "type": "find_schemes",
+    "user_query": "I am a 35 year old male from Karnataka, belonging to General category. My annual household income is Rs. 0. I am a Unemployed . My specific requirements are: Self-employment Schemes, Job Training.  Please suggest government schemes that I am eligible for, particularly related to my requirements.",
+    "response": "Recommendations generated",
+    "metadata": {
+      "state": "Karnataka",
+      "language": "en",
+      "user_profile": {
+        "occupation_category": "Unemployed",
+        "age": 35,
+        "gender": "Male",
+        "category": "General",
+        "annual_income": 0,
+        "education_level": "Graduate",
+        "specific_requirement": [
+          "Self-employment Schemes",
+          "Job Training"
+        ],
+        "disability_status": "No"
+      },
+      "interaction_type": "initial_questionnaire",
+      "num_recommendations": 5
+    }
   }
 ]
