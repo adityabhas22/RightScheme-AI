@@ -204,18 +204,42 @@ if "find_schemes" not in st.session_state:
     }
 
 def initialize_questionnaire_state():
-    if "current_question" not in st.session_state:
-        st.session_state.current_question = 0
-    if "user_responses" not in st.session_state:
-        st.session_state.user_responses = {}
-    if "questionnaire_completed" not in st.session_state:
-        st.session_state.questionnaire_completed = False
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-    if "scheme_agent" not in st.session_state:
-        st.session_state.scheme_agent = None
-    if "is_first_message" not in st.session_state:
-        st.session_state.is_first_message = True
+    if "find_schemes" not in st.session_state:
+        st.session_state.find_schemes = {
+            "chat_history": [],
+            "scheme_agent": create_scheme_agent(),
+            "scheme_matcher": SemanticSchemeMatcher(),
+            "is_first_message": True,
+            "current_question": 0,
+            "user_responses": {},
+            "questionnaire_completed": False,
+            "recommendations": None
+        }
+    
+    # Ensure all keys exist
+    required_keys = [
+        "chat_history", 
+        "scheme_agent", 
+        "scheme_matcher",
+        "is_first_message",
+        "current_question",
+        "user_responses",
+        "questionnaire_completed",
+        "recommendations"
+    ]
+    
+    for key in required_keys:
+        if key not in st.session_state.find_schemes:
+            if key == "scheme_agent":
+                st.session_state.find_schemes[key] = create_scheme_agent()
+            elif key == "scheme_matcher":
+                st.session_state.find_schemes[key] = SemanticSchemeMatcher()
+            elif key == "chat_history":
+                st.session_state.find_schemes[key] = []
+            elif key in ["current_question", "is_first_message"]:
+                st.session_state.find_schemes[key] = 0 if key == "current_question" else True
+            else:
+                st.session_state.find_schemes[key] = None if key == "recommendations" else {}
 
 def show_scheme_details(scheme: SchemeRecommendation):
     """Display detailed information about a scheme in a modal."""
@@ -248,25 +272,38 @@ def show_scheme_details(scheme: SchemeRecommendation):
 
 def get_dynamic_questions(responses: Dict) -> List[Dict]:
     """Return dynamic questions based on previous responses."""
+    # First get the occupation category in English if it exists
+    occupation_category = responses.get("occupation_category", "")
+    
+    # Define base options for occupation categories
+    base_occupation_options = {
+        "Student": ["Student", translate_text("Student")],
+        "Employed": ["Employed", translate_text("Employed")],
+        "Self-employed/Business": ["Self-employed/Business", translate_text("Self-employed/Business")],
+        "Unemployed": ["Unemployed", translate_text("Unemployed")],
+        "Senior Citizen": ["Senior Citizen", translate_text("Senior Citizen")],
+        "Farmer/Agricultural Worker": ["Farmer/Agricultural Worker", translate_text("Farmer/Agricultural Worker")]
+    }
+    
+    # Convert occupation category to English if it's translated
+    if occupation_category:
+        for eng_category, variations in base_occupation_options.items():
+            if occupation_category in variations:
+                occupation_category = eng_category
+                break
+
     base_questions = [
         {
             "id": "occupation_category",
-            "text": translate_text("Which category best describes you?"),
+            "text": "Which category best describes you?",
             "type": "select",
-            "options": [
-                translate_text("Student"),
-                translate_text("Employed"),
-                translate_text("Self-employed/Business"),
-                translate_text("Unemployed"),
-                translate_text("Senior Citizen"),
-                translate_text("Farmer/Agricultural Worker")
-            ],
+            "options": [key for key in base_occupation_options.keys()],
             "required": True,
             "category": "Basic Information"
         },
         {
             "id": "age",
-            "text": translate_text("What is your age?"),
+            "text": "What is your age?",
             "type": "number",
             "validation": lambda x: 0 <= x <= 120,
             "required": True,
@@ -274,32 +311,32 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
         },
         {
             "id": "gender",
-            "text": translate_text("What is your gender?"),
+            "text": "What is your gender?",
             "type": "select",
             "options": [
-                translate_text("Male"),
-                translate_text("Female"),
-                translate_text("Other")
+                "Male",
+                "Female",
+                "Other"
             ],
             "required": True,
             "category": "Basic Information"
         },
         {
             "id": "category",
-            "text": translate_text("Which social category do you belong to?"),
+            "text": "Which social category do you belong to?",
             "type": "select",
             "options": [
-                translate_text("General"),
-                translate_text("SC"),
-                translate_text("ST"),
-                translate_text("OBC")
+                "General",
+                "SC",
+                "ST",
+                "OBC"
             ],
             "required": True,
             "category": "Basic Information"
         },
         {
             "id": "annual_income",
-            "text": translate_text("What is your annual household income (in INR)?"),
+            "text": "What is your annual household income (in INR)?",
             "type": "number",
             "validation": lambda x: x >= 0,
             "required": True,
@@ -307,219 +344,213 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
         }
     ]
 
-    # Add category-specific questions based on occupation_category
-    if "occupation_category" in responses:
-        if responses["occupation_category"] == "Student":
-            base_questions.extend([
-                {
-                    "id": "education_level",
-                    "text": translate_text("What is your current education level?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("School Student"),
-                        translate_text("Undergraduate"),
-                        translate_text("Postgraduate"),
-                        translate_text("Research Scholar")
-                    ],
-                    "category": "Education Details"
-                },
-                {
-                    "id": "institution_type",
-                    "text": translate_text("What type of institution do you study in?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Government"),
-                        translate_text("Private"),
-                        translate_text("Aided")
-                    ],
-                    "category": "Education Details"
-                },
-                {
-                    "id": "specific_requirement",
-                    "text": translate_text("What specific support are you looking for?"),
-                    "type": "multiselect",
-                    "options": [
-                        translate_text("Education Loan"),
-                        translate_text("Scholarship"),
-                        translate_text("Skill Development"),
-                        translate_text("Research Funding")
-                    ],
-                    "category": "Requirements"
-                }
-            ])
-
-        elif responses["occupation_category"] == "Employed":
-            base_questions.extend([
-                {
-                    "id": "employment_sector",
-                    "text": translate_text("Which sector do you work in?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Government"),
-                        translate_text("Private"),
-                        translate_text("Public Sector")
-                    ],
-                    "category": "Employment Details"
-                },
-                {
-                    "id": "specific_requirement",
-                    "text": translate_text("What specific support are you looking for?"),
-                    "type": "multiselect",
-                    "options": [
-                        translate_text("Housing"),
-                        translate_text("Skill Enhancement"),
-                        translate_text("Business Loan"),
-                        translate_text("Personal Loan")
-                    ],
-                    "category": "Requirements"
-                }
-            ])
-
-        elif responses["occupation_category"] == "Self-employed/Business":
-            base_questions.extend([
-                {
-                    "id": "business_type",
-                    "text": translate_text("What is your business size?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Micro"),
-                        translate_text("Small"),
-                        translate_text("Medium")
-                    ],
-                    "category": "Business Details"
-                },
-                {
-                    "id": "annual_turnover",
-                    "text": translate_text("What is your annual business turnover (in INR)?"),
-                    "type": "number",
-                    "validation": lambda x: x >= 0,
-                    "category": "Business Details"
-                },
-                {
-                    "id": "specific_requirement",
-                    "text": translate_text("What specific support are you looking for?"),
-                    "type": "multiselect",
-                    "options": [
-                        translate_text("Business Loan"),
-                        translate_text("Equipment Purchase"),
-                        translate_text("Working Capital"),
-                        translate_text("Business Expansion")
-                    ],
-                    "category": "Requirements"
-                }
-            ])
-
-        elif responses["occupation_category"] == "Unemployed":
-            base_questions.extend([
-                {
-                    "id": "education_level",
-                    "text": translate_text("What is your highest education level?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Below 10th"),
-                        translate_text("10th Pass"),
-                        translate_text("12th Pass"),
-                        translate_text("Graduate"),
-                        translate_text("Post Graduate")
-                    ],
-                    "category": "Education Details"
-                },
-                {
-                    "id": "specific_requirement",
-                    "text": translate_text("What specific support are you looking for?"),
-                    "type": "multiselect",
-                    "options": [
-                        translate_text("Skill Development"),
-                        translate_text("Self-employment Schemes"),
-                        translate_text("Job Training")
-                    ],
-                    "category": "Requirements"
-                }
-            ])
-
-        elif responses["occupation_category"] == "Senior Citizen":
-            base_questions.extend([
-                {
-                    "id": "living_status",
-                    "text": translate_text("What is your living status?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Living Alone"),
-                        translate_text("Living with Family")
-                    ],
-                    "category": "Living Details"
-                },
-                {
-                    "id": "specific_requirement",
-                    "text": translate_text("What specific support are you looking for?"),
-                    "type": "multiselect",
-                    "options": [
-                        translate_text("Pension Schemes"),
-                        translate_text("Healthcare"),
-                        translate_text("Financial Security")
-                    ],
-                    "category": "Requirements"
-                }
-            ])
-
-        elif responses["occupation_category"] == "Farmer/Agricultural Worker":
-            base_questions.extend([
-                {
-                    "id": "land_holding",
-                    "text": translate_text("What is your land holding size (in acres)?"),
-                    "type": "number",
-                    "validation": lambda x: x >= 0,
-                    "category": "Agricultural Details"
-                },
-                {
-                    "id": "farming_type",
-                    "text": translate_text("What type of farming do you practice?"),
-                    "type": "select",
-                    "options": [
-                        translate_text("Traditional"),
-                        translate_text("Organic"),
-                        translate_text("Mixed")
-                    ],
-                    "category": "Agricultural Details"
-                },
-                {
-                    "id": "specific_requirement",
-                    "text": translate_text("What specific support are you looking for?"),
-                    "type": "multiselect",
-                    "options": [
-                        translate_text("Crop Loans"),
-                        translate_text("Equipment Purchase"),
-                        translate_text("Irrigation Schemes"),
-                        translate_text("Subsidies")
-                    ],
-                    "category": "Requirements"
-                }
-            ])
+    # Add category-specific questions based on English occupation_category
+    if occupation_category == "Student":
+        base_questions.extend([
+            {
+                "id": "education_level",
+                "text": "What is your current education level?",
+                "type": "select",
+                "options": [
+                    "School Student",
+                    "Undergraduate",
+                    "Postgraduate",
+                    "Research Scholar"
+                ],
+                "category": "Education Details"
+            },
+            {
+                "id": "institution_type",
+                "text": "What type of institution do you study in?",
+                "type": "select",
+                "options": [
+                    "Government",
+                    "Private",
+                    "Aided"
+                ],
+                "category": "Education Details"
+            },
+            {
+                "id": "specific_requirement",
+                "text": "What specific support are you looking for?",
+                "type": "multiselect",
+                "options": [
+                    "Education Loan",
+                    "Scholarship",
+                    "Skill Development",
+                    "Research Funding"
+                ],
+                "category": "Requirements"
+            }
+        ])
+    elif occupation_category == "Self-employed/Business":
+        base_questions.extend([
+            {
+                "id": "business_type",
+                "text": "What is your business size?",
+                "type": "select",
+                "options": [
+                    "Micro",
+                    "Small",
+                    "Medium"
+                ],
+                "category": "Business Details"
+            },
+            {
+                "id": "annual_turnover",
+                "text": "What is your annual business turnover (in INR)?",
+                "type": "number",
+                "validation": lambda x: x >= 0,
+                "category": "Business Details"
+            },
+            {
+                "id": "specific_requirement",
+                "text": "What specific support are you looking for?",
+                "type": "multiselect",
+                "options": [
+                    "Business Loan",
+                    "Equipment Purchase",
+                    "Working Capital",
+                    "Business Expansion"
+                ],
+                "category": "Requirements"
+            }
+        ])
+    elif occupation_category == "Employed":
+        base_questions.extend([
+            {
+                "id": "employment_sector",
+                "text": "Which sector do you work in?",
+                "type": "select",
+                "options": [
+                    "Government",
+                    "Private",
+                    "Public Sector"
+                ],
+                "category": "Employment Details"
+            },
+            {
+                "id": "specific_requirement",
+                "text": "What specific support are you looking for?",
+                "type": "multiselect",
+                "options": [
+                    "Housing",
+                    "Skill Enhancement",
+                    "Business Loan",
+                    "Personal Loan"
+                ],
+                "category": "Requirements"
+            }
+        ])
+    elif occupation_category == "Unemployed":
+        base_questions.extend([
+            {
+                "id": "education_level",
+                "text": "What is your highest education level?",
+                "type": "select",
+                "options": [
+                    "Below 10th",
+                    "10th Pass",
+                    "12th Pass",
+                    "Graduate",
+                    "Post Graduate"
+                ],
+                "category": "Education Details"
+            },
+            {
+                "id": "specific_requirement",
+                "text": "What specific support are you looking for?",
+                "type": "multiselect",
+                "options": [
+                    "Skill Development",
+                    "Self-employment Schemes",
+                    "Job Training"
+                ],
+                "category": "Requirements"
+            }
+        ])
+    elif occupation_category == "Senior Citizen":
+        base_questions.extend([
+            {
+                "id": "living_status",
+                "text": "What is your living status?",
+                "type": "select",
+                "options": [
+                    "Living Alone",
+                    "Living with Family"
+                ],
+                "category": "Living Details"
+            },
+            {
+                "id": "specific_requirement",
+                "text": "What specific support are you looking for?",
+                "type": "multiselect",
+                "options": [
+                    "Pension Schemes",
+                    "Healthcare",
+                    "Financial Security"
+                ],
+                "category": "Requirements"
+            }
+        ])
+    elif occupation_category == "Farmer/Agricultural Worker":
+        base_questions.extend([
+            {
+                "id": "land_holding",
+                "text": "What is your land holding size (in acres)?",
+                "type": "number",
+                "validation": lambda x: x >= 0,
+                "category": "Agricultural Details"
+            },
+            {
+                "id": "farming_type",
+                "text": "What type of farming do you practice?",
+                "type": "select",
+                "options": [
+                    "Traditional",
+                    "Organic",
+                    "Mixed"
+                ],
+                "category": "Agricultural Details"
+            },
+            {
+                "id": "specific_requirement",
+                "text": "What specific support are you looking for?",
+                "type": "multiselect",
+                "options": [
+                    "Crop Loans",
+                    "Equipment Purchase",
+                    "Irrigation Schemes",
+                    "Subsidies"
+                ],
+                "category": "Requirements"
+            }
+        ])
 
     # Add disability-related questions for all
     base_questions.append({
         "id": "disability_status",
-        "text": translate_text("Do you have any disabilities?"),
+        "text": "Do you have any disabilities?",
         "type": "select",
         "options": [
-            translate_text("No"),
-            translate_text("Yes")
+            "No",
+            "Yes"
         ],
         "category": "Health Information"
     })
 
     # Add disability-specific questions if applicable
-    if "disability_status" in responses and responses["disability_status"] == "Yes":
+    if responses.get("disability_status") == "Yes":
         base_questions.append({
             "id": "disability_type",
-            "text": translate_text("What type of disability do you have?"),
+            "text": "What type of disability do you have?",
             "type": "multiselect",
             "options": [
-                translate_text("Physical"),
-                translate_text("Visual"),
-                translate_text("Hearing"),
-                translate_text("Cognitive"),
-                translate_text("Other")
+                "Physical",
+                "Visual",
+                "Hearing",
+                "Cognitive",
+                "Other"
             ],
             "category": "Health Information"
         })
@@ -528,6 +559,14 @@ def get_dynamic_questions(responses: Dict) -> List[Dict]:
 
 def display_questionnaire():
     """Display the dynamic questionnaire with progress bar."""
+    # Ensure responses exist and are in English
+    if "user_responses" not in st.session_state.find_schemes:
+        st.session_state.find_schemes["user_responses"] = {}
+    
+    # Store the current language for reference
+    current_language = st.session_state.language
+    
+    # Get questions based on English responses
     questions = get_dynamic_questions(st.session_state.find_schemes["user_responses"])
     total_questions = len(questions)
     current_q_index = st.session_state.find_schemes["current_question"]
@@ -535,12 +574,12 @@ def display_questionnaire():
     # Display progress bar
     progress = (current_q_index) / total_questions
     st.progress(progress)
-    st.markdown(f"Question {current_q_index + 1} of {total_questions}")
+    st.markdown(translate_text(f"Question {current_q_index + 1} of {total_questions}"))
     
     if current_q_index < total_questions:
         current_q = questions[current_q_index]
         
-        # Display category header if it's the first question of a category
+        # Translate category header
         if current_q_index == 0 or questions[current_q_index - 1]["category"] != current_q["category"]:
             st.markdown(f"### {translate_text(current_q['category'])}")
         
@@ -550,42 +589,97 @@ def display_questionnaire():
                 <div class="question-card">
             """, unsafe_allow_html=True)
             
+            # Translate question text
+            question_text = translate_text(current_q["text"])
+            
+            # Handle different question types
             if current_q["type"] == "text":
                 response = st.text_input(
-                    current_q["text"],
-                    placeholder=current_q.get("placeholder", ""),
+                    question_text,
+                    placeholder=translate_text(current_q.get("placeholder", "")),
                     key=f"input_{current_q['id']}"
                 )
+                final_response = response
+                
             elif current_q["type"] == "select":
+                # Create a mapping of translated to original options
+                options_map = {translate_text(opt): opt for opt in current_q["options"]}
+                translated_options = list(options_map.keys())
+                
+                # If there's a previous response, find its translated version
+                default_index = 0
+                if current_q["id"] in st.session_state.find_schemes["user_responses"]:
+                    prev_response = st.session_state.find_schemes["user_responses"][current_q["id"]]
+                    prev_translated = translate_text(prev_response)
+                    if prev_translated in translated_options:
+                        default_index = translated_options.index(prev_translated)
+                
                 response = st.selectbox(
-                    current_q["text"],
-                    options=current_q["options"],
+                    question_text,
+                    options=translated_options,
+                    index=default_index,
                     key=f"input_{current_q['id']}"
                 )
+                # Convert back to English
+                final_response = options_map[response]
+                
             elif current_q["type"] == "multiselect":
+                # Create a mapping of translated to original options
+                options_map = {translate_text(opt): opt for opt in current_q["options"]}
+                translated_options = list(options_map.keys())
+                
+                # If there's a previous response, find its translated versions
+                default = []
+                if current_q["id"] in st.session_state.find_schemes["user_responses"]:
+                    prev_responses = st.session_state.find_schemes["user_responses"][current_q["id"]]
+                    default = [translate_text(resp) for resp in prev_responses]
+                
                 response = st.multiselect(
-                    current_q["text"],
-                    options=current_q["options"],
+                    question_text,
+                    options=translated_options,
+                    default=default,
                     key=f"input_{current_q['id']}"
                 )
+                # Convert back to English
+                final_response = [options_map[r] for r in response]
+                
             elif current_q["type"] == "number":
+                # Get previous value if it exists
+                default_value = st.session_state.find_schemes["user_responses"].get(current_q["id"], 0)
                 response = st.number_input(
-                    current_q["text"],
+                    question_text,
                     min_value=0,
+                    value=default_value,
                     key=f"input_{current_q['id']}"
                 )
+                final_response = response
             
             st.markdown("</div>", unsafe_allow_html=True)
         
-        # Navigation buttons
+        # Navigation buttons with translated text
         col1, col2, col3 = st.columns([1, 1, 4])
         
-        if col1.button("Previous", key="prev_button", disabled=current_q_index == 0):
+        if col1.button(translate_text("Previous"), key="prev_button", disabled=current_q_index == 0):
             st.session_state.find_schemes["current_question"] -= 1
             st.rerun()
             
-        if col2.button("Next", key="next_button"):
-            st.session_state.find_schemes["user_responses"][current_q["id"]] = response
+        if col2.button(translate_text("Next"), key="next_button"):
+            # Store the English version of the response
+            st.session_state.find_schemes["user_responses"][current_q["id"]] = final_response
+            
+            # Log the response for debugging
+            logger.log_conversation(
+                conversation_type="questionnaire_response",
+                user_query=f"Question: {current_q['text']}",
+                response=f"Answer: {final_response}",
+                metadata={
+                    "question_id": current_q["id"],
+                    "language": current_language,
+                    "response_type": current_q["type"],
+                    "current_responses": st.session_state.find_schemes["user_responses"]
+                }
+            )
+            
             st.session_state.find_schemes["current_question"] += 1
             
             if current_q_index == total_questions - 1:
@@ -831,7 +925,9 @@ def main():
     # Set current page for unique widget keys
     st.session_state['current_page'] = 'find_schemes'
     
+    # Initialize all session state
     initialize_session_state()
+    initialize_questionnaire_state()
     display_state_selector()
     
     # Add reset button to sidebar
@@ -870,59 +966,82 @@ def main():
         return
         
     # Rest of the questionnaire code...
-    if not st.session_state.find_schemes["questionnaire_completed"]:
+    if not st.session_state.find_schemes.get("questionnaire_completed", False):
         display_questionnaire()
     
     # Process recommendations and handle chat
-    if st.session_state.find_schemes["questionnaire_completed"]:
+    if st.session_state.find_schemes.get("questionnaire_completed", False):
+        # Safely get recommendations
+        recommendations = st.session_state.find_schemes.get("recommendations")
+        
         # Display recommendations if available
-        if st.session_state.find_schemes["recommendations"]:
-            display_recommendations(st.session_state.find_schemes["recommendations"])
-            
-            # Add a separator
-            st.markdown("---")
-            st.markdown("### 💬 Ask Follow-up Questions")
-            st.markdown("Feel free to ask specific questions about any scheme or explore more options.")
+        if recommendations is not None and len(recommendations) > 0:
+            try:
+                display_recommendations(recommendations)
+                
+                # Add a separator
+                st.markdown("---")
+                st.markdown("### 💬 " + translate_text("Ask Follow-up Questions"))
+                st.markdown(translate_text("Feel free to ask specific questions about any scheme or explore more options."))
+            except Exception as e:
+                logger.log_error("find_schemes", f"Error displaying recommendations: {str(e)}", {
+                    "state": st.session_state.get("user_state"),
+                    "language": st.session_state.get("language")
+                })
+                st.error(translate_text("There was an error displaying the recommendations. Please try refreshing the page."))
+                return
+        elif recommendations is not None and len(recommendations) == 0:
+            st.warning(translate_text("No matching schemes found. Please try adjusting your responses."))
+            return
         
         # Handle chat interface
         if query := st.chat_input(translate_text("Ask follow-up questions about schemes...")):
-            # Translate query to English if in another language
-            english_query = translate_to_english(query) if st.session_state.language != "en" else query
-            
-            # Add to chat history
-            st.session_state.find_schemes["chat_history"].append({"role": "user", "content": query})
-            
-            # Show thinking animation
-            display_thinking_animation()
-            
-            # Add state context to the query
-            contextualized_query = f"For someone in {st.session_state.user_state}: {english_query}"
-            
-            # Get response
-            response_data = process_query(contextualized_query)
-            
-            # Log follow-up conversation
-            logger.log_conversation(
-                conversation_type="find_schemes",
-                user_query=query,
-                response=response_data["response"],
-                metadata={
-                    "state": st.session_state.user_state,
-                    "language": st.session_state.language,
-                    "user_profile": st.session_state.find_schemes["user_responses"],
-                    "interaction_type": "follow_up",
-                    "english_query": english_query,
-                    "contextualized_query": contextualized_query
-                }
-            )
-            
-            # Add to chat history
-            st.session_state.find_schemes["chat_history"].append(
-                {"role": "assistant", "content": response_data["response"]}
-            )
+            try:
+                # Translate query to English if in another language
+                english_query = translate_to_english(query) if st.session_state.language != "en" else query
+                
+                # Add to chat history
+                st.session_state.find_schemes["chat_history"].append({"role": "user", "content": query})
+                
+                # Show thinking animation
+                display_thinking_animation()
+                
+                # Add state context to the query
+                contextualized_query = f"For someone in {st.session_state.user_state}: {english_query}"
+                
+                # Get response
+                response_data = process_query(contextualized_query)
+                
+                # Log follow-up conversation
+                logger.log_conversation(
+                    conversation_type="find_schemes",
+                    user_query=query,
+                    response=response_data["response"],
+                    metadata={
+                        "state": st.session_state.user_state,
+                        "language": st.session_state.language,
+                        "user_profile": st.session_state.find_schemes.get("user_responses", {}),
+                        "interaction_type": "follow_up",
+                        "english_query": english_query,
+                        "contextualized_query": contextualized_query
+                    }
+                )
+                
+                # Add to chat history
+                st.session_state.find_schemes["chat_history"].append(
+                    {"role": "assistant", "content": response_data["response"]}
+                )
+            except Exception as e:
+                logger.log_error("find_schemes", f"Error processing chat: {str(e)}", {
+                    "state": st.session_state.get("user_state"),
+                    "language": st.session_state.get("language"),
+                    "query": query
+                })
+                st.error(translate_text("There was an error processing your question. Please try again."))
 
     # Display chat history ONCE with translations
-    for message in st.session_state.find_schemes["chat_history"]:
+    chat_history = st.session_state.find_schemes.get("chat_history", [])
+    for message in chat_history:
         display_bilingual_message(message["content"], message["role"])
 
     st.markdown("""
